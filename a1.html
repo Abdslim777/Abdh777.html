@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سبعات - موقع الأفكار الإبداعية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        /* شريط التنقل */
+        .navbar {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .menu-btn {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .menu-line {
+            width: 25px;
+            height: 3px;
+            background-color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar.active {
+            right: 0;
+        }
+        
+        .close-btn {
+            align-self: flex-end;
+            cursor: pointer;
+            color: #e74c3c;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-content {
+            flex-grow: 1;
+        }
+        
+        .options-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            cursor: pointer;
+            color: #2c3e50;
+            font-size: 24px;
+            z-index: 500;
+        }
+        
+        .options-menu {
+            position: fixed;
+            bottom: 60px;
+            left: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: none;
+            z-index: 600;
+        }
+        
+        .options-menu.active {
+            display: block;
+        }
+        
+        .option-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .option-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .option-item i {
+            margin-left: 10px;
+        }
+        
+        .main-content {
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .idea-form {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        textarea:focus, input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: block;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .contact-info {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-content {
+                padding: 20px 15px;
+            }
+            
+            .idea-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- شريط التنقل -->
+    <nav class="navbar">
+        <div class="logo">سبعات</div>
+        <div class="menu-btn" id="menuBtn">
+            <div class="menu-line"></div>
+            <div class="menu-line"></div>
+            <div class="menu-line"></div>
+        </div>
+    </nav>
+    
+    <!-- الشريط الجانبي -->
+    <div class="sidebar" id="sidebar">
+        <div class="close-btn" id="closeBtn">×</div>
+        <div class="sidebar-content">
+            <h2>خيارات الموقع</h2>
+            <p>هنا يمكنك إضافة محتوى الشريط الجانبي مثل روابط الصفحات، الإعدادات، أو أي معلومات أخرى تريد عرضها.</p>
+        </div>
+    </div>
+    
+    <!-- زر الخيارات (النقاط الثلاث) -->
+    <div class="options-btn" id="optionsBtn">
+        <i class="fas fa-ellipsis-v"></i>
+    </div>
+    
+    <!-- قائمة الخيارات -->
+    <div class="options-menu" id="optionsMenu">
+        <div class="option-item" id="rateItem">
+            <i class="fas fa-star"></i>
+            <span>تقييم الموقع</span>
+        </div>
+        <div class="option-item" id="reportItem">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>الإبلاغ عن مشكلة</span>
+        </div>
+        <div class="option-item" id="closeSiteItem">
+            <i class="fas fa-times"></i>
+            <span>إغلاق الموقع</span>
+        </div>
+    </div>
+    
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content">
+        <div class="idea-form">
+            <h1>شاركنا أفكارك الإبداعية</h1>
+            <form id="ideaForm">
+                <div class="form-group">
+                    <label for="name">اسمك (اختياري)</label>
+                    <input type="text" id="name" placeholder="اكتب اسمك هنا">
+                </div>
+                <div class="form-group">
+                    <label for="idea">ما الفكرة التي ترغب في رؤيتها في موقع سبعات؟</label>
+                    <textarea id="idea" placeholder="اكتب فكرتك بالتفصيل هنا..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">إرسال الفكرة</button>
+            </form>
+        </div>
+        
+        <div class="contact-info">
+            <p>للاستفسارات أو الدعم الفني:</p>
+            <p><i class="fas fa-phone"></i> واتساب: +967777524788</p>
+            <p><i class="fas fa-envelope"></i> البريد الإلكتروني: abdslim777524@gmail.com</p>
+            <p>المطور: عبده عبدالله العمري</p>
+        </div>
+    </div>
+    
+    <script>
+        // فتح وإغلاق الشريط الجانبي
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const closeBtn = document.getElementById('closeBtn');
+        
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
+        
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+        
+        // فتح وإغلاق قائمة الخيارات
+        const optionsBtn = document.getElementById('optionsBtn');
+        const optionsMenu = document.getElementById('optionsMenu');
+        
+        optionsBtn.addEventListener('click', () => {
+            optionsMenu.classList.toggle('active');
+        });
+        
+        // إجراءات عناصر قائمة الخيارات
+        document.getElementById('rateItem').addEventListener('click', () => {
+            alert('شكرًا لك! سيتم توجيهك إلى صفحة التقييم.');
+            optionsMenu.classList.remove('active');
+        });
+        
+        document.getElementById('reportItem').addEventListener('click', () => {
+            alert('سيتم فتح نموذج للإبلاغ عن المشكلة. شكرًا لمساهمتك في تحسين الموقع.');
+            optionsMenu.classList.remove('active');
+        });
+        
+        document.getElementById('closeSiteItem').addEventListener('click', () => {
+            if (confirm('هل أنت متأكد أنك تريد إغلاق الموقع؟')) {
+                window.close();
+            }
+            optionsMenu.classList.remove('active');
+        });
+        
+        // إرسال النموذج
+        document.getElementById('ideaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const idea = document.getElementById('idea').value;
+            
+            if (!idea) {
+                alert('الرجاء إدخال فكرتك قبل الإرسال');
+                return;
+            }
+            
+            // هنا يمكنك إضافة كود لإرسال البيانات إلى الخادم أو الواتساب
+            const whatsappUrl = `https://wa.me/967777524788?text=${encodeURIComponent(
+                `اسم المرسل: ${name || 'غير معروف'}\n\nالفكرة المقترحة:\n${idea}`
+            )}`;
+            
+            window.open(whatsappUrl, '_blank');
+            
+            alert('شكرًا لك على مشاركة فكرتك! سيتم مراجعتها من قبل المطور.');
+            this.reset();
+        });
+    </script>
+</body>
+</html>
