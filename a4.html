@@ -279,6 +279,49 @@
             font-size: 0.9rem;
         }
 
+        .api-options {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .api-options h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .method-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .method-btn {
+            padding: 8px 15px;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .method-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .github-token-input {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .github-token-input.active {
+            display: block;
+        }
+
         @media (max-width: 768px) {
             .input-group {
                 flex-direction: column;
@@ -323,6 +366,23 @@
                         <a href="#" class="example-link" data-url="https://github.com/Abdslim777/Abdh/blob/main/gg.html">ملف المثال</a>
                         <a href="#" class="example-link" data-url="https://github.com/microsoft/TypeScript/blob/main/README.md">README TypeScript</a>
                         <a href="#" class="example-link" data-url="https://github.com/twbs/bootstrap/blob/main/index.html">Bootstrap مثال</a>
+                    </div>
+                </div>
+                
+                <div class="api-options">
+                    <h3><i class="fas fa-cog"></i> طريقة جلب الملف</h3>
+                    <div class="method-selector">
+                        <button class="method-btn active" data-method="raw">Raw URL (مباشر)</button>
+                        <button class="method-btn" data-method="proxy">GitHub Proxy</button>
+                        <button class="method-btn" data-method="api">GitHub API</button>
+                    </div>
+                    
+                    <div class="github-token-input" id="tokenInput">
+                        <label for="githubToken">GitHub Token (اختياري):</label>
+                        <input type="password" id="githubToken" placeholder="أدخل token هنا إذا كان المستودع خاص">
+                        <small style="color: #666; display: block; margin-top: 5px;">
+                            يمكنك إنشاء token من <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings</a>
+                        </small>
                     </div>
                 </div>
                 
@@ -389,6 +449,7 @@
                     <ol style="padding-right: 20px; color: #555;">
                         <li>انسخ رابط ملف HTML من GitHub (يجب أن يكون الرابط مباشراً للملف)</li>
                         <li>الصق الرابط في الحقل أعلاه واضغط على "تشغيل الملف"</li>
+                        <li>إذا فشل التحميل، جرب استخدام طريقة أخرى من "طريقة جلب الملف"</li>
                         <li>ستظهر النتيجة في إطار المعاينة أعلاه</li>
                         <li>يمكنك نسخ الكود أو حفظه أو فتحه في تبويب جديد</li>
                     </ol>
@@ -419,13 +480,26 @@
             const saveBtn = document.getElementById('saveBtn');
             const newTabBtn = document.getElementById('newTabBtn');
             const exampleLinks = document.querySelectorAll('.example-link');
+            const methodButtons = document.querySelectorAll('.method-btn');
+            const tokenInput = document.getElementById('tokenInput');
+            const githubTokenInput = document.getElementById('githubToken');
             
-            // مثال تلقائي عند التحميل
-            window.addEventListener('load', function() {
-                // تحميل ملف المثال تلقائياً بعد ثانيتين
-                setTimeout(() => {
-                    loadFileFromUrl(githubUrlInput.value);
-                }, 1000);
+            let currentMethod = 'raw'; // الطريقة الافتراضية
+            
+            // اختيار طريقة جلب الملف
+            methodButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    methodButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    currentMethod = this.dataset.method;
+                    
+                    // إظهار/إخفاء حقل الـ token
+                    if (currentMethod === 'api') {
+                        tokenInput.classList.add('active');
+                    } else {
+                        tokenInput.classList.remove('active');
+                    }
+                });
             });
             
             // تحميل الملف عند النقر على الزر
@@ -535,88 +609,180 @@
             });
             
             // دالة لتحميل الملف من URL
-            function loadFileFromUrl(url) {
+            async function loadFileFromUrl(url) {
                 // إظهار مؤشر التحميل
                 loading.classList.add('active');
                 statusMessage.style.display = 'none';
                 
-                // تحويل رابط GitHub إلى رابط API
-                let apiUrl = convertToApiUrl(url);
-                
-                if (!apiUrl) {
-                    showError('رابط GitHub غير صالح. يرجى التأكد من أنه رابط مباشر لملف');
+                try {
+                    let content = '';
+                    let filename = 'file.html';
+                    
+                    // اختيار الطريقة بناءً على الاختيار
+                    switch(currentMethod) {
+                        case 'raw':
+                            content = await fetchWithRawUrl(url);
+                            filename = extractFilename(url);
+                            break;
+                            
+                        case 'proxy':
+                            content = await fetchWithProxy(url);
+                            filename = extractFilename(url);
+                            break;
+                            
+                        case 'api':
+                            content = await fetchWithApi(url, githubTokenInput.value);
+                            filename = extractFilename(url);
+                            break;
+                    }
+                    
+                    // عرض محتوى الكود
+                    displayCodeContent(content, filename, url);
+                    
+                    // إنشاء blob وتشغيله في iframe
+                    const blob = new Blob([content], { type: 'text/html' });
+                    const blobUrl = URL.createObjectURL(blob);
+                    previewFrame.src = blobUrl;
+                    
+                    // إظهار معلومات الملف
+                    displayFileInfo(filename, url, content.length);
+                    
+                    // إظهار رسالة النجاح
+                    showSuccess(`تم تحميل وتشغيل الملف: ${filename}`);
+                    
+                    // إخفاء مؤشر التحميل
                     loading.classList.remove('active');
-                    return;
+                    
+                } catch (error) {
+                    console.error('Error:', error);
+                    showError(`فشل تحميل الملف: ${error.message}`);
+                    loading.classList.remove('active');
                 }
-                
-                // جلب الملف باستخدام GitHub API
-                fetch(apiUrl)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`خطأ في جلب الملف: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // فك تشفير محتوى Base64
-                        const content = atob(data.content.replace(/\n/g, ''));
-                        
-                        // عرض محتوى الكود
-                        displayCodeContent(content, data.name, data.path);
-                        
-                        // إنشاء blob وتشغيله في iframe
-                        const blob = new Blob([content], { type: 'text/html' });
-                        const blobUrl = URL.createObjectURL(blob);
-                        previewFrame.src = blobUrl;
-                        
-                        // إظهار معلومات الملف
-                        displayFileInfo(data);
-                        
-                        // إظهار رسالة النجاح
-                        showSuccess(`تم تحميل وتشغيل الملف: ${data.name}`);
-                        
-                        // إخفاء مؤشر التحميل
-                        loading.classList.remove('active');
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showError(`فشل تحميل الملف: ${error.message}`);
-                        loading.classList.remove('active');
-                    });
             }
             
-            // دالة لتحويل رابط GitHub إلى رابط API
-            function convertToApiUrl(githubUrl) {
+            // الطريقة 1: استخدام Raw URL مباشرة
+            async function fetchWithRawUrl(githubUrl) {
+                // تحويل رابط GitHub إلى رابط raw مباشر
+                const rawUrl = convertToRawUrl(githubUrl);
+                if (!rawUrl) {
+                    throw new Error('رابط GitHub غير صالح');
+                }
+                
+                const response = await fetch(rawUrl);
+                if (!response.ok) {
+                    throw new Error(`خطأ في جلب الملف: ${response.status}`);
+                }
+                
+                return await response.text();
+            }
+            
+            // الطريقة 2: استخدام CORS Proxy
+            async function fetchWithProxy(githubUrl) {
+                const rawUrl = convertToRawUrl(githubUrl);
+                if (!rawUrl) {
+                    throw new Error('رابط GitHub غير صالح');
+                }
+                
+                // استخدام CORS proxy لتجنب مشاكل CORS
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                if (!response.ok) {
+                    throw new Error(`خطأ في جلب الملف: ${response.status}`);
+                }
+                
+                return await response.text();
+            }
+            
+            // الطريقة 3: استخدام GitHub API
+            async function fetchWithApi(githubUrl, token = '') {
+                const apiUrl = convertToApiUrl(githubUrl);
+                if (!apiUrl) {
+                    throw new Error('رابط GitHub غير صالح');
+                }
+                
+                const headers = {
+                    'Accept': 'application/vnd.github.v3+json'
+                };
+                
+                // إضافة token إذا كان موجوداً
+                if (token) {
+                    headers['Authorization'] = `token ${token}`;
+                }
+                
+                const response = await fetch(apiUrl, { headers });
+                if (!response.ok) {
+                    throw new Error(`خطأ في جلب الملف: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                // فك تشفير محتوى Base64
+                return atob(data.content.replace(/\n/g, ''));
+            }
+            
+            // تحويل رابط GitHub إلى رابط raw
+            function convertToRawUrl(githubUrl) {
                 try {
-                    // تحليل الرابط
                     const url = new URL(githubUrl);
                     
-                    // التحقق من أن الرابط من GitHub
                     if (url.hostname !== 'github.com') {
                         return null;
                     }
                     
-                    // استخراج مكونات المسار
                     const pathParts = url.pathname.split('/').filter(part => part);
                     
-                    // يجب أن يكون هناك على الأقل اسم المستخدم واسم المستودع
-                    if (pathParts.length < 2) {
+                    if (pathParts.length < 5) {
                         return null;
                     }
                     
-                    const [owner, repo, ...rest] = pathParts;
+                    const [owner, repo, blob, branch, ...filePath] = pathParts;
                     
-                    // إزالة "blob" من المسار إذا كان موجوداً
-                    const blobIndex = rest.indexOf('blob');
-                    if (blobIndex !== -1) {
-                        rest.splice(blobIndex, 1);
+                    if (blob !== 'blob') {
+                        return null;
                     }
                     
-                    // بناء رابط API
-                    const filePath = rest.join('/');
-                    return `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+                    return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath.join('/')}`;
                 } catch (e) {
                     return null;
+                }
+            }
+            
+            // تحويل رابط GitHub إلى رابط API
+            function convertToApiUrl(githubUrl) {
+                try {
+                    const url = new URL(githubUrl);
+                    
+                    if (url.hostname !== 'github.com') {
+                        return null;
+                    }
+                    
+                    const pathParts = url.pathname.split('/').filter(part => part);
+                    
+                    if (pathParts.length < 5) {
+                        return null;
+                    }
+                    
+                    const [owner, repo, blob, branch, ...filePath] = pathParts;
+                    
+                    if (blob !== 'blob') {
+                        return null;
+                    }
+                    
+                    return `https://api.github.com/repos/${owner}/${repo}/contents/${filePath.join('/')}?ref=${branch}`;
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            // استخراج اسم الملف من الرابط
+            function extractFilename(url) {
+                try {
+                    const urlObj = new URL(url);
+                    const pathParts = urlObj.pathname.split('/');
+                    return pathParts[pathParts.length - 1] || 'file.html';
+                } catch (e) {
+                    return 'file.html';
                 }
             }
             
@@ -644,18 +810,17 @@
             }
             
             // دالة لعرض معلومات الملف
-            function displayFileInfo(data) {
-                const sizeInKB = (data.size / 1024).toFixed(2);
-                const downloadUrl = data.download_url || data.html_url;
+            function displayFileInfo(filename, filepath, size) {
+                const sizeInKB = (size / 1024).toFixed(2);
+                const rawUrl = convertToRawUrl(filepath) || filepath;
                 
                 fileInfo.innerHTML = `
                     <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
-                    <p><strong>اسم الملف:</strong> ${data.name}</p>
-                    <p><strong>المسار:</strong> ${data.path}</p>
+                    <p><strong>اسم الملف:</strong> ${filename}</p>
+                    <p><strong>المسار:</strong> ${filepath}</p>
                     <p><strong>الحجم:</strong> ${sizeInKB} كيلوبايت</p>
-                    <p><strong>نوع الملف:</strong> ${data.type}</p>
-                    <p><strong>رابط التنزيل:</strong> <a href="${downloadUrl}" target="_blank">${downloadUrl.substring(0, 50)}...</a></p>
-                    <p><strong>SHA:</strong> ${data.sha.substring(0, 10)}...</p>
+                    <p><strong>رابط Raw:</strong> <a href="${rawUrl}" target="_blank">${rawUrl.substring(0, 50)}...</a></p>
+                    <p><strong>طريقة الجلب:</strong> ${currentMethod}</p>
                 `;
             }
             
