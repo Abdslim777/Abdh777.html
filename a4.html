@@ -3,336 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تشغيل ملفات GitHub تفاعلياً</title>
+    <title>عرض البيانات من رابط خارجي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
-        }
-
-        body {
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             color: #333;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            line-height: 1.6;
         }
-
+        
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            padding: 40px;
             text-align: center;
-            padding: 30px 0;
+        }
+        
+        header {
             margin-bottom: 30px;
         }
-
+        
         h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
+            color: #1a2a6c;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(to right, #1a2a6c, #fdbb2d);
+            border-radius: 2px;
+        }
+        
+        .description {
+            color: #555;
+            font-size: 1.1rem;
             margin-bottom: 10px;
         }
-
-        .subtitle {
-            color: #7f8c8d;
-            font-size: 1.2rem;
-            max-width: 800px;
-            margin: 0 auto;
+        
+        .url-display {
+            background-color: #f8f9fa;
+            padding: 12px 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px dashed #1a2a6c;
+            font-size: 0.9rem;
+            word-break: break-all;
+            text-align: center;
+            direction: ltr;
         }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
+        
+        .button-container {
+            margin: 40px 0;
         }
-
-        .input-section, .preview-section, .control-section {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #3498db;
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .section-title i {
+        
+        .open-btn {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            border: none;
+            padding: 18px 45px;
             font-size: 1.3rem;
-        }
-
-        .url-input {
-            display: flex;
-            flex-direction: column;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(26, 42, 108, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             gap: 15px;
         }
-
-        .url-input label {
-            font-weight: bold;
-            color: #2c3e50;
+        
+        .open-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(26, 42, 108, 0.5);
+            background: linear-gradient(to right, #b21f1f, #1a2a6c);
         }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .input-group input {
-            flex: 1;
-            padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-
-        .btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .btn:active {
+        
+        .open-btn:active {
             transform: translateY(0);
         }
-
-        .example-links {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
+        
+        .open-btn i {
+            font-size: 1.5rem;
         }
-
-        .example-link {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 8px 15px;
-            border-radius: 20px;
-            color: #3498db;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-        }
-
-        .example-link:hover {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .preview-container {
-            border: 2px solid #eee;
-            border-radius: 10px;
-            overflow: hidden;
-            height: 500px;
-            position: relative;
-        }
-
-        .preview-header {
-            background-color: #f8f9fa;
-            padding: 10px 15px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .preview-title {
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .preview-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .preview-actions button {
-            background: none;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-        }
-
-        .preview-actions button:hover {
-            background-color: #f0f0f0;
-        }
-
-        #previewFrame {
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: calc(100% - 45px);
-            border: none;
-            background-color: white;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
         }
-
-        .code-container {
-            background-color: #2d3748;
+        
+        .modal-content {
+            width: 95%;
+            height: 95%;
+            background-color: white;
             border-radius: 10px;
             overflow: hidden;
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
         }
-
-        .code-header {
-            background-color: #1a202c;
-            padding: 10px 15px;
+        
+        .modal-header {
+            background: linear-gradient(to right, #1a2a6c, #b21f1f);
+            color: white;
+            padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .code-title {
-            color: #e2e8f0;
-            font-weight: bold;
-            font-family: monospace;
+        
+        .modal-header h2 {
+            font-size: 1.5rem;
         }
-
-        .code-content {
-            padding: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            color: #e2e8f0;
-            white-space: pre-wrap;
-            line-height: 1.5;
-        }
-
-        .status-message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            display: none;
-        }
-
-        .status-message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-
-        .status-message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            display: block;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: #3498db;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .loading i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        .file-info {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-
-        .api-options {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .api-options h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-
-        .method-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .method-btn {
-            padding: 8px 15px;
-            background-color: #e9ecef;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .method-btn.active {
-            background-color: #3498db;
+        
+        .close-btn {
+            background: none;
+            border: none;
             color: white;
-            border-color: #3498db;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
         }
-
-        .github-token-input {
-            margin-top: 15px;
-            display: none;
+        
+        .close-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
-
-        .github-token-input.active {
-            display: block;
+        
+        .iframe-container {
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
         }
-
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: right;
+        }
+        
+        .instructions h3 {
+            color: #1a2a6c;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions ul {
+            list-style-position: inside;
+            margin-right: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            color: #444;
+        }
+        
+        footer {
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9rem;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
         @media (max-width: 768px) {
-            .input-group {
-                flex-direction: column;
-            }
-            
-            .preview-container {
-                height: 400px;
+            .container {
+                padding: 25px;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+            }
+            
+            .open-btn {
+                padding: 15px 35px;
+                font-size: 1.2rem;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .open-btn {
+                padding: 12px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .modal-header {
+                padding: 15px;
             }
         }
     </style>
@@ -340,514 +255,111 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-code"></i> تشغيل ملفات GitHub تفاعلياً</h1>
-            <p class="subtitle">
-                هذه الأداة تتيح لك الوصول إلى أي ملف HTML على GitHub وتشغيله بشكل تفاعلي. 
-                فقط أدخل رابط الملف واضغط على "تشغيل" لرؤية النتيجة.
-            </p>
+            <h1><i class="fas fa-external-link-alt"></i> عرض البيانات من رابط خارجي</h1>
+            <p class="description">هذه الصفحة تحتوي على زر لفتح محتوى من مصدر خارجي في نافذة كاملة.</p>
+            <p class="description">بعد النقر على الزر، سيتم عرض المحتوى من الرابط التالي:</p>
+            
+            <div class="url-display">
+                <i class="fas fa-link"></i> فتح التخمين 
+            </div>
         </header>
-
-        <div class="main-content">
-            <div class="input-section">
-                <h2 class="section-title"><i class="fas fa-link"></i> رابط ملف GitHub</h2>
-                <div class="url-input">
-                    <label for="githubUrl">أدخل رابط ملف HTML من GitHub:</label>
-                    <div class="input-group">
-                        <input type="text" id="githubUrl" 
-                               placeholder="https://github.com/username/repository/blob/branch/path/to/file.html"
-                               value="https://github.com/Abdslim777/Abdh/blob/main/gg.html">
-                        <button id="loadBtn" class="btn">
-                            <i class="fas fa-play-circle"></i> تشغيل الملف
-                        </button>
-                    </div>
-                    
-                    <div class="example-links">
-                        <span>أمثلة:</span>
-                        <a href="#" class="example-link" data-url="https://github.com/Abdslim777/Abdh/blob/main/gg.html">ملف المثال</a>
-                        <a href="#" class="example-link" data-url="https://github.com/microsoft/TypeScript/blob/main/README.md">README TypeScript</a>
-                        <a href="#" class="example-link" data-url="https://github.com/twbs/bootstrap/blob/main/index.html">Bootstrap مثال</a>
-                    </div>
-                </div>
-                
-                <div class="api-options">
-                    <h3><i class="fas fa-cog"></i> طريقة جلب الملف</h3>
-                    <div class="method-selector">
-                        <button class="method-btn active" data-method="raw">Raw URL (مباشر)</button>
-                        <button class="method-btn" data-method="proxy">GitHub Proxy</button>
-                        <button class="method-btn" data-method="api">GitHub API</button>
-                    </div>
-                    
-                    <div class="github-token-input" id="tokenInput">
-                        <label for="githubToken">GitHub Token (اختياري):</label>
-                        <input type="password" id="githubToken" placeholder="أدخل token هنا إذا كان المستودع خاص">
-                        <small style="color: #666; display: block; margin-top: 5px;">
-                            يمكنك إنشاء token من <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings</a>
-                        </small>
-                    </div>
-                </div>
-                
-                <div class="loading" id="loading">
-                    <i class="fas fa-spinner fa-spin"></i>
-                    <p>جاري جلب الملف وتشغيله...</p>
-                </div>
-                
-                <div id="statusMessage" class="status-message"></div>
+        
+        <div class="button-container">
+            <button id="openPageBtn" class="open-btn">
+                <i class="fas fa-external-link-alt"></i>
+                فتح الصفحة الكاملة
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> تعليمات الاستخدام</h3>
+            <ul>
+                <li>انقر على الزر "فتح الصفحة الكاملة" لفتح محتوى الرابط</li>
+                <li>ستظهر نافذة كاملة تحتوي على المحتوى الخارجي</li>
+                <li>يمكنك إغلاق النافذة بالضغط على زر الإغلاق (X) في الأعلى</li>
+                <li>يمكنك أيضًا إغلاق النافذة بالضغط على أي مكان خارجها</li>
+                <li>إذا لم يظهر المحتوى، قد يكون هناك مشكلة في الرابط أو اتصال الإنترنت</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>تم التطوير باستخدام HTML و CSS و JavaScript | جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+    
+    <!-- نافذة العرض الكاملة -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-globe"></i> عرض البيانات من الرابط الخارجي</h2>
+                <button id="closeModalBtn" class="close-btn">&times;</button>
             </div>
-
-            <div class="preview-section">
-                <h2 class="section-title"><i class="fas fa-desktop"></i> معاينة النتيجة</h2>
-                <div class="preview-container">
-                    <div class="preview-header">
-                        <div class="preview-title">نتيجة تشغيل الملف</div>
-                        <div class="preview-actions">
-                            <button id="refreshBtn"><i class="fas fa-redo"></i> تحديث</button>
-                            <button id="fullscreenBtn"><i class="fas fa-expand"></i> ملء الشاشة</button>
-                        </div>
-                    </div>
-                    <iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin"></iframe>
-                </div>
-                
-                <div class="code-container">
-                    <div class="code-header">
-                        <div class="code-title">محتوى الملف</div>
-                        <div>
-                            <button id="copyCodeBtn" class="btn" style="padding: 5px 10px; font-size: 0.8rem;">
-                                <i class="far fa-copy"></i> نسخ الكود
-                            </button>
-                        </div>
-                    </div>
-                    <div class="code-content" id="codeContent">
-                        <div style="text-align: center; padding: 20px;">
-                            <i class="fas fa-code fa-2x" style="color: #4a5568; margin-bottom: 10px;"></i>
-                            <p>سيظهر محتوى الملف هنا بعد تحميله</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="file-info" id="fileInfo">
-                    <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
-                    <p>لم يتم تحميل أي ملف بعد. أدخل رابط ملف GitHub واضغط على "تشغيل الملف".</p>
-                </div>
-            </div>
-
-            <div class="control-section">
-                <h2 class="section-title"><i class="fas fa-cogs"></i> خيارات إضافية</h2>
-                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-                    <button id="clearBtn" class="btn" style="background-color: #e74c3c;">
-                        <i class="fas fa-trash-alt"></i> مسح الكل
-                    </button>
-                    <button id="saveBtn" class="btn" style="background-color: #2ecc71;">
-                        <i class="fas fa-save"></i> حفظ الكود محلياً
-                    </button>
-                    <button id="newTabBtn" class="btn" style="background-color: #9b59b6;">
-                        <i class="fas fa-external-link-alt"></i> فتح في تبويب جديد
-                    </button>
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <h3 style="color: #2c3e50; margin-bottom: 10px;">كيفية الاستخدام:</h3>
-                    <ol style="padding-right: 20px; color: #555;">
-                        <li>انسخ رابط ملف HTML من GitHub (يجب أن يكون الرابط مباشراً للملف)</li>
-                        <li>الصق الرابط في الحقل أعلاه واضغط على "تشغيل الملف"</li>
-                        <li>إذا فشل التحميل، جرب استخدام طريقة أخرى من "طريقة جلب الملف"</li>
-                        <li>ستظهر النتيجة في إطار المعاينة أعلاه</li>
-                        <li>يمكنك نسخ الكود أو حفظه أو فتحه في تبويب جديد</li>
-                    </ol>
-                </div>
+            <div class="iframe-container">
+                <iframe id="dataFrame" src="" title="بيانات الرابط الخارجي"></iframe>
             </div>
         </div>
-
-        <footer>
-            <p>تم التطوير باستخدام GitHub API | هذه الأداة تعمل على تشغيل ملفات HTML وجافا سكريبت من GitHub بشكل آمن</p>
-            <p style="margin-top: 10px;">&copy; 2023 - جميع الحقوق محفوظة</p>
-        </footer>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // عناصر DOM
-            const githubUrlInput = document.getElementById('githubUrl');
-            const loadBtn = document.getElementById('loadBtn');
-            const previewFrame = document.getElementById('previewFrame');
-            const codeContent = document.getElementById('codeContent');
-            const statusMessage = document.getElementById('statusMessage');
-            const loading = document.getElementById('loading');
-            const fileInfo = document.getElementById('fileInfo');
-            const refreshBtn = document.getElementById('refreshBtn');
-            const fullscreenBtn = document.getElementById('fullscreenBtn');
-            const copyCodeBtn = document.getElementById('copyCodeBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const saveBtn = document.getElementById('saveBtn');
-            const newTabBtn = document.getElementById('newTabBtn');
-            const exampleLinks = document.querySelectorAll('.example-link');
-            const methodButtons = document.querySelectorAll('.method-btn');
-            const tokenInput = document.getElementById('tokenInput');
-            const githubTokenInput = document.getElementById('githubToken');
+        // العناصر الرئيسية في الصفحة
+        const openPageBtn = document.getElementById('openPageBtn');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const dataFrame = document.getElementById('dataFrame');
+        const url = 'https://iancoleman.io/bip39/';
+        
+        // فتح النافذة الكاملة عند النقر على الزر
+        openPageBtn.addEventListener('click', function() {
+            // تعيين مصدر الإطار iframe إلى الرابط المطلوب
+            dataFrame.src = url;
             
-            let currentMethod = 'raw'; // الطريقة الافتراضية
+            // إظهار نافذة العرض
+            modalOverlay.style.display = 'flex';
             
-            // اختيار طريقة جلب الملف
-            methodButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    methodButtons.forEach(btn => btn.classList.remove('active'));
-                    this.classList.add('active');
-                    currentMethod = this.dataset.method;
-                    
-                    // إظهار/إخفاء حقل الـ token
-                    if (currentMethod === 'api') {
-                        tokenInput.classList.add('active');
-                    } else {
-                        tokenInput.classList.remove('active');
-                    }
-                });
-            });
-            
-            // تحميل الملف عند النقر على الزر
-            loadBtn.addEventListener('click', function() {
-                const url = githubUrlInput.value.trim();
-                if (!url) {
-                    showError('يرجى إدخال رابط ملف GitHub');
-                    return;
-                }
-                
-                loadFileFromUrl(url);
-            });
-            
-            // تحديث المعاينة
-            refreshBtn.addEventListener('click', function() {
-                if (previewFrame.src && previewFrame.src !== 'about:blank') {
-                    previewFrame.contentWindow.location.reload();
-                }
-            });
-            
-            // وضع ملء الشاشة
-            fullscreenBtn.addEventListener('click', function() {
-                if (previewFrame.requestFullscreen) {
-                    previewFrame.requestFullscreen();
-                } else if (previewFrame.mozRequestFullScreen) {
-                    previewFrame.mozRequestFullScreen();
-                } else if (previewFrame.webkitRequestFullscreen) {
-                    previewFrame.webkitRequestFullscreen();
-                } else if (previewFrame.msRequestFullscreen) {
-                    previewFrame.msRequestFullscreen();
-                }
-            });
-            
-            // نسخ الكود
-            copyCodeBtn.addEventListener('click', function() {
-                const codeText = codeContent.innerText;
-                if (!codeText || codeText.includes('سيظهر محتوى الملف هنا بعد تحميله')) {
-                    showError('لا يوجد كود للنسخ');
-                    return;
-                }
-                
-                navigator.clipboard.writeText(codeText)
-                    .then(() => {
-                        showSuccess('تم نسخ الكود إلى الحافظة');
-                    })
-                    .catch(err => {
-                        showError('فشل نسخ الكود: ' + err);
-                    });
-            });
-            
-            // مسح الكل
-            clearBtn.addEventListener('click', function() {
-                previewFrame.src = 'about:blank';
-                codeContent.innerHTML = `
-                    <div style="text-align: center; padding: 20px;">
-                        <i class="fas fa-code fa-2x" style="color: #4a5568; margin-bottom: 10px;"></i>
-                        <p>سيظهر محتوى الملف هنا بعد تحميله</p>
-                    </div>
-                `;
-                fileInfo.innerHTML = `
-                    <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
-                    <p>لم يتم تحميل أي ملف بعد. أدخل رابط ملف GitHub واضغط على "تشغيل الملف".</p>
-                `;
-                statusMessage.style.display = 'none';
-                githubUrlInput.value = '';
-                showSuccess('تم مسح جميع البيانات');
-            });
-            
-            // حفظ الكود محلياً
-            saveBtn.addEventListener('click', function() {
-                const codeText = codeContent.innerText;
-                if (!codeText || codeText.includes('سيظهر محتوى الملف هنا بعد تحميله')) {
-                    showError('لا يوجد كود لحفظه');
-                    return;
-                }
-                
-                const blob = new Blob([codeText], { type: 'text/html' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'github_file.html';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                showSuccess('تم حفظ الملف محلياً');
-            });
-            
-            // فتح في تبويب جديد
-            newTabBtn.addEventListener('click', function() {
-                if (previewFrame.src && previewFrame.src !== 'about:blank') {
-                    window.open(previewFrame.src, '_blank');
-                } else {
-                    showError('لا يوجد ملف مفتوح لفتحه في تبويب جديد');
-                }
-            });
-            
-            // أمثلة سريعة
-            exampleLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const url = this.getAttribute('data-url');
-                    githubUrlInput.value = url;
-                    loadFileFromUrl(url);
-                });
-            });
-            
-            // دالة لتحميل الملف من URL
-            async function loadFileFromUrl(url) {
-                // إظهار مؤشر التحميل
-                loading.classList.add('active');
-                statusMessage.style.display = 'none';
-                
-                try {
-                    let content = '';
-                    let filename = 'file.html';
-                    
-                    // اختيار الطريقة بناءً على الاختيار
-                    switch(currentMethod) {
-                        case 'raw':
-                            content = await fetchWithRawUrl(url);
-                            filename = extractFilename(url);
-                            break;
-                            
-                        case 'proxy':
-                            content = await fetchWithProxy(url);
-                            filename = extractFilename(url);
-                            break;
-                            
-                        case 'api':
-                            content = await fetchWithApi(url, githubTokenInput.value);
-                            filename = extractFilename(url);
-                            break;
-                    }
-                    
-                    // عرض محتوى الكود
-                    displayCodeContent(content, filename, url);
-                    
-                    // إنشاء blob وتشغيله في iframe
-                    const blob = new Blob([content], { type: 'text/html' });
-                    const blobUrl = URL.createObjectURL(blob);
-                    previewFrame.src = blobUrl;
-                    
-                    // إظهار معلومات الملف
-                    displayFileInfo(filename, url, content.length);
-                    
-                    // إظهار رسالة النجاح
-                    showSuccess(`تم تحميل وتشغيل الملف: ${filename}`);
-                    
-                    // إخفاء مؤشر التحميل
-                    loading.classList.remove('active');
-                    
-                } catch (error) {
-                    console.error('Error:', error);
-                    showError(`فشل تحميل الملف: ${error.message}`);
-                    loading.classList.remove('active');
-                }
-            }
-            
-            // الطريقة 1: استخدام Raw URL مباشرة
-            async function fetchWithRawUrl(githubUrl) {
-                // تحويل رابط GitHub إلى رابط raw مباشر
-                const rawUrl = convertToRawUrl(githubUrl);
-                if (!rawUrl) {
-                    throw new Error('رابط GitHub غير صالح');
-                }
-                
-                const response = await fetch(rawUrl);
-                if (!response.ok) {
-                    throw new Error(`خطأ في جلب الملف: ${response.status}`);
-                }
-                
-                return await response.text();
-            }
-            
-            // الطريقة 2: استخدام CORS Proxy
-            async function fetchWithProxy(githubUrl) {
-                const rawUrl = convertToRawUrl(githubUrl);
-                if (!rawUrl) {
-                    throw new Error('رابط GitHub غير صالح');
-                }
-                
-                // استخدام CORS proxy لتجنب مشاكل CORS
-                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(rawUrl)}`;
-                
-                const response = await fetch(proxyUrl);
-                if (!response.ok) {
-                    throw new Error(`خطأ في جلب الملف: ${response.status}`);
-                }
-                
-                return await response.text();
-            }
-            
-            // الطريقة 3: استخدام GitHub API
-            async function fetchWithApi(githubUrl, token = '') {
-                const apiUrl = convertToApiUrl(githubUrl);
-                if (!apiUrl) {
-                    throw new Error('رابط GitHub غير صالح');
-                }
-                
-                const headers = {
-                    'Accept': 'application/vnd.github.v3+json'
-                };
-                
-                // إضافة token إذا كان موجوداً
-                if (token) {
-                    headers['Authorization'] = `token ${token}`;
-                }
-                
-                const response = await fetch(apiUrl, { headers });
-                if (!response.ok) {
-                    throw new Error(`خطأ في جلب الملف: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                // فك تشفير محتوى Base64
-                return atob(data.content.replace(/\n/g, ''));
-            }
-            
-            // تحويل رابط GitHub إلى رابط raw
-            function convertToRawUrl(githubUrl) {
-                try {
-                    const url = new URL(githubUrl);
-                    
-                    if (url.hostname !== 'github.com') {
-                        return null;
-                    }
-                    
-                    const pathParts = url.pathname.split('/').filter(part => part);
-                    
-                    if (pathParts.length < 5) {
-                        return null;
-                    }
-                    
-                    const [owner, repo, blob, branch, ...filePath] = pathParts;
-                    
-                    if (blob !== 'blob') {
-                        return null;
-                    }
-                    
-                    return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath.join('/')}`;
-                } catch (e) {
-                    return null;
-                }
-            }
-            
-            // تحويل رابط GitHub إلى رابط API
-            function convertToApiUrl(githubUrl) {
-                try {
-                    const url = new URL(githubUrl);
-                    
-                    if (url.hostname !== 'github.com') {
-                        return null;
-                    }
-                    
-                    const pathParts = url.pathname.split('/').filter(part => part);
-                    
-                    if (pathParts.length < 5) {
-                        return null;
-                    }
-                    
-                    const [owner, repo, blob, branch, ...filePath] = pathParts;
-                    
-                    if (blob !== 'blob') {
-                        return null;
-                    }
-                    
-                    return `https://api.github.com/repos/${owner}/${repo}/contents/${filePath.join('/')}?ref=${branch}`;
-                } catch (e) {
-                    return null;
-                }
-            }
-            
-            // استخراج اسم الملف من الرابط
-            function extractFilename(url) {
-                try {
-                    const urlObj = new URL(url);
-                    const pathParts = urlObj.pathname.split('/');
-                    return pathParts[pathParts.length - 1] || 'file.html';
-                } catch (e) {
-                    return 'file.html';
-                }
-            }
-            
-            // دالة لعرض محتوى الكود
-            function displayCodeContent(content, filename, filepath) {
-                // تنسيق الكود للألوان
-                let formattedContent = content;
-                
-                // محاولة إضافة تمييز بسيط للكود
-                formattedContent = formattedContent
-                    .replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;')
-                    .replace(/'/g, '&#039;');
-                
-                // تمييز العناصر الأساسية
-                formattedContent = formattedContent
-                    .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span style="color: #6a9955;">$1</span>') // تعليقات HTML
-                    .replace(/(&lt;\/?[a-zA-Z][^&]*&gt;)/g, '<span style="color: #569cd6;">$1</span>') // علامات HTML
-                    .replace(/(&lt;script[\s\S]*?&gt;[\s\S]*?&lt;\/script&gt;)/gi, '<span style="color: #ce9178;">$1</span>') // سكريبت
-                    .replace(/(&lt;style[\s\S]*?&gt;[\s\S]*?&lt;\/style&gt;)/gi, '<span style="color: #ce9178;">$1</span>') // ستايل
-                
-                codeContent.innerHTML = formattedContent;
-            }
-            
-            // دالة لعرض معلومات الملف
-            function displayFileInfo(filename, filepath, size) {
-                const sizeInKB = (size / 1024).toFixed(2);
-                const rawUrl = convertToRawUrl(filepath) || filepath;
-                
-                fileInfo.innerHTML = `
-                    <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
-                    <p><strong>اسم الملف:</strong> ${filename}</p>
-                    <p><strong>المسار:</strong> ${filepath}</p>
-                    <p><strong>الحجم:</strong> ${sizeInKB} كيلوبايت</p>
-                    <p><strong>رابط Raw:</strong> <a href="${rawUrl}" target="_blank">${rawUrl.substring(0, 50)}...</a></p>
-                    <p><strong>طريقة الجلب:</strong> ${currentMethod}</p>
-                `;
-            }
-            
-            // دالة لعرض رسالة نجاح
-            function showSuccess(message) {
-                statusMessage.textContent = message;
-                statusMessage.className = 'status-message success';
-                statusMessage.style.display = 'block';
-                
-                // إخفاء الرسالة بعد 5 ثوانٍ
-                setTimeout(() => {
-                    statusMessage.style.display = 'none';
-                }, 5000);
-            }
-            
-            // دالة لعرض رسالة خطأ
-            function showError(message) {
-                statusMessage.textContent = message;
-                statusMessage.className = 'status-message error';
-                statusMessage.style.display = 'block';
-                
-                // إخفاء الرسالة بعد 5 ثوانٍ
-                setTimeout(() => {
-                    statusMessage.style.display = 'none';
-                }, 5000);
+            // إضافة تأثير عند الظهور
+            setTimeout(() => {
+                modalOverlay.style.opacity = '1';
+            }, 10);
+        });
+        
+        // إغلاق النافذة عند النقر على زر الإغلاق
+        closeModalBtn.addEventListener('click', closeModal);
+        
+        // إغلاق النافذة عند النقر خارج المحتوى
+        modalOverlay.addEventListener('click', function(event) {
+            if (event.target === modalOverlay) {
+                closeModal();
             }
         });
+        
+        // إغلاق النافذة عند الضغط على مفتاح Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modalOverlay.style.display === 'flex') {
+                closeModal();
+            }
+        });
+        
+        // وظيفة إغلاق النافذة
+        function closeModal() {
+            modalOverlay.style.opacity = '0';
+            
+            setTimeout(() => {
+                modalOverlay.style.display = 'none';
+                // إزالة مصدر الإطار iframe عند الإغلاق لتوفير الذاكرة
+                dataFrame.src = '';
+            }, 300);
+        }
+        
+        // إضافة تأثيرات عند التحميل
+        window.addEventListener('load', function() {
+            document.querySelector('.container').style.transform = 'translateY(0)';
+            document.querySelector('.container').style.opacity = '1';
+        });
+        
+        // إعداد التأثيرات الأولية
+        document.querySelector('.container').style.transform = 'translateY(20px)';
+        document.querySelector('.container').style.opacity = '0';
+        document.querySelector('.container').style.transition = 'transform 0.5s ease, opacity 0.5s ease';
     </script>
 </body>
 </html>
