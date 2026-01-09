@@ -3,1883 +3,686 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>محلل ومشغل أكواد متعدد اللغات من GitHub</title>
+    <title>تشغيل ملفات GitHub تفاعلياً</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/eclipse.min.css">
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
-        :root {
-            --primary: #2563eb;
-            --secondary: #7c3aed;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --dark: #1e293b;
-            --light: #f8fafc;
-        }
-        
+
         body {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: #e2e8f0;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 25px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
-        }
-        
-        .header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-        
-        .header h1 i {
-            color: var(--warning);
-            animation: bounce 2s infinite;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.95;
-            max-width: 900px;
-            margin: 0 auto;
-            line-height: 1.7;
-        }
-        
-        .header .highlight {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 8px;
-            border-radius: 6px;
-            color: var(--warning);
-            font-weight: bold;
-        }
-        
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 15px;
-            border: 2px solid #475569;
-            backdrop-filter: blur(10px);
-        }
-        
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transition: 0.5s;
-        }
-        
-        .btn:hover::before {
-            left: 100%;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(90deg, var(--success), var(--primary));
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            color: white;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(90deg, var(--danger), #f97316);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: linear-gradient(90deg, var(--warning), #eab308);
-            color: white;
-        }
-        
-        .btn-info {
-            background: linear-gradient(90deg, #0ea5e9, #06b6d4);
-            color: white;
-        }
-        
-        .btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-        
-        .btn:active {
-            transform: translateY(0) scale(1);
-        }
-        
-        .btn i {
-            font-size: 1.2rem;
-        }
-        
-        .content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 1200px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .panel {
-            background: rgba(30, 41, 59, 0.9);
-            border-radius: 15px;
-            overflow: hidden;
-            border: 2px solid #475569;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            display: flex;
-            flex-direction: column;
-            height: 600px;
-        }
-        
-        .panel-header {
-            background: linear-gradient(90deg, #1e293b, #334155);
-            padding: 15px 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #475569;
-            flex-shrink: 0;
-        }
-        
-        .panel-header h3 {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 1.4rem;
-            color: #e2e8f0;
-        }
-        
-        .panel-header i {
-            color: var(--primary);
-        }
-        
-        .panel-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .panel-controls select,
-        .panel-controls button {
-            padding: 8px 15px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #e2e8f0;
-            cursor: pointer;
-            font-size: 0.9rem;
-        }
-        
-        .panel-controls select:hover,
-        .panel-controls button:hover {
-            background: #1e293b;
-        }
-        
-        .panel-content {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .code-editor {
-            height: 100%;
-            width: 100%;
-        }
-        
-        .CodeMirror {
-            height: 100% !important;
-            font-family: 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
-            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
-        
-        .output-container {
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .main-content {
             display: flex;
             flex-direction: column;
-            height: 100%;
+            gap: 30px;
         }
-        
-        .output-tabs {
-            display: flex;
-            background: #1e293b;
-            border-bottom: 2px solid #475569;
-            padding: 0 15px;
-            flex-shrink: 0;
-        }
-        
-        .output-tab {
-            padding: 12px 20px;
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            cursor: pointer;
-            font-weight: 500;
-            position: relative;
-            transition: all 0.3s;
-        }
-        
-        .output-tab:hover {
-            color: #e2e8f0;
-            background: rgba(59, 130, 246, 0.1);
-        }
-        
-        .output-tab.active {
-            color: var(--primary);
-            background: #0f172a;
-        }
-        
-        .output-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary);
-        }
-        
-        .output-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background: #0f172a;
-        }
-        
-        .tab-pane {
-            display: none;
-            height: 100%;
-        }
-        
-        .tab-pane.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .output-line {
-            margin-bottom: 12px;
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-left: 4px solid;
-            background: rgba(30, 41, 59, 0.5);
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .output-line.info {
-            border-color: var(--primary);
-        }
-        
-        .output-line.success {
-            border-color: var(--success);
-        }
-        
-        .output-line.error {
-            border-color: var(--danger);
-        }
-        
-        .output-line.warning {
-            border-color: var(--warning);
-        }
-        
-        .output-line.html {
-            border-color: #e34c26;
-        }
-        
-        .output-line.css {
-            border-color: #264de4;
-        }
-        
-        .output-line.js {
-            border-color: #f0db4f;
-        }
-        
-        .output-line.python {
-            border-color: #3776ab;
-        }
-        
-        .html-preview {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: white;
-        }
-        
-        .status-bar {
-            background: rgba(30, 41, 59, 0.9);
-            padding: 20px;
+
+        .input-section, .preview-section, .control-section {
+            background-color: white;
             border-radius: 15px;
-            margin-top: 20px;
-            border: 2px solid #475569;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
-            border: 1px solid #475569;
-            transition: transform 0.3s;
-        }
-        
-        .status-item:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary);
-        }
-        
-        .status-icon {
-            font-size: 1.8rem;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            background: rgba(59, 130, 246, 0.1);
-        }
-        
-        .status-content {
-            flex: 1;
-        }
-        
-        .status-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-        
-        .status-value {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #e2e8f0;
-        }
-        
-        .status-value.success {
-            color: var(--success);
-        }
-        
-        .status-value.error {
-            color: var(--danger);
-        }
-        
-        .status-value.warning {
-            color: var(--warning);
-        }
-        
-        .status-value.info {
-            color: var(--primary);
-        }
-        
-        .file-info {
-            background: rgba(30, 41, 59, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             padding: 25px;
-            border-radius: 15px;
-            margin-top: 30px;
-            border: 2px solid #475569;
-            backdrop-filter: blur(10px);
         }
-        
-        .file-info h4 {
+
+        .section-title {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
+            color: #3498db;
             margin-bottom: 20px;
-            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .section-title i {
             font-size: 1.3rem;
         }
-        
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+
+        .url-input {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
-        
-        .info-item {
-            background: rgba(15, 23, 42, 0.5);
+
+        .url-input label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-group input {
+            flex: 1;
             padding: 15px;
+            border: 2px solid #ddd;
             border-radius: 10px;
-            border: 1px solid #475569;
-            transition: all 0.3s;
+            font-size: 1rem;
+            transition: border 0.3s;
         }
-        
-        .info-item:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
+
+        .input-group input:focus {
+            border-color: #3498db;
+            outline: none;
         }
-        
-        .info-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
-        .info-value {
-            font-weight: 500;
-            word-break: break-all;
-            font-size: 1rem;
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
         }
-        
-        .info-value a {
-            color: var(--primary);
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .example-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .example-link {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #3498db;
             text-decoration: none;
-            transition: color 0.3s;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
-        
-        .info-value a:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-        
-        .language-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-left: 10px;
-        }
-        
-        .badge-python {
-            background: rgba(55, 118, 171, 0.2);
-            color: #3776ab;
-            border: 1px solid #3776ab;
-        }
-        
-        .badge-html {
-            background: rgba(227, 76, 38, 0.2);
-            color: #e34c26;
-            border: 1px solid #e34c26;
-        }
-        
-        .badge-css {
-            background: rgba(38, 77, 228, 0.2);
-            color: #264de4;
-            border: 1px solid #264de4;
-        }
-        
-        .badge-js {
-            background: rgba(240, 219, 79, 0.2);
-            color: #f0db4f;
-            border: 1px solid #f0db4f;
-        }
-        
-        .badge-txt {
-            background: rgba(148, 163, 184, 0.2);
-            color: #94a3b8;
-            border: 1px solid #94a3b8;
-        }
-        
-        .badge-mixed {
-            background: linear-gradient(90deg, 
-                rgba(227, 76, 38, 0.2), 
-                rgba(38, 77, 228, 0.2), 
-                rgba(240, 219, 79, 0.2)
-            );
+
+        .example-link:hover {
+            background-color: #3498db;
             color: white;
-            border: 1px solid transparent;
         }
-        
-        .loader {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            backdrop-filter: blur(10px);
-        }
-        
-        .loader.active {
-            display: flex;
-        }
-        
-        .loader-content {
-            text-align: center;
-            max-width: 500px;
-            padding: 40px;
-            background: rgba(30, 41, 59, 0.9);
-            border-radius: 20px;
-            border: 2px solid var(--primary);
-        }
-        
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(59, 130, 246, 0.3);
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 25px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            width: 100%;
-            max-width: 700px;
-            border-radius: 20px;
+
+        .preview-container {
+            border: 2px solid #eee;
+            border-radius: 10px;
             overflow: hidden;
-            border: 2px solid var(--primary);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            animation: modalAppear 0.3s ease;
+            height: 500px;
+            position: relative;
         }
-        
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .modal-header {
-            background: linear-gradient(90deg, #1e293b, #334155);
-            padding: 20px 30px;
-            border-bottom: 2px solid #475569;
+
+        .preview-header {
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .modal-header h3 {
+
+        .preview-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .preview-actions {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #e2e8f0;
-            font-size: 1.4rem;
-        }
-        
-        .modal-body {
-            padding: 30px;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .modal-footer {
-            padding: 20px 30px;
-            border-top: 2px solid #475569;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            background: rgba(15, 23, 42, 0.5);
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.8rem;
-            cursor: pointer;
-            transition: color 0.3s;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-        
-        .close-btn:hover {
-            color: #e2e8f0;
-            background: rgba(239, 68, 68, 0.1);
-        }
-        
-        .error-details {
-            background: rgba(239, 68, 68, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid var(--danger);
-            margin-top: 20px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            overflow-x: auto;
-        }
-        
-        .code-analysis {
-            background: rgba(59, 130, 246, 0.1);
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid var(--primary);
-            margin-top: 20px;
-        }
-        
-        .code-analysis h5 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
-        
-        .analysis-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
+
+        .preview-actions button {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
         }
-        
-        .analysis-item {
-            background: rgba(30, 41, 59, 0.5);
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
+
+        .preview-actions button:hover {
+            background-color: #f0f0f0;
         }
-        
-        .analysis-value {
-            font-size: 1.8rem;
+
+        #previewFrame {
+            width: 100%;
+            height: calc(100% - 45px);
+            border: none;
+            background-color: white;
+        }
+
+        .code-container {
+            background-color: #2d3748;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .code-header {
+            background-color: #1a202c;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-title {
+            color: #e2e8f0;
             font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 5px;
+            font-family: monospace;
         }
-        
-        .analysis-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
+
+        .code-content {
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+            line-height: 1.5;
         }
-        
-        .footer {
+
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .status-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #3498db;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        footer {
             text-align: center;
             margin-top: 40px;
-            padding: 30px;
-            color: #94a3b8;
-            border-top: 2px solid #475569;
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 15px;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
         }
-        
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-            transition: color 0.3s;
-            font-weight: 600;
-        }
-        
-        .footer a:hover {
-            color: #60a5fa;
-            text-decoration: underline;
-        }
-        
-        .footer-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 20px 0;
-            font-size: 1.5rem;
-        }
-        
-        .footer-icons i {
-            color: var(--primary);
-            transition: color 0.3s, transform 0.3s;
-        }
-        
-        .footer-icons i:hover {
-            color: var(--secondary);
-            transform: scale(1.2);
-        }
-        
-        .update-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(90deg, var(--success), var(--primary));
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: none;
-            align-items: center;
-            gap: 15px;
-            z-index: 1000;
-            animation: slideUp 0.3s ease;
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            
+            .preview-container {
+                height: 400px;
             }
-        }
-        
-        .auto-refresh {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .auto-refresh input {
-            width: 60px;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #e2e8f0;
-            text-align: center;
+            
+            h1 {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-file-code"></i> محلل أكواد متعدد اللغات من GitHub</h1>
-            <p>تحميل وتحليل وتشغيل أي ملف من GitHub بغض النظر عن نوعه 
-                <span class="highlight">(Python, HTML, JavaScript, CSS, نصوص)</span> 
-                حتى لو كان امتداده مختلف عن محتواه!</p>
-        </div>
-        
-        <div class="controls">
-            <button id="loadBtn" class="btn btn-primary">
-                <i class="fas fa-cloud-download-alt"></i> تحميل الملف من GitHub
-            </button>
-            <button id="analyzeBtn" class="btn btn-secondary">
-                <i class="fas fa-search"></i> تحليل الكود تلقائياً
-            </button>
-            <button id="runBtn" class="btn btn-warning">
-                <i class="fas fa-play"></i> تشغيل/عرض الكود
-            </button>
-            <button id="detectBtn" class="btn btn-info">
-                <i class="fas fa-microscope"></i> اكتشاف نوع الملف
-            </button>
-            <button id="clearBtn" class="btn btn-danger">
-                <i class="fas fa-trash-alt"></i> مسح الكل
-            </button>
-            
-            <div class="auto-refresh">
-                <label for="refreshInterval">
-                    <i class="fas fa-sync-alt"></i> تحديث تلقائي (ثانية):
-                </label>
-                <input type="number" id="refreshInterval" min="0" max="3600" value="0">
-                <button id="toggleRefresh" class="btn" style="padding: 8px 15px;">
-                    <i class="fas fa-power-off"></i> تشغيل
-                </button>
-            </div>
-        </div>
-        
-        <div class="content">
-            <div class="panel">
-                <div class="panel-header">
-                    <h3><i class="fas fa-code"></i> محرر الكود</h3>
-                    <div class="panel-controls">
-                        <select id="themeSelect">
-                            <option value="monokai">Monokai</option>
-                            <option value="dracula">Dracula</option>
-                            <option value="eclipse">Eclipse</option>
-                        </select>
-                        <select id="fontSize">
-                            <option value="12">12px</option>
-                            <option value="14" selected>14px</option>
-                            <option value="16">16px</option>
-                            <option value="18">18px</option>
-                        </select>
-                        <button id="copyBtn" title="نسخ الكود">
-                            <i class="fas fa-copy"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="panel-content">
-                    <div id="codeEditor" class="code-editor"></div>
-                </div>
-            </div>
-            
-            <div class="panel">
-                <div class="panel-header">
-                    <h3><i class="fas fa-terminal"></i> النتائج والمعاينة</h3>
-                    <div class="panel-controls">
-                        <button id="exportBtn" title="تصدير النتائج">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="output-container">
-                    <div class="output-tabs">
-                        <button class="output-tab active" data-tab="output">الإخراج</button>
-                        <button class="output-tab" data-tab="analysis">التحليل</button>
-                        <button class="output-tab" data-tab="preview">المعاينة</button>
-                        <button class="output-tab" data-tab="raw">النص الخام</button>
-                    </div>
-                    <div class="panel-content">
-                        <div id="outputPane" class="tab-pane active">
-                            <div class="output-content" id="output">
-                                <div class="output-line info">
-                                    <i class="fas fa-info-circle"></i> مرحباً! يمكنك تحميل أي ملف من GitHub وسيتم تحليله تلقائياً.
-                                </div>
-                                <div class="output-line info">
-                                    <i class="fas fa-info-circle"></i> يدعم النظام: Python, HTML, CSS, JavaScript, والنصوص العادية.
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="analysisPane" class="tab-pane">
-                            <div class="output-content" id="analysisContent">
-                                <div class="output-line info">
-                                    <i class="fas fa-chart-bar"></i> ستظهر هنا نتائج تحليل الكود بعد التحميل.
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div id="previewPane" class="tab-pane">
-                            <div class="output-content" id="previewContent">
-                                <iframe class="html-preview" id="htmlPreview"></iframe>
-                            </div>
-                        </div>
-                        
-                        <div id="rawPane" class="tab-pane">
-                            <div class="output-content" id="rawContent">
-                                <div class="output-line info">
-                                    <i class="fas fa-file-alt"></i> ستظهر هنا النص الخام للملف.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="loader" id="loader">
-            <div class="loader-content">
-                <div class="spinner"></div>
-                <h3>جاري تحميل الملف...</h3>
-                <p id="loaderText">الاتصال بمستودع GitHub</p>
-                <div class="progress" style="width: 100%; height: 5px; background: #475569; margin-top: 20px; border-radius: 5px;">
-                    <div id="loaderProgress" style="width: 0%; height: 100%; background: var(--primary); border-radius: 5px; transition: width 0.3s;"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="status-bar">
-            <div class="status-item">
-                <div class="status-icon">
-                    <i class="fas fa-file-code"></i>
-                </div>
-                <div class="status-content">
-                    <div class="status-label">نوع الملف</div>
-                    <div id="fileType" class="status-value warning">غير محدد</div>
-                </div>
-            </div>
-            
-            <div class="status-item">
-                <div class="status-icon">
-                    <i class="fas fa-ruler-combined"></i>
-                </div>
-                <div class="status-content">
-                    <div class="status-label">حجم الملف</div>
-                    <div id="fileSize" class="status-value info">0 بايت</div>
-                </div>
-            </div>
-            
-            <div class="status-item">
-                <div class="status-icon">
-                    <i class="fas fa-code-branch"></i>
-                </div>
-                <div class="status-content">
-                    <div class="status-label">اللغات المكتشفة</div>
-                    <div id="detectedLanguages" class="status-value info">0</div>
-                </div>
-            </div>
-            
-            <div class="status-item">
-                <div class="status-icon">
-                    <i class="fas fa-history"></i>
-                </div>
-                <div class="status-content">
-                    <div class="status-label">آخر تحديث</div>
-                    <div id="lastUpdate" class="status-value success">لم يتم بعد</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="file-info">
-            <h4><i class="fas fa-info-circle"></i> معلومات الملف</h4>
-            <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fab fa-github"></i> رابط GitHub
-                    </div>
-                    <div class="info-value">
-                        <a href="https://github.com/Abdslim777/Abdh/blob/main/Bot.py" target="_blank">
-                            https://github.com/Abdslim777/Abdh/blob/main/Bot.py
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fas fa-user"></i> المالك
-                    </div>
-                    <div class="info-value">Abdslim777</div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fas fa-folder"></i> المستودع
-                    </div>
-                    <div class="info-value">Abdh</div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fas fa-map-marker-alt"></i> المسار
-                    </div>
-                    <div class="info-value">/main/Bot.py <span id="actualExtension" class="language-badge badge-python">.py</span></div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fas fa-language"></i> اللغات المكتشفة
-                    </div>
-                    <div class="info-value" id="languagesList">-</div>
-                </div>
-                
-                <div class="info-item">
-                    <div class="info-label">
-                        <i class="fas fa-exclamation-triangle"></i> ملاحظات
-                    </div>
-                    <div class="info-value" id="fileNotes">الملف لم يتم تحميله بعد</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="footer">
-            <div class="footer-icons">
-                <i class="fab fa-python" title="Python"></i>
-                <i class="fab fa-html5" title="HTML"></i>
-                <i class="fab fa-css3-alt" title="CSS"></i>
-                <i class="fab fa-js-square" title="JavaScript"></i>
-                <i class="fas fa-file-alt" title="نصوص"></i>
-            </div>
-            <p>نظام تحليل وتشغيل أكواد متعدد اللغات - يدعم جميع أنواع الملفات حتى لو كان الامتداد لا يتطابق مع المحتوى</p>
-            <p>تم التطوير باستخدام CodeMirror و JavaScript | 
-               <a href="https://github.com/Abdslim777/Abdh" target="_blank">عرض المستودع الأصلي على GitHub</a>
+        <header>
+            <h1><i class="fas fa-code"></i> تشغيل ملفات GitHub تفاعلياً</h1>
+            <p class="subtitle">
+                هذه الأداة تتيح لك الوصول إلى أي ملف HTML على GitHub وتشغيله بشكل تفاعلي. 
+                فقط أدخل رابط الملف واضغط على "تشغيل" لرؤية النتيجة.
             </p>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title"><i class="fas fa-link"></i> رابط ملف GitHub</h2>
+                <div class="url-input">
+                    <label for="githubUrl">أدخل رابط ملف HTML من GitHub:</label>
+                    <div class="input-group">
+                        <input type="text" id="githubUrl" 
+                               placeholder="https://github.com/username/repository/blob/branch/path/to/file.html"
+                               value="https://github.com/Abdslim777/Abdh/blob/main/gg.html">
+                        <button id="loadBtn" class="btn">
+                            <i class="fas fa-play-circle"></i> تشغيل الملف
+                        </button>
+                    </div>
+                    
+                    <div class="example-links">
+                        <span>أمثلة:</span>
+                        <a href="#" class="example-link" data-url="https://github.com/Abdslim777/Abdh/blob/main/gg.html">ملف المثال</a>
+                        <a href="#" class="example-link" data-url="https://github.com/microsoft/TypeScript/blob/main/README.md">README TypeScript</a>
+                        <a href="#" class="example-link" data-url="https://github.com/twbs/bootstrap/blob/main/index.html">Bootstrap مثال</a>
+                    </div>
+                </div>
+                
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>جاري جلب الملف وتشغيله...</p>
+                </div>
+                
+                <div id="statusMessage" class="status-message"></div>
+            </div>
+
+            <div class="preview-section">
+                <h2 class="section-title"><i class="fas fa-desktop"></i> معاينة النتيجة</h2>
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <div class="preview-title">نتيجة تشغيل الملف</div>
+                        <div class="preview-actions">
+                            <button id="refreshBtn"><i class="fas fa-redo"></i> تحديث</button>
+                            <button id="fullscreenBtn"><i class="fas fa-expand"></i> ملء الشاشة</button>
+                        </div>
+                    </div>
+                    <iframe id="previewFrame" sandbox="allow-scripts allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin"></iframe>
+                </div>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <div class="code-title">محتوى الملف</div>
+                        <div>
+                            <button id="copyCodeBtn" class="btn" style="padding: 5px 10px; font-size: 0.8rem;">
+                                <i class="far fa-copy"></i> نسخ الكود
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-content" id="codeContent">
+                        <div style="text-align: center; padding: 20px;">
+                            <i class="fas fa-code fa-2x" style="color: #4a5568; margin-bottom: 10px;"></i>
+                            <p>سيظهر محتوى الملف هنا بعد تحميله</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="file-info" id="fileInfo">
+                    <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
+                    <p>لم يتم تحميل أي ملف بعد. أدخل رابط ملف GitHub واضغط على "تشغيل الملف".</p>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h2 class="section-title"><i class="fas fa-cogs"></i> خيارات إضافية</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px;">
+                    <button id="clearBtn" class="btn" style="background-color: #e74c3c;">
+                        <i class="fas fa-trash-alt"></i> مسح الكل
+                    </button>
+                    <button id="saveBtn" class="btn" style="background-color: #2ecc71;">
+                        <i class="fas fa-save"></i> حفظ الكود محلياً
+                    </button>
+                    <button id="newTabBtn" class="btn" style="background-color: #9b59b6;">
+                        <i class="fas fa-external-link-alt"></i> فتح في تبويب جديد
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="color: #2c3e50; margin-bottom: 10px;">كيفية الاستخدام:</h3>
+                    <ol style="padding-right: 20px; color: #555;">
+                        <li>انسخ رابط ملف HTML من GitHub (يجب أن يكون الرابط مباشراً للملف)</li>
+                        <li>الصق الرابط في الحقل أعلاه واضغط على "تشغيل الملف"</li>
+                        <li>ستظهر النتيجة في إطار المعاينة أعلاه</li>
+                        <li>يمكنك نسخ الكود أو حفظه أو فتحه في تبويب جديد</li>
+                    </ol>
+                </div>
+            </div>
         </div>
+
+        <footer>
+            <p>تم التطوير باستخدام GitHub API | هذه الأداة تعمل على تشغيل ملفات HTML وجافا سكريبت من GitHub بشكل آمن</p>
+            <p style="margin-top: 10px;">&copy; 2023 - جميع الحقوق محفوظة</p>
+        </footer>
     </div>
-    
-    <!-- Modal للرسائل -->
-    <div class="modal" id="messageModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-exclamation-triangle"></i> تنبيه</h3>
-                <button class="close-btn" id="closeModalBtn">&times;</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <!-- محتوى ديناميكي -->
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="modalOkBtn">موافق</button>
-                <button class="btn btn-secondary" id="modalCancelBtn">إلغاء</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- مكتبات JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/comment/comment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/selection/active-line.min.js"></script>
-    
+
     <script>
-        // المتغيرات العامة
-        let editor = null;
-        let detectedLanguage = 'text';
-        let fileContent = '';
-        let autoRefreshInterval = null;
-        let lastHash = '';
-        const GITHUB_URL = 'https://raw.githubusercontent.com/Abdslim777/Abdh/main/Bot.py';
-        
-        // أنماط الكود للتعرف على اللغات
-        const LANGUAGE_PATTERNS = {
-            'python': [
-                /\b(def|class|import|from|as|if|elif|else|for|while|try|except|finally|with|return|yield)\b/,
-                /^\s*#.*$/m,
-                /\b(True|False|None)\b/,
-                /print\(.*\)/,
-                /__name__\s*==\s*['"]__main__['"]/
-            ],
-            'html': [
-                /<!DOCTYPE html>/i,
-                /<html[\s>]/i,
-                /<head[\s>]/i,
-                /<body[\s>]/i,
-                /<div[\s>]/i,
-                /<span[\s>]/i,
-                /<p[\s>]/i,
-                /<a[\s>]/i,
-                /<script[\s>]/i,
-                /<style[\s>]/i
-            ],
-            'css': [
-                /\{[^}]*\}/,
-                /:[^;]*;/,
-                /\.\w+\s*\{/,
-                /#\w+\s*\{/,
-                /@media/,
-                /@keyframes/
-            ],
-            'javascript': [
-                /\bfunction\s+\w+\s*\(/,
-                /\bconst\b|\blet\b|\bvar\b/,
-                /console\.(log|warn|error)\(/,
-                /document\.(getElementById|querySelector)\(/,
-                /addEventListener\(/,
-                /\breturn\b/
-            ]
-        };
-        
-        // التهيئة عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', async function() {
-            initCodeEditor();
-            setupEventListeners();
-            setupTabs();
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر DOM
+            const githubUrlInput = document.getElementById('githubUrl');
+            const loadBtn = document.getElementById('loadBtn');
+            const previewFrame = document.getElementById('previewFrame');
+            const codeContent = document.getElementById('codeContent');
+            const statusMessage = document.getElementById('statusMessage');
+            const loading = document.getElementById('loading');
+            const fileInfo = document.getElementById('fileInfo');
+            const refreshBtn = document.getElementById('refreshBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const copyCodeBtn = document.getElementById('copyCodeBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const newTabBtn = document.getElementById('newTabBtn');
+            const exampleLinks = document.querySelectorAll('.example-link');
             
-            // تحميل الملف تلقائياً بعد ثانيتين
-            setTimeout(() => {
-                loadFileFromGitHub();
-            }, 2000);
-        });
-        
-        // تهيئة محرر الكود
-        function initCodeEditor() {
-            editor = CodeMirror(document.getElementById('codeEditor'), {
-                mode: 'text',
-                theme: 'monokai',
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                readOnly: true,
-                value: '// جاري تحميل الملف من GitHub...\n// يمكن أن يكون الملف بأي لغة: Python, HTML, CSS, JavaScript, أو نص عادي\n// حتى لو كان الامتداد .py والمحتوى HTML!'
+            // مثال تلقائي عند التحميل
+            window.addEventListener('load', function() {
+                // تحميل ملف المثال تلقائياً بعد ثانيتين
+                setTimeout(() => {
+                    loadFileFromUrl(githubUrlInput.value);
+                }, 1000);
             });
             
-            // تحديث حجم المحرر عند تغيير حجم النافذة
-            window.addEventListener('resize', () => editor.refresh());
-        }
-        
-        // إعداد الأحداث
-        function setupEventListeners() {
-            document.getElementById('loadBtn').addEventListener('click', loadFileFromGitHub);
-            document.getElementById('analyzeBtn').addEventListener('click', analyzeContent);
-            document.getElementById('runBtn').addEventListener('click', executeOrPreview);
-            document.getElementById('detectBtn').addEventListener('click', detectLanguage);
-            document.getElementById('clearBtn').addEventListener('click', clearAll);
-            document.getElementById('copyBtn').addEventListener('click', copyCode);
-            document.getElementById('exportBtn').addEventListener('click', exportResults);
-            document.getElementById('themeSelect').addEventListener('change', changeTheme);
-            document.getElementById('fontSize').addEventListener('change', changeFontSize);
-            document.getElementById('toggleRefresh').addEventListener('click', toggleAutoRefresh);
-            document.getElementById('refreshInterval').addEventListener('change', updateRefreshInterval);
-            
-            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-            document.getElementById('modalOkBtn').addEventListener('click', closeModal);
-            document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
-        }
-        
-        // إعداد التبويبات
-        function setupTabs() {
-            document.querySelectorAll('.output-tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const tabId = this.getAttribute('data-tab');
-                    
-                    // إزالة النشاط من جميع التبويبات
-                    document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-                    
-                    // إضافة النشاط للتبويب المحدد
-                    this.classList.add('active');
-                    document.getElementById(tabId + 'Pane').classList.add('active');
-                });
+            // تحميل الملف عند النقر على الزر
+            loadBtn.addEventListener('click', function() {
+                const url = githubUrlInput.value.trim();
+                if (!url) {
+                    showError('يرجى إدخال رابط ملف GitHub');
+                    return;
+                }
+                
+                loadFileFromUrl(url);
             });
-        }
-        
-        // تحميل الملف من GitHub
-        async function loadFileFromGitHub() {
-            showLoader('جاري الاتصال بمستودع GitHub...');
-            updateLoaderProgress(20);
             
-            try {
-                outputMessage('🔗 جاري الاتصال بـ GitHub...', 'info');
-                
-                // استخدام fetch مع تعقب التقدم
-                const response = await fetch(GITHUB_URL);
-                updateLoaderProgress(50);
-                
-                if (!response.ok) {
-                    throw new Error(`فشل في تحميل الملف: ${response.status} ${response.statusText}`);
+            // تحديث المعاينة
+            refreshBtn.addEventListener('click', function() {
+                if (previewFrame.src && previewFrame.src !== 'about:blank') {
+                    previewFrame.contentWindow.location.reload();
+                }
+            });
+            
+            // وضع ملء الشاشة
+            fullscreenBtn.addEventListener('click', function() {
+                if (previewFrame.requestFullscreen) {
+                    previewFrame.requestFullscreen();
+                } else if (previewFrame.mozRequestFullScreen) {
+                    previewFrame.mozRequestFullScreen();
+                } else if (previewFrame.webkitRequestFullscreen) {
+                    previewFrame.webkitRequestFullscreen();
+                } else if (previewFrame.msRequestFullscreen) {
+                    previewFrame.msRequestFullscreen();
+                }
+            });
+            
+            // نسخ الكود
+            copyCodeBtn.addEventListener('click', function() {
+                const codeText = codeContent.innerText;
+                if (!codeText || codeText.includes('سيظهر محتوى الملف هنا بعد تحميله')) {
+                    showError('لا يوجد كود للنسخ');
+                    return;
                 }
                 
-                // الحصول على المحتوى
-                const content = await response.text();
-                updateLoaderProgress(80);
-                
-                // حفظ المحتوى
-                fileContent = content;
-                
-                // حساب hash للمحتوى للكشف عن التغييرات
-                const currentHash = hashCode(content);
-                const hasChanged = currentHash !== lastHash;
-                lastHash = currentHash;
-                
-                // تحديث المحرر
-                updateCodeEditor(content);
-                
-                // اكتشاف اللغة تلقائياً
-                detectLanguage();
-                
-                // تحليل المحتوى
-                analyzeContent();
-                
-                // تحديث المعلومات
-                updateFileInfo(content, hasChanged);
-                
-                outputMessage(`✅ تم تحميل الملف بنجاح! (${content.length} حرف)`, 'success');
-                
-                if (hasChanged) {
-                    showUpdateNotification('تم تحديث الملف بنجاح!');
-                }
-                
-                updateLoaderProgress(100);
-                
-            } catch (error) {
-                console.error('خطأ في تحميل الملف:', error);
-                outputMessage(`❌ خطأ في تحميل الملف: ${error.message}`, 'error');
-                
-                showModal('خطأ في التحميل', 
-                    `فشل في تحميل الملف من GitHub.<br><br>
-                     تفاصيل الخطأ:<br>
-                     <div class="error-details">${error.message}</div>`
-                );
-                
-            } finally {
-                hideLoader();
-            }
-        }
-        
-        // تحديث محرر الكود
-        function updateCodeEditor(content) {
-            editor.setValue(content);
-            
-            // تحديث عدد الأسطر
-            const lines = content.split('\n').length;
-            outputMessage(`📊 الملف يحتوي على ${lines} سطر`, 'info');
-        }
-        
-        // اكتشاف لغة الملف
-        function detectLanguage() {
-            const content = editor.getValue();
-            let scores = {
-                'python': 0,
-                'html': 0,
-                'css': 0,
-                'javascript': 0,
-                'text': 0
-            };
-            
-            // فحص الأنماط لكل لغة
-            for (const [lang, patterns] of Object.entries(LANGUAGE_PATTERNS)) {
-                patterns.forEach(pattern => {
-                    const matches = content.match(pattern);
-                    if (matches) {
-                        scores[lang] += matches.length;
-                    }
-                });
-            }
-            
-            // تحديد اللغة الفائزة
-            let maxScore = 0;
-            let detectedLang = 'text';
-            let detectedLangs = [];
-            
-            for (const [lang, score] of Object.entries(scores)) {
-                if (score > maxScore) {
-                    maxScore = score;
-                    detectedLang = lang;
-                }
-                if (score > 0) {
-                    detectedLangs.push(lang);
-                }
-            }
-            
-            // إذا كان هناك أكثر من لغة
-            if (detectedLangs.length > 1) {
-                detectedLang = 'mixed';
-            }
-            
-            // تحديث واجهة المستخدم
-            detectedLanguage = detectedLang;
-            updateEditorMode(detectedLang);
-            updateLanguageBadge(detectedLang, detectedLangs);
-            
-            outputMessage(`🔍 تم اكتشاف اللغة: ${getLanguageName(detectedLang)}`, 'success');
-            
-            // إذا كانت لغة مختلطة، إظهار التفاصيل
-            if (detectedLangs.length > 1) {
-                outputMessage(`📋 اللغات المكتشفة: ${detectedLangs.map(l => getLanguageName(l)).join(', ')}`, 'info');
-            }
-        }
-        
-        // تحديث نمط المحرر بناءً على اللغة
-        function updateEditorMode(language) {
-            let mode = 'text';
-            
-            switch(language) {
-                case 'python':
-                    mode = 'python';
-                    break;
-                case 'html':
-                    mode = 'htmlmixed';
-                    break;
-                case 'css':
-                    mode = 'css';
-                    break;
-                case 'javascript':
-                    mode = 'javascript';
-                    break;
-                case 'mixed':
-                    mode = 'htmlmixed'; // HTML مختلط مع لغات أخرى
-                    break;
-                default:
-                    mode = 'text';
-            }
-            
-            editor.setOption('mode', mode);
-            editor.refresh();
-        }
-        
-        // تحليل محتوى الملف
-        function analyzeContent() {
-            const content = editor.getValue();
-            const analysisContent = document.getElementById('analysisContent');
-            analysisContent.innerHTML = '';
-            
-            // تحليل عام
-            const lines = content.split('\n');
-            const words = content.split(/\s+/).filter(w => w.length > 0);
-            const chars = content.length;
-            
-            // إضافة تحليل عام
-            const generalAnalysis = document.createElement('div');
-            generalAnalysis.className = 'code-analysis';
-            generalAnalysis.innerHTML = `
-                <h5><i class="fas fa-chart-bar"></i> تحليل عام</h5>
-                <div class="analysis-grid">
-                    <div class="analysis-item">
-                        <div class="analysis-value">${lines.length}</div>
-                        <div class="analysis-label">عدد الأسطر</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${words.length}</div>
-                        <div class="analysis-label">عدد الكلمات</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${chars}</div>
-                        <div class="analysis-label">عدد الأحرف</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${Math.round(chars / 1024 * 100) / 100}</div>
-                        <div class="analysis-label">الحجم (كيلوبايت)</div>
-                    </div>
-                </div>
-            `;
-            
-            analysisContent.appendChild(generalAnalysis);
-            
-            // تحليل تفصيلي بناءً على اللغة
-            switch(detectedLanguage) {
-                case 'python':
-                    analyzePython(content);
-                    break;
-                case 'html':
-                    analyzeHTML(content);
-                    break;
-                case 'css':
-                    analyzeCSS(content);
-                    break;
-                case 'javascript':
-                    analyzeJavaScript(content);
-                    break;
-                case 'mixed':
-                    analyzeMixedContent(content);
-                    break;
-                default:
-                    analyzeText(content);
-            }
-        }
-        
-        // تحليل Python
-        function analyzePython(content) {
-            const imports = content.match(/^(import|from)\s+.+$/gm) || [];
-            const functions = content.match(/^def\s+\w+\s*\(/gm) || [];
-            const classes = content.match(/^class\s+\w+/gm) || [];
-            
-            const analysisContent = document.createElement('div');
-            analysisContent.className = 'code-analysis';
-            analysisContent.innerHTML = `
-                <h5><i class="fab fa-python"></i> تحليل Python</h5>
-                <div class="analysis-grid">
-                    <div class="analysis-item">
-                        <div class="analysis-value">${imports.length}</div>
-                        <div class="analysis-label">استيرادات</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${functions.length}</div>
-                        <div class="analysis-label">دوال</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${classes.length}</div>
-                        <div class="analysis-label">كلاسات</div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('analysisContent').appendChild(analysisContent);
-        }
-        
-        // تحليل HTML
-        function analyzeHTML(content) {
-            const tags = content.match(/<\/?[a-z][a-z0-9]*\b[^>]*>/gi) || [];
-            const scripts = content.match(/<script[^>]*>[\s\S]*?<\/script>/gi) || [];
-            const styles = content.match(/<style[^>]*>[\s\S]*?<\/style>/gi) || [];
-            
-            const analysisContent = document.createElement('div');
-            analysisContent.className = 'code-analysis';
-            analysisContent.innerHTML = `
-                <h5><i class="fab fa-html5"></i> تحليل HTML</h5>
-                <div class="analysis-grid">
-                    <div class="analysis-item">
-                        <div class="analysis-value">${tags.length}</div>
-                        <div class="analysis-label">وسوم</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${scripts.length}</div>
-                        <div class="analysis-label">سكريبتات</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${styles.length}</div>
-                        <div class="analysis-label">أنماط</div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('analysisContent').appendChild(analysisContent);
-        }
-        
-        // تحليل محتوى مختلط
-        function analyzeMixedContent(content) {
-            // عد العناصر لكل لغة
-            const pythonCount = (content.match(/\b(def|class|import|print)\b/g) || []).length;
-            const htmlCount = (content.match(/<\/?[a-z][^>]*>/gi) || []).length;
-            const cssCount = (content.match(/[.#][a-z][^{]*\{/gi) || []).length;
-            const jsCount = (content.match(/\b(function|const|let|var|console\.)\b/g) || []).length;
-            
-            const analysisContent = document.createElement('div');
-            analysisContent.className = 'code-analysis';
-            analysisContent.innerHTML = `
-                <h5><i class="fas fa-code-branch"></i> تحليل المحتوى المختلط</h5>
-                <div class="analysis-grid">
-                    <div class="analysis-item">
-                        <div class="analysis-value">${pythonCount}</div>
-                        <div class="analysis-label">عناصر Python</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${htmlCount}</div>
-                        <div class="analysis-label">وسوم HTML</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${cssCount}</div>
-                        <div class="analysis-label">أنماط CSS</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="analysis-value">${jsCount}</div>
-                        <div class="analysis-label">عناصر JavaScript</div>
-                    </div>
-                </div>
-            `;
-            
-            document.getElementById('analysisContent').appendChild(analysisContent);
-        }
-        
-        // تشغيل أو عرض المحتوى بناءً على نوعه
-        function executeOrPreview() {
-            const content = editor.getValue();
-            
-            switch(detectedLanguage) {
-                case 'html':
-                case 'mixed':
-                    previewHTML(content);
-                    break;
-                case 'python':
-                    executePython(content);
-                    break;
-                case 'javascript':
-                    executeJavaScript(content);
-                    break;
-                default:
-                    outputMessage('⚠️ هذا النوع من الملفات لا يمكن تشغيله مباشرة', 'warning');
-                    showRawContent(content);
-            }
-        }
-        
-        // عرض HTML في iframe
-        function previewHTML(content) {
-            const previewFrame = document.getElementById('htmlPreview');
-            const blob = new Blob([content], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            previewFrame.src = url;
-            
-            // التبديل إلى تبويب المعاينة
-            document.querySelector('[data-tab="preview"]').click();
-            
-            outputMessage('🌐 يتم عرض محتوى HTML في نافذة المعاينة', 'html');
-        }
-        
-        // تشغيل Python في المتصفح
-        async function executePython(content) {
-            outputMessage('🐍 جاري تشغيل كود Python...', 'python');
-            
-            // هذا مثال مبسط - في الواقع تحتاج Pyodide أو خدمة backend
-            try {
-                // تحليل الكود للعثور على print statements
-                const printStatements = content.match(/print\([^)]*\)/g) || [];
-                
-                if (printStatements.length > 0) {
-                    outputMessage('📤 إخراج البرنامج:', 'python');
-                    printStatements.forEach(stmt => {
-                        // محاولة استخراج النص داخل print
-                        const match = stmt.match(/print\((['"])(.*?)\1\)/);
-                        if (match) {
-                            outputMessage(`   ${match[2]}`, 'success');
-                        }
+                navigator.clipboard.writeText(codeText)
+                    .then(() => {
+                        showSuccess('تم نسخ الكود إلى الحافظة');
+                    })
+                    .catch(err => {
+                        showError('فشل نسخ الكود: ' + err);
                     });
+            });
+            
+            // مسح الكل
+            clearBtn.addEventListener('click', function() {
+                previewFrame.src = 'about:blank';
+                codeContent.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-code fa-2x" style="color: #4a5568; margin-bottom: 10px;"></i>
+                        <p>سيظهر محتوى الملف هنا بعد تحميله</p>
+                    </div>
+                `;
+                fileInfo.innerHTML = `
+                    <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
+                    <p>لم يتم تحميل أي ملف بعد. أدخل رابط ملف GitHub واضغط على "تشغيل الملف".</p>
+                `;
+                statusMessage.style.display = 'none';
+                githubUrlInput.value = '';
+                showSuccess('تم مسح جميع البيانات');
+            });
+            
+            // حفظ الكود محلياً
+            saveBtn.addEventListener('click', function() {
+                const codeText = codeContent.innerText;
+                if (!codeText || codeText.includes('سيظهر محتوى الملف هنا بعد تحميله')) {
+                    showError('لا يوجد كود لحفظه');
+                    return;
+                }
+                
+                const blob = new Blob([codeText], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'github_file.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showSuccess('تم حفظ الملف محلياً');
+            });
+            
+            // فتح في تبويب جديد
+            newTabBtn.addEventListener('click', function() {
+                if (previewFrame.src && previewFrame.src !== 'about:blank') {
+                    window.open(previewFrame.src, '_blank');
                 } else {
-                    outputMessage('✅ تم تحليل كود Python بنجاح (لا يوجد إخراج مباشر)', 'python');
+                    showError('لا يوجد ملف مفتوح لفتحه في تبويب جديد');
                 }
-                
-            } catch (error) {
-                outputMessage(`❌ خطأ في تشغيل Python: ${error.message}`, 'error');
-            }
-        }
-        
-        // تشغيل JavaScript
-        function executeJavaScript(content) {
-            outputMessage('⚡ جاري تشغيل كود JavaScript...', 'js');
-            
-            try {
-                // فصل console.log من الكود
-                const logs = [];
-                const modifiedCode = content.replace(/console\.log\(([^)]+)\)/g, (match, p1) => {
-                    logs.push(p1);
-                    return `/* ${match} */`;
-                });
-                
-                // محاولة تنفيذ الكود
-                const result = eval(modifiedCode);
-                
-                if (logs.length > 0) {
-                    outputMessage('📤 إخراج console.log:', 'js');
-                    logs.forEach(log => {
-                        outputMessage(`   ${log}`, 'success');
-                    });
-                }
-                
-                if (result !== undefined) {
-                    outputMessage(`🎯 النتيجة النهائية: ${result}`, 'success');
-                }
-                
-            } catch (error) {
-                outputMessage(`❌ خطأ في تشغيل JavaScript: ${error.message}`, 'error');
-            }
-        }
-        
-        // عرض النص الخام
-        function showRawContent(content) {
-            const rawContentDiv = document.getElementById('rawContent');
-            rawContentDiv.innerHTML = `<pre style="white-space: pre-wrap; word-break: break-all;">${escapeHtml(content)}</pre>`;
-            
-            // التبديل إلى تبويب النص الخام
-            document.querySelector('[data-tab="raw"]').click();
-        }
-        
-        // تحديث معلومات الملف
-        function updateFileInfo(content, hasChanged) {
-            const size = content.length;
-            const lines = content.split('\n').length;
-            const now = new Date();
-            
-            // تحديث حالة الحجم
-            document.getElementById('fileSize').textContent = formatFileSize(size);
-            
-            // تحديث وقت التحديث
-            document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('ar-EG');
-            document.getElementById('lastUpdate').className = hasChanged ? 'status-value success' : 'status-value info';
-            
-            // تحديث الملاحظات
-            const notes = hasChanged ? 'تم تحديث الملف الآن' : 'لم يتغير الملف منذ آخر تحميل';
-            document.getElementById('fileNotes').textContent = notes;
-        }
-        
-        // تحديث شارة اللغة
-        function updateLanguageBadge(language, languagesList) {
-            const badgeElement = document.getElementById('actualExtension');
-            const fileTypeElement = document.getElementById('fileType');
-            const languagesCountElement = document.getElementById('detectedLanguages');
-            const languagesListElement = document.getElementById('languagesList');
-            
-            // تحديث نوع الملف
-            fileTypeElement.textContent = getLanguageName(language);
-            fileTypeElement.className = `status-value ${language === 'mixed' ? 'warning' : 'success'}`;
-            
-            // تحديث عدد اللغات
-            const langCount = languagesList.length || 1;
-            languagesCountElement.textContent = langCount;
-            
-            // تحديث قائمة اللغات
-            if (languagesList.length > 0) {
-                const badges = languagesList.map(lang => 
-                    `<span class="language-badge badge-${lang}">${getLanguageName(lang)}</span>`
-                ).join(' ');
-                languagesListElement.innerHTML = badges;
-            }
-            
-            // تحديث الشارة الرئيسية
-            badgeElement.textContent = `.py → ${getLanguageName(language)}`;
-            badgeElement.className = `language-badge ${language === 'mixed' ? 'badge-mixed' : `badge-${language}`}`;
-        }
-        
-        // تبديل التحديث التلقائي
-        function toggleAutoRefresh() {
-            const interval = parseInt(document.getElementById('refreshInterval').value);
-            const toggleBtn = document.getElementById('toggleRefresh');
-            
-            if (autoRefreshInterval) {
-                clearInterval(autoRefreshInterval);
-                autoRefreshInterval = null;
-                toggleBtn.innerHTML = '<i class="fas fa-power-off"></i> تشغيل';
-                outputMessage('⏹️ تم إيقاف التحديث التلقائي', 'warning');
-            } else if (interval > 0) {
-                autoRefreshInterval = setInterval(loadFileFromGitHub, interval * 1000);
-                toggleBtn.innerHTML = '<i class="fas fa-stop"></i> إيقاف';
-                outputMessage(`🔄 تم تفعيل التحديث التلقائي كل ${interval} ثانية`, 'success');
-            }
-        }
-        
-        // تحديث فاصل التحديث
-        function updateRefreshInterval() {
-            if (autoRefreshInterval) {
-                toggleAutoRefresh(); // إيقاف
-                toggleAutoRefresh(); // تشغيل بالقيمة الجديدة
-            }
-        }
-        
-        // مسح كل شيء
-        function clearAll() {
-            editor.setValue('');
-            document.getElementById('output').innerHTML = '';
-            document.getElementById('analysisContent').innerHTML = '';
-            document.getElementById('rawContent').innerHTML = '';
-            document.getElementById('htmlPreview').src = '';
-            
-            outputMessage('🧹 تم مسح كل المحتويات', 'info');
-        }
-        
-        // نسخ الكود
-        function copyCode() {
-            const code = editor.getValue();
-            navigator.clipboard.writeText(code)
-                .then(() => outputMessage('📋 تم نسخ الكود إلى الحافظة', 'success'))
-                .catch(() => outputMessage('❌ فشل نسخ الكود', 'error'));
-        }
-        
-        // تصدير النتائج
-        function exportResults() {
-            const content = editor.getValue();
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `file_${Date.now()}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            outputMessage('💾 تم تصدير الملف', 'success');
-        }
-        
-        // تغيير سمة المحرر
-        function changeTheme() {
-            const theme = document.getElementById('themeSelect').value;
-            editor.setOption('theme', theme);
-        }
-        
-        // تغيير حجم الخط
-        function changeFontSize() {
-            const size = document.getElementById('fontSize').value;
-            editor.getWrapperElement().style.fontSize = size + 'px';
-            editor.refresh();
-        }
-        
-        // إظهار رسالة في الناتج
-        function outputMessage(message, type = 'info') {
-            const outputDiv = document.getElementById('output');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `output-line ${type}`;
-            
-            // إضافة الطابع الزمني
-            const now = new Date();
-            const time = now.toLocaleTimeString('ar-EG', { hour12: true });
-            
-            let icon = 'fas fa-info-circle';
-            if (type === 'success') icon = 'fas fa-check-circle';
-            if (type === 'error') icon = 'fas fa-exclamation-circle';
-            if (type === 'warning') icon = 'fas fa-exclamation-triangle';
-            if (type === 'python') icon = 'fab fa-python';
-            if (type === 'html') icon = 'fab fa-html5';
-            if (type === 'css') icon = 'fab fa-css3-alt';
-            if (type === 'js') icon = 'fab fa-js-square';
-            
-            messageDiv.innerHTML = `
-                <i class="${icon}"></i>
-                <span style="opacity: 0.7; font-size: 0.9em; margin-left: 10px;">[${time}]</span>
-                ${message}
-            `;
-            
-            outputDiv.appendChild(messageDiv);
-            outputDiv.scrollTop = outputDiv.scrollHeight;
-        }
-        
-        // إظهار إشعار التحديث
-        function showUpdateNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'update-notification';
-            notification.innerHTML = `
-                <i class="fas fa-sync-alt fa-spin"></i>
-                <span>${message}</span>
-                <button class="close-btn" style="font-size: 1rem;">&times;</button>
-            `;
-            
-            document.body.appendChild(notification);
-            notification.style.display = 'flex';
-            
-            notification.querySelector('.close-btn').addEventListener('click', () => {
-                notification.style.display = 'none';
-                setTimeout(() => notification.remove(), 300);
             });
             
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.style.display = 'none';
-                    setTimeout(() => notification.remove(), 300);
+            // أمثلة سريعة
+            exampleLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('data-url');
+                    githubUrlInput.value = url;
+                    loadFileFromUrl(url);
+                });
+            });
+            
+            // دالة لتحميل الملف من URL
+            function loadFileFromUrl(url) {
+                // إظهار مؤشر التحميل
+                loading.classList.add('active');
+                statusMessage.style.display = 'none';
+                
+                // تحويل رابط GitHub إلى رابط API
+                let apiUrl = convertToApiUrl(url);
+                
+                if (!apiUrl) {
+                    showError('رابط GitHub غير صالح. يرجى التأكد من أنه رابط مباشر لملف');
+                    loading.classList.remove('active');
+                    return;
                 }
-            }, 5000);
-        }
-        
-        // إظهار/إخفاء مؤشر التحميل
-        function showLoader(text = 'جاري التحميل...') {
-            document.getElementById('loader').classList.add('active');
-            document.getElementById('loaderText').textContent = text;
-        }
-        
-        function hideLoader() {
-            document.getElementById('loader').classList.remove('active');
-            document.getElementById('loaderProgress').style.width = '0%';
-        }
-        
-        function updateLoaderProgress(percent) {
-            document.getElementById('loaderProgress').style.width = percent + '%';
-        }
-        
-        // إظهار/إخفاء النافذة المنبثقة
-        function showModal(title, content) {
-            document.getElementById('modalBody').innerHTML = `
-                <h4>${title}</h4>
-                <div>${content}</div>
-            `;
-            document.getElementById('messageModal').classList.add('active');
-        }
-        
-        function closeModal() {
-            document.getElementById('messageModal').classList.remove('active');
-        }
-        
-        // دالات مساعدة
-        function getLanguageName(lang) {
-            const names = {
-                'python': 'Python',
-                'html': 'HTML',
-                'css': 'CSS',
-                'javascript': 'JavaScript',
-                'text': 'نص عادي',
-                'mixed': 'مختلط'
-            };
-            return names[lang] || lang;
-        }
-        
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 بايت';
-            const k = 1024;
-            const sizes = ['بايت', 'كيلوبايت', 'ميجابايت', 'جيجابايت'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function hashCode(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) {
-                const char = str.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
+                
+                // جلب الملف باستخدام GitHub API
+                fetch(apiUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`خطأ في جلب الملف: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // فك تشفير محتوى Base64
+                        const content = atob(data.content.replace(/\n/g, ''));
+                        
+                        // عرض محتوى الكود
+                        displayCodeContent(content, data.name, data.path);
+                        
+                        // إنشاء blob وتشغيله في iframe
+                        const blob = new Blob([content], { type: 'text/html' });
+                        const blobUrl = URL.createObjectURL(blob);
+                        previewFrame.src = blobUrl;
+                        
+                        // إظهار معلومات الملف
+                        displayFileInfo(data);
+                        
+                        // إظهار رسالة النجاح
+                        showSuccess(`تم تحميل وتشغيل الملف: ${data.name}`);
+                        
+                        // إخفاء مؤشر التحميل
+                        loading.classList.remove('active');
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showError(`فشل تحميل الملف: ${error.message}`);
+                        loading.classList.remove('active');
+                    });
             }
-            return hash.toString();
-        }
-        
-        // دالات تحليل إضافية (مبسطة)
-        function analyzeCSS(content) {
-            // تنفيذ مشابه للدوال الأخرى
-        }
-        
-        function analyzeJavaScript(content) {
-            // تنفيذ مشابه للدوال الأخرى
-        }
-        
-        function analyzeText(content) {
-            // تنفيذ مشابه للدوال الأخرى
-        }
+            
+            // دالة لتحويل رابط GitHub إلى رابط API
+            function convertToApiUrl(githubUrl) {
+                try {
+                    // تحليل الرابط
+                    const url = new URL(githubUrl);
+                    
+                    // التحقق من أن الرابط من GitHub
+                    if (url.hostname !== 'github.com') {
+                        return null;
+                    }
+                    
+                    // استخراج مكونات المسار
+                    const pathParts = url.pathname.split('/').filter(part => part);
+                    
+                    // يجب أن يكون هناك على الأقل اسم المستخدم واسم المستودع
+                    if (pathParts.length < 2) {
+                        return null;
+                    }
+                    
+                    const [owner, repo, ...rest] = pathParts;
+                    
+                    // إزالة "blob" من المسار إذا كان موجوداً
+                    const blobIndex = rest.indexOf('blob');
+                    if (blobIndex !== -1) {
+                        rest.splice(blobIndex, 1);
+                    }
+                    
+                    // بناء رابط API
+                    const filePath = rest.join('/');
+                    return `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            // دالة لعرض محتوى الكود
+            function displayCodeContent(content, filename, filepath) {
+                // تنسيق الكود للألوان
+                let formattedContent = content;
+                
+                // محاولة إضافة تمييز بسيط للكود
+                formattedContent = formattedContent
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+                
+                // تمييز العناصر الأساسية
+                formattedContent = formattedContent
+                    .replace(/(&lt;!--[\s\S]*?--&gt;)/g, '<span style="color: #6a9955;">$1</span>') // تعليقات HTML
+                    .replace(/(&lt;\/?[a-zA-Z][^&]*&gt;)/g, '<span style="color: #569cd6;">$1</span>') // علامات HTML
+                    .replace(/(&lt;script[\s\S]*?&gt;[\s\S]*?&lt;\/script&gt;)/gi, '<span style="color: #ce9178;">$1</span>') // سكريبت
+                    .replace(/(&lt;style[\s\S]*?&gt;[\s\S]*?&lt;\/style&gt;)/gi, '<span style="color: #ce9178;">$1</span>') // ستايل
+                
+                codeContent.innerHTML = formattedContent;
+            }
+            
+            // دالة لعرض معلومات الملف
+            function displayFileInfo(data) {
+                const sizeInKB = (data.size / 1024).toFixed(2);
+                const downloadUrl = data.download_url || data.html_url;
+                
+                fileInfo.innerHTML = `
+                    <h3><i class="fas fa-info-circle"></i> معلومات الملف</h3>
+                    <p><strong>اسم الملف:</strong> ${data.name}</p>
+                    <p><strong>المسار:</strong> ${data.path}</p>
+                    <p><strong>الحجم:</strong> ${sizeInKB} كيلوبايت</p>
+                    <p><strong>نوع الملف:</strong> ${data.type}</p>
+                    <p><strong>رابط التنزيل:</strong> <a href="${downloadUrl}" target="_blank">${downloadUrl.substring(0, 50)}...</a></p>
+                    <p><strong>SHA:</strong> ${data.sha.substring(0, 10)}...</p>
+                `;
+            }
+            
+            // دالة لعرض رسالة نجاح
+            function showSuccess(message) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message success';
+                statusMessage.style.display = 'block';
+                
+                // إخفاء الرسالة بعد 5 ثوانٍ
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            // دالة لعرض رسالة خطأ
+            function showError(message) {
+                statusMessage.textContent = message;
+                statusMessage.className = 'status-message error';
+                statusMessage.style.display = 'block';
+                
+                // إخفاء الرسالة بعد 5 ثوانٍ
+                setTimeout(() => {
+                    statusMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
     </script>
 </body>
 </html>
