@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام تحديث الملفات التلقائي - GitHub</title>
+    <title>محرر وتشغيل Python من GitHub</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/monokai.min.css">
     <style>
         * {
             margin: 0;
@@ -12,963 +14,1080 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(135deg, #0d1117, #161b22);
-            color: #c9d1d9;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #e2e8f0;
             min-height: 100vh;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
         }
-
+        
         .container {
-            max-width: 1200px;
-            width: 100%;
-            background-color: #0d1117;
-            border-radius: 20px;
-            border: 1px solid #30363d;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
-            margin: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
         }
-
+        
         .header {
-            background: linear-gradient(90deg, #238636, #2ea043);
-            color: white;
-            padding: 25px 30px;
             text-align: center;
-            border-bottom: 1px solid #30363d;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(90deg, #1e40af, #3b82f6);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-
+        
         .header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 8px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
         }
-
+        
         .header h1 i {
-            font-size: 2.5rem;
+            color: #fbbf24;
         }
-
+        
         .header p {
+            font-size: 1.2rem;
             opacity: 0.9;
-            font-size: 1.1rem;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .info-box {
-            background-color: #161b22;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid #30363d;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-
-        .info-icon {
-            background: linear-gradient(135deg, #1f6feb, #2ea043);
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            flex-shrink: 0;
-        }
-
-        .info-content {
-            flex: 1;
-        }
-
-        .info-content h2 {
-            color: #58a6ff;
-            margin-bottom: 15px;
-            font-size: 1.8rem;
-        }
-
-        .info-content p {
-            color: #8b949e;
-            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
             line-height: 1.6;
-            margin-bottom: 10px;
         }
-
-        .info-content code {
-            background-color: #0d1117;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            border: 1px solid #30363d;
-            color: #a5d6ff;
-        }
-
-        .stats-box {
+        
+        .controls {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
             margin-bottom: 30px;
-            gap: 20px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 15px;
+            border: 1px solid #475569;
         }
-
-        .stat-item {
-            background-color: #161b22;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            flex: 1;
-            border: 1px solid #30363d;
-            transition: transform 0.3s ease;
-        }
-
-        .stat-item:hover {
-            transform: translateY(-5px);
-            border-color: #58a6ff;
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #58a6ff;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: #8b949e;
-            font-size: 1.1rem;
-        }
-
-        .file-details {
-            background-color: #161b22;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            border: 1px solid #30363d;
-            overflow: hidden;
-        }
-
-        .file-header {
-            background-color: #0d1117;
-            padding: 20px 30px;
-            border-bottom: 1px solid #30363d;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .file-header h3 {
-            color: #58a6ff;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .file-header h3 i {
-            color: #3776ab;
-        }
-
-        .file-source {
-            color: #8b949e;
-        }
-
-        .file-source a {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-
-        .file-source a:hover {
-            text-decoration: underline;
-        }
-
-        .file-content {
-            padding: 30px;
-        }
-
-        .file-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .meta-item {
-            background-color: #0d1117;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-        }
-
-        .meta-label {
-            display: block;
-            color: #8b949e;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-
-        .meta-value {
-            color: #c9d1d9;
-            font-weight: 500;
-            word-break: break-all;
-        }
-
-        .action-section {
-            margin-bottom: 30px;
-        }
-
-        .update-btn {
-            background: linear-gradient(90deg, #1f6feb, #2ea043);
-            color: white;
+        
+        .btn {
+            padding: 12px 25px;
             border: none;
-            padding: 20px 40px;
-            font-size: 1.4rem;
-            border-radius: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 15px;
+            gap: 10px;
             transition: all 0.3s ease;
-            box-shadow: 0 5px 15px rgba(31, 111, 235, 0.3);
-            width: 100%;
-            margin-bottom: 20px;
         }
-
-        .update-btn:hover {
+        
+        .btn-primary {
+            background: linear-gradient(90deg, #10b981, #34d399);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ef4444, #f87171);
+            color: white;
+        }
+        
+        .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(31, 111, 235, 0.4);
-            background: linear-gradient(90deg, #2ea043, #1f6feb);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-
-        .update-btn:active {
+        
+        .btn:active {
             transform: translateY(0);
         }
-
-        .update-btn i {
-            font-size: 1.6rem;
+        
+        .btn i {
+            font-size: 1.2rem;
         }
-
-        .progress-container {
-            background-color: #0d1117;
-            height: 30px;
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background: rgba(30, 41, 59, 0.8);
             border-radius: 15px;
             overflow: hidden;
-            border: 1px solid #30363d;
-            margin-bottom: 20px;
-            display: none;
-            position: relative;
+            border: 1px solid #475569;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #1f6feb, #2ea043);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+        
+        .panel-header {
+            background: linear-gradient(90deg, #1e293b, #334155);
+            padding: 15px 20px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
+            border-bottom: 1px solid #475569;
         }
-
-        .status-message {
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-            display: none;
-        }
-
-        .status-message.success {
-            background-color: rgba(35, 134, 54, 0.2);
-            border: 1px solid #238636;
-            color: #56d364;
-            display: block;
-        }
-
-        .status-message.error {
-            background-color: rgba(248, 81, 73, 0.2);
-            border: 1px solid #f85149;
-            color: #f85149;
-            display: block;
-        }
-
-        .status-message.info {
-            background-color: rgba(56, 139, 253, 0.2);
-            border: 1px solid #388bfd;
-            color: #58a6ff;
-            display: block;
-        }
-
-        .file-preview {
-            background-color: #0d1117;
-            border-radius: 12px;
-            padding: 25px;
-            border: 1px solid #30363d;
-        }
-
-        .file-preview h4 {
-            color: #58a6ff;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
+        
+        .panel-header h3 {
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .file-preview pre {
-            background-color: #161b22;
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-            max-height: 300px;
-            overflow-y: auto;
-            color: #a5d6ff;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            white-space: pre-wrap;
-        }
-
-        .comment {
-            color: #6e7681;
-        }
-
-        .string {
-            color: #a5d6ff;
-        }
-
-        .keyword {
-            color: #ff7b72;
-            font-weight: bold;
-        }
-
-        .constant {
-            color: #79c0ff;
-        }
-
-        .number {
-            color: #79c0ff;
-        }
-
-        .instructions {
-            background-color: #161b22;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            border: 1px solid #30363d;
-        }
-
-        .instructions h3 {
-            color: #58a6ff;
-            margin-bottom: 20px;
-            font-size: 1.6rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instruction-content {
-            color: #8b949e;
-            line-height: 1.6;
-        }
-
-        .instruction-content p {
-            margin-bottom: 15px;
-        }
-
-        .instruction-content ul {
-            padding-right: 20px;
-            margin-bottom: 20px;
-        }
-
-        .instruction-content li {
-            margin-bottom: 10px;
-        }
-
-        .instruction-content a {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-
-        .instruction-content a:hover {
-            text-decoration: underline;
-        }
-
-        .instruction-content strong {
-            color: #c9d1d9;
-        }
-
-        .note-box {
-            background-color: rgba(31, 111, 235, 0.1);
-            border: 1px solid #1f6feb;
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .note-box i {
-            color: #58a6ff;
-            font-size: 1.8rem;
-            margin-top: 5px;
-        }
-
-        .note-content h4 {
-            color: #58a6ff;
-            margin-bottom: 10px;
             font-size: 1.3rem;
         }
-
-        .note-content p {
-            color: #8b949e;
-            line-height: 1.6;
+        
+        .panel-header i {
+            color: #60a5fa;
         }
-
-        .footer {
-            background-color: #0d1117;
-            padding: 25px 30px;
-            border-top: 1px solid #30363d;
-            text-align: center;
+        
+        .panel-content {
+            padding: 0;
+            height: 500px;
+            overflow: hidden;
         }
-
-        .footer p {
-            color: #8b949e;
-            margin-bottom: 20px;
+        
+        .code-editor {
+            height: 100%;
+            width: 100%;
         }
-
-        .footer-links {
+        
+        .CodeMirror {
+            height: 100% !important;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .output-panel {
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
+            flex-direction: column;
         }
-
-        .footer-links a {
-            color: #58a6ff;
-            text-decoration: none;
+        
+        .output-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #0f172a;
+        }
+        
+        #output {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        
+        .output-line {
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        
+        .output-line.info {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .output-line.success {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid #22c55e;
+        }
+        
+        .output-line.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+        }
+        
+        .output-line.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .status-bar {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid #475569;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-            transition: all 0.3s;
+            gap: 10px;
         }
-
-        .footer-links a:hover {
-            background-color: #161b22;
-            border-color: #58a6ff;
+        
+        .status-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        
+        .status-value {
+            font-weight: 600;
+            color: #e2e8f0;
         }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-            }
-            
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .content {
-                padding: 20px;
-            }
-            
-            .info-box {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-            
-            .stats-box {
-                flex-direction: column;
-            }
-            
-            .file-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            
-            .update-btn {
-                padding: 16px 25px;
-                font-size: 1.2rem;
-            }
-            
-            .footer-links {
-                flex-direction: column;
-                gap: 15px;
-            }
+        
+        .status-value.success {
+            color: #34d399;
         }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 1.5rem;
-            }
-            
-            .info-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 2rem;
-            }
-            
-            .stat-value {
-                font-size: 2rem;
-            }
-            
-            .update-btn {
-                padding: 14px 20px;
-                font-size: 1.1rem;
-            }
+        
+        .status-value.error {
+            color: #f87171;
+        }
+        
+        .status-value.warning {
+            color: #fbbf24;
+        }
+        
+        .file-info {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border: 1px solid #475569;
+        }
+        
+        .file-info h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #60a5fa;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+        }
+        
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+            word-break: break-all;
+        }
+        
+        .info-value a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        
+        .info-value a:hover {
+            text-decoration: underline;
+        }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loader.active {
+            display: block;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(59, 130, 246, 0.3);
+            border-top: 5px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #475569;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            background: linear-gradient(90deg, #1e293b, #334155);
+            padding: 20px;
+            border-bottom: 1px solid #475569;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #475569;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-btn:hover {
+            color: #e2e8f0;
+        }
+        
+        .error-details {
+            background: rgba(239, 68, 68, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ef4444;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .success-message {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .success-message i {
+            font-size: 4rem;
+            color: #34d399;
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #94a3b8;
+            border-top: 1px solid #475569;
+        }
+        
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        .highlight {
+            background: rgba(245, 158, 11, 0.2);
+            padding: 2px 4px;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1><i class="fab fa-github"></i> نظام تحديث الملفات التلقائي</h1>
-            <p>تحديث الملفات من GitHub مباشرةً</p>
+            <h1><i class="fab fa-python"></i> محرر وتشغيل Python من GitHub</h1>
+            <p>قم بتحميل وتشغيل كود Python مباشرة من GitHub بدون حاجة للتحميل أو التثبيت. فقط انقر وابدأ البرمجة!</p>
+        </div>
+        
+        <div class="controls">
+            <button id="loadBtn" class="btn btn-primary">
+                <i class="fas fa-download"></i> تحميل الكود من GitHub
+            </button>
+            <button id="runBtn" class="btn btn-secondary" disabled>
+                <i class="fas fa-play"></i> تشغيل الكود
+            </button>
+            <button id="stopBtn" class="btn btn-danger" disabled>
+                <i class="fas fa-stop"></i> إيقاف التشغيل
+            </button>
+            <button id="clearBtn" class="btn">
+                <i class="fas fa-broom"></i> مسح النتائج
+            </button>
+            <button id="editBtn" class="btn">
+                <i class="fas fa-edit"></i> تفعيل التعديل
+            </button>
         </div>
         
         <div class="content">
-            <div class="info-box">
-                <div class="info-icon">
-                    <i class="fas fa-sync-alt"></i>
+            <div class="panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-code"></i> محرر الكود</h3>
+                    <span id="editorStatus" class="status-value warning">بانتظار التحميل</span>
                 </div>
-                <div class="info-content">
-                    <h2>كيف يعمل النظام؟</h2>
-                    <p>يقوم هذا النظام بتنزيل وتحديث ملف <code>Bot.py</code> تلقائياً من مستودع GitHub المحدد عند كل نقرة على الزر.</p>
-                    <p>الملف المحمّل سيتم حفظه بجانب هذا الموقع على GitHub Pages.</p>
-                </div>
-            </div>
-            
-            <div class="stats-box">
-                <div class="stat-item">
-                    <div class="stat-value" id="downloadCount">0</div>
-                    <div class="stat-label">مرات التحميل</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="lastUpdate">لم يتم بعد</div>
-                    <div class="stat-label">آخر تحديث</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="fileStatus">غير محمل</div>
-                    <div class="stat-label">حالة الملف</div>
+                <div class="panel-content">
+                    <div id="codeEditor" class="code-editor"></div>
                 </div>
             </div>
             
-            <div class="file-details">
-                <div class="file-header">
-                    <h3><i class="fab fa-python"></i> ملف Bot.py</h3>
-                    <span class="file-source">مصدر الملف: <a href="https://github.com/Abdslim777/Abdh/blob/main/Bot.py" target="_blank">مستودع Abdh</a></span>
+            <div class="panel output-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-terminal"></i> نافذة النتائج</h3>
+                    <span id="outputStatus" class="status-value info">جاهز</span>
+                </div>
+                <div class="panel-content">
+                    <div class="output-content" id="output">
+                        <div class="output-line info">
+                            <i class="fas fa-info-circle"></i> مرحباً! هذا المحرر يتيح لك تحميل وتشغيل كود Python مباشرة من GitHub.
+                        </div>
+                        <div class="output-line info">
+                            <i class="fas fa-info-circle"></i> انقر على زر "تحميل الكود من GitHub" لبدء العمل.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="loader" id="loader">
+            <div class="spinner"></div>
+            <p>جاري تحميل الكود من GitHub...</p>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <i class="fas fa-circle" id="connectionStatusIcon" style="color: #fbbf24;"></i>
+                <div>
+                    <div class="status-label">حالة الاتصال</div>
+                    <div id="connectionStatus" class="status-value warning">غير متصل</div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <i class="fas fa-code"></i>
+                <div>
+                    <div class="status-label">أسطر الكود</div>
+                    <div id="linesCount" class="status-value">0</div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <i class="fas fa-bolt"></i>
+                <div>
+                    <div class="status-label">حالة التشغيل</div>
+                    <div id="executionStatus" class="status-value info">متوقف</div>
+                </div>
+            </div>
+            
+            <div class="status-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <div class="status-label">آخر تحديث</div>
+                    <div id="lastUpdate" class="status-value">لم يتم بعد</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="file-info">
+            <h4><i class="fas fa-info-circle"></i> معلومات الملف</h4>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">المصدر</div>
+                    <div class="info-value">
+                        <a href="https://github.com/Abdslim777/Abdh/blob/main/Bot.py" target="_blank">
+                            <i class="fab fa-github"></i> GitHub - ملف Bot.py
+                        </a>
+                    </div>
                 </div>
                 
-                <div class="file-content">
-                    <div class="file-meta">
-                        <div class="meta-item">
-                            <span class="meta-label">الموقع المستهدف:</span>
-                            <span class="meta-value">نفس دليل GitHub Pages</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">آخر تعديل:</span>
-                            <span class="meta-value" id="fileLastModified">غير معروف</span>
-                        </div>
-                        <div class="meta-item">
-                            <span class="meta-label">حجم الملف:</span>
-                            <span class="meta-value" id="fileSize">غير معروف</span>
-                        </div>
-                    </div>
-                    
-                    <div class="action-section">
-                        <button id="updateBtn" class="update-btn">
-                            <i class="fas fa-download"></i> تحديث/تحميل الملف الآن
-                        </button>
-                        
-                        <div class="progress-container" id="progressContainer">
-                            <div class="progress-bar" id="progressBar"></div>
-                            <span class="progress-text" id="progressText">0%</span>
-                        </div>
-                        
-                        <div id="statusMessage" class="status-message"></div>
-                    </div>
-                    
-                    <div class="file-preview">
-                        <h4><i class="fas fa-code"></i> معاينة الملف (الأسطر الأولى)</h4>
-                        <pre id="filePreview">سيظهر محتوى الملف هنا بعد التحميل...</pre>
-                    </div>
+                <div class="info-item">
+                    <div class="info-label">المستخدم</div>
+                    <div class="info-value">Abdslim777</div>
                 </div>
-            </div>
-            
-            <div class="instructions">
-                <h3><i class="fas fa-info-circle"></i> معلومات تقنية</h3>
-                <div class="instruction-content">
-                    <p>هذا الموقع مصمم للعمل على <strong>GitHub Pages</strong> ويقوم بالمهام التالية:</p>
-                    <ul>
-                        <li>تحميل ملف <code>Bot.py</code> من <a href="https://github.com/Abdslim777/Abdh/blob/main/Bot.py" target="_blank">هذا الرابط</a> عند كل نقرة</li>
-                        <li>تحديث الملف محلياً على نفس مستودع GitHub Pages</li>
-                        <li>عرض إحصائيات التحديث والتاريخ</li>
-                        <li>توفير معاينة للمحتوى المحمّل</li>
-                    </ul>
-                    <p><strong>ملاحظة:</strong> للحصول على وظيفة التحديث الكاملة مع حفظ الملف على GitHub، يمكن إضافة سكريبت GitHub Actions.</p>
+                
+                <div class="info-item">
+                    <div class="info-label">المستودع</div>
+                    <div class="info-value">Abdh</div>
                 </div>
-            </div>
-            
-            <div class="note-box">
-                <i class="fas fa-lightbulb"></i>
-                <div class="note-content">
-                    <h4>ميزات النظام</h4>
-                    <p>1. يحتفظ بعدد مرات التحميل حتى بعد إغلاق المتصفح<br>
-                       2. يعرض آخر وقت تحديث للملف<br>
-                       3. يوفر معاينة للملف مع تمييز بناء الجملة<br>
-                       4. يعرض تقدم التحميل بشكل مرئي<br>
-                       5. متوافق مع جميع الأجهزة والشاشات</p>
+                
+                <div class="info-item">
+                    <div class="info-label">المسار</div>
+                    <div class="info-value">/main/Bot.py</div>
                 </div>
             </div>
         </div>
         
         <div class="footer">
-            <p>تم التطوير للعمل على GitHub Pages | يتم التحديث عند كل نقرة</p>
-            <div class="footer-links">
-                <a href="https://github.com/Abdslim777/Abdh" target="_blank"><i class="fab fa-github"></i> المستودع المصدر</a>
-                <a href="#" id="viewFileLink" target="_blank"><i class="fas fa-file-code"></i> عرض الملف المحلي</a>
-                <a href="#" id="downloadDirectLink"><i class="fas fa-download"></i> تحميل مباشر</a>
+            <p>تم التطوير باستخدام Pyodide لتشغيل Python في المتصفح | 
+               <a href="https://github.com/Abdslim777/Abdh" target="_blank">عرض المستودع الأصلي على GitHub</a>
+            </p>
+            <p>لا يتم حفظ أو تحميل أي ملفات على جهازك - كل شيء يعمل في المتصفح!</p>
+        </div>
+    </div>
+    
+    <!-- Modal للرسائل -->
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> تنبيه</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- محتوى ديناميكي -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="modalOkBtn">موافق</button>
             </div>
         </div>
     </div>
     
+    <!-- مكتبات JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/comment/comment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // عناصر DOM
-            const updateBtn = document.getElementById('updateBtn');
-            const progressContainer = document.getElementById('progressContainer');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            const statusMessage = document.getElementById('statusMessage');
-            const downloadCountElement = document.getElementById('downloadCount');
-            const lastUpdateElement = document.getElementById('lastUpdate');
-            const fileStatusElement = document.getElementById('fileStatus');
-            const fileLastModifiedElement = document.getElementById('fileLastModified');
-            const fileSizeElement = document.getElementById('fileSize');
-            const filePreviewElement = document.getElementById('filePreview');
-            const viewFileLink = document.getElementById('viewFileLink');
-            const downloadDirectLink = document.getElementById('downloadDirectLink');
+        // المتغيرات العامة
+        let pyodide = null;
+        let editor = null;
+        let isRunning = false;
+        let isEditingEnabled = false;
+        let originalCode = '';
+        const GITHUB_URL = 'https://raw.githubusercontent.com/Abdslim777/Abdh/main/Bot.py';
+        
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', async function() {
+            // تهيئة محرر الكود
+            initCodeEditor();
             
-            // متغيرات التطبيق
-            let downloadCount = localStorage.getItem('downloadCount') || 0;
-            let lastUpdateTime = localStorage.getItem('lastUpdateTime') || null;
-            
-            // رابط الملف على GitHub
-            const GITHUB_FILE_URL = 'https://raw.githubusercontent.com/Abdslim777/Abdh/main/Bot.py';
-            const LOCAL_FILE_NAME = 'Bot.py';
-            
-            // تهيئة الصفحة
-            function initPage() {
-                // تحديث الإحصائيات
-                downloadCountElement.textContent = downloadCount;
-                
-                if (lastUpdateTime) {
-                    const date = new Date(lastUpdateTime);
-                    lastUpdateElement.textContent = date.toLocaleString('ar-EG');
-                }
-                
-                // محاولة تحميل بيانات الملف المحلي (إن وجد)
-                checkLocalFile();
-                
-                // إعداد الروابط
-                viewFileLink.href = LOCAL_FILE_NAME;
-                downloadDirectLink.href = GITHUB_FILE_URL;
-                downloadDirectLink.download = LOCAL_FILE_NAME;
-                
-                // إظهار رسالة ترحيبية
-                showStatus('انقر على الزر لتحديث/تحميل ملف Bot.py من GitHub', 'info');
-            }
-            
-            // التحقق من وجود ملف محلي
-            async function checkLocalFile() {
-                try {
-                    const response = await fetch(LOCAL_FILE_NAME);
-                    if (response.ok) {
-                        fileStatusElement.textContent = 'محمل';
-                        fileStatusElement.style.color = '#56d364';
-                        
-                        // الحصول على معلومات الملف
-                        const blob = await response.blob();
-                        fileSizeElement.textContent = formatFileSize(blob.size);
-                        
-                        // معاينة محتوى الملف
-                        const text = await response.text();
-                        showFilePreview(text);
-                        
-                        // الحصول على تاريخ التعديل
-                        const headers = response.headers;
-                        const lastModified = headers.get('last-modified');
-                        if (lastModified) {
-                            fileLastModifiedElement.textContent = new Date(lastModified).toLocaleString('ar-EG');
-                        }
-                    } else {
-                        fileStatusElement.textContent = 'غير محمل';
-                        fileStatusElement.style.color = '#f85149';
-                    }
-                } catch (error) {
-                    console.log('الملف المحلي غير موجود بعد:', error);
-                    fileStatusElement.textContent = 'غير محمل';
-                    fileStatusElement.style.color = '#f85149';
-                }
-            }
-            
-            // تحديث/تحميل الملف
-            async function updateFile() {
-                // إعادة تعليمات الزر والتقدم
-                updateBtn.disabled = true;
-                updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحديث...';
-                progressContainer.style.display = 'block';
-                progressBar.style.width = '0%';
-                progressText.textContent = '0%';
-                
-                try {
-                    showStatus('جاري الاتصال بمستودع GitHub...', 'info');
-                    
-                    // استخدام fetch مع تتبع التقدم
-                    const response = await fetch(GITHUB_FILE_URL);
-                    
-                    if (!response.ok) {
-                        throw new Error(`خطأ في الشبكة: ${response.status}`);
-                    }
-                    
-                    // الحصول على حجم المحتوى
-                    const contentLength = response.headers.get('content-length');
-                    const totalBytes = contentLength ? parseInt(contentLength) : null;
-                    let loadedBytes = 0;
-                    
-                    // قارئ تيار البيانات
-                    const reader = response.body.getReader();
-                    const chunks = [];
-                    
-                    // قراءة البيانات
-                    while (true) {
-                        const { done, value } = await reader.read();
-                        
-                        if (done) break;
-                        
-                        chunks.push(value);
-                        loadedBytes += value.length;
-                        
-                        // تحديث شريط التقدم
-                        if (totalBytes) {
-                            const progress = Math.round((loadedBytes / totalBytes) * 100);
-                            progressBar.style.width = `${progress}%`;
-                            progressText.textContent = `${progress}%`;
-                        } else {
-                            // إذا لم يكن حجم الملف معروفاً، نعرض تقدماً وهمياً
-                            const progress = Math.min(95, loadedBytes / 10000 * 100);
-                            progressBar.style.width = `${progress}%`;
-                            progressText.textContent = `${Math.round(progress)}%`;
-                        }
-                    }
-                    
-                    // تجميع البيانات
-                    const blob = new Blob(chunks);
-                    const text = await blob.text();
-                    
-                    // حفظ الملف محلياً (في ذاكرة المتصفح)
-                    saveFileLocally(text);
-                    
-                    // عرض معاينة للملف
-                    showFilePreview(text);
-                    
-                    // تحديث الإحصائيات
-                    downloadCount++;
-                    downloadCountElement.textContent = downloadCount;
-                    localStorage.setItem('downloadCount', downloadCount);
-                    
-                    lastUpdateTime = new Date().toISOString();
-                    lastUpdateElement.textContent = new Date(lastUpdateTime).toLocaleString('ar-EG');
-                    localStorage.setItem('lastUpdateTime', lastUpdateTime);
-                    
-                    // تحديث معلومات الملف
-                    fileStatusElement.textContent = 'محمل';
-                    fileStatusElement.style.color = '#56d364';
-                    fileSizeElement.textContent = formatFileSize(blob.size);
-                    fileLastModifiedElement.textContent = new Date().toLocaleString('ar-EG');
-                    
-                    // إظهار رسالة النجاح
-                    showStatus('تم تحديث الملف بنجاح! تم حفظ نسخة محلية.', 'success');
-                    
-                    // إكمال شريط التقدم
-                    progressBar.style.width = '100%';
-                    progressText.textContent = '100%';
-                    
-                } catch (error) {
-                    console.error('حدث خطأ أثناء التحديث:', error);
-                    showStatus(`حدث خطأ: ${error.message}. حاول مرة أخرى.`, 'error');
-                } finally {
-                    // إعادة تعليمات الزر
-                    setTimeout(() => {
-                        updateBtn.disabled = false;
-                        updateBtn.innerHTML = '<i class="fas fa-download"></i> تحديث/تحميل الملف الآن';
-                        progressContainer.style.display = 'none';
-                    }, 1500);
-                }
-            }
-            
-            // حفظ الملف محلياً (في ذاكرة المتصفح)
-            function saveFileLocally(content) {
-                try {
-                    // إنشاء رابط تحميل
-                    const blob = new Blob([content], { type: 'text/x-python' });
-                    const url = URL.createObjectURL(blob);
-                    
-                    // إنشاء عنصر تحميل
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = LOCAL_FILE_NAME;
-                    a.style.display = 'none';
-                    
-                    document.body.appendChild(a);
-                    a.click();
-                    
-                    // تنظيف
-                    setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }, 100);
-                    
-                    // تخزين في localStorage للمعاينة
-                    localStorage.setItem('lastFileContent', content);
-                    localStorage.setItem('lastFileUpdate', new Date().toISOString());
-                    
-                } catch (error) {
-                    console.error('خطأ في حفظ الملف محلياً:', error);
-                }
-            }
-            
-            // عرض معاينة للملف
-            function showFilePreview(content) {
-                // عرض أول 20 سطر من الملف
-                const lines = content.split('\n').slice(0, 20);
-                const preview = lines.join('\n');
-                
-                if (preview.length < content.length) {
-                    filePreviewElement.innerHTML = highlightPythonSyntax(preview + '\n\n... (المزيد من المحتوى)');
-                } else {
-                    filePreviewElement.innerHTML = highlightPythonSyntax(preview);
-                }
-            }
-            
-            // تمييز بناء الجملة لبايثون
-            function highlightPythonSyntax(code) {
-                return code
-                    .replace(/(#.*)/g, '<span class="comment">$1</span>')
-                    .replace(/(\"\"\"[\s\S]*?\"\"\"|''''[\s\S]*?'''|"[\s\S]*?"|'[\s\S]*?')/g, '<span class="string">$1</span>')
-                    .replace(/\b(def|class|if|else|elif|for|while|return|import|from|as|try|except|finally|with)\b/g, '<span class="keyword">$1</span>')
-                    .replace(/\b(True|False|None)\b/g, '<span class="constant">$1</span>')
-                    .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
-            }
-            
-            // تنسيق حجم الملف
-            function formatFileSize(bytes) {
-                if (!bytes || bytes === 0) return 'غير معروف';
-                
-                const k = 1024;
-                const sizes = ['بايت', 'كيلوبايت', 'ميجابايت', 'جيجابايت'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-            }
-            
-            // عرض رسالة الحالة
-            function showStatus(message, type = 'info') {
-                statusMessage.textContent = message;
-                statusMessage.className = `status-message ${type}`;
-                
-                // إخفاء الرسالة بعد 5 ثوانٍ (ما عدا الأخطاء)
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        statusMessage.style.display = 'none';
-                    }, 5000);
-                }
-            }
-            
-            // إعداد أحداث المستخدم
-            function setupEventListeners() {
-                // حدث النقر على زر التحديث
-                updateBtn.addEventListener('click', updateFile);
-                
-                // حدث لرابط التحميل المباشر
-                downloadDirectLink.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    updateFile();
-                });
-                
-                // حدث لرابط عرض الملف المحلي
-                viewFileLink.addEventListener('click', function(e) {
-                    if (localStorage.getItem('lastFileContent')) {
-                        // فتح نافذة جديدة لعرض المحتوى
-                        const newWindow = window.open();
-                        newWindow.document.write(`
-                            <!DOCTYPE html>
-                            <html>
-                            <head>
-                                <title>معاينة Bot.py</title>
-                                <style>
-                                    body { background: #0d1117; color: #c9d1d9; padding: 20px; }
-                                    pre { background: #161b22; padding: 20px; border-radius: 10px; }
-                                </style>
-                            </head>
-                            <body>
-                                <h2>محتوى ملف Bot.py</h2>
-                                <pre>${localStorage.getItem('lastFileContent')}</pre>
-                            </body>
-                            </html>
-                        `);
-                    } else {
-                        e.preventDefault();
-                        showStatus('لم يتم تحميل الملف بعد. الرجاء النقر على زر التحديث أولاً.', 'error');
-                    }
-                });
-                
-                // تأثيرات للزر
-                updateBtn.addEventListener('mousedown', function() {
-                    this.style.transform = 'scale(0.98)';
-                });
-                
-                updateBtn.addEventListener('mouseup', function() {
-                    this.style.transform = 'translateY(-3px)';
-                });
-            }
-            
-            // بدء تشغيل التطبيق
-            initPage();
+            // إعداد الأزرار والأحداث
             setupEventListeners();
+            
+            // محاولة تهيئة Pyodide
+            await initPyodide();
+            
+            // تحميل الكود تلقائياً بعد التهيئة
+            setTimeout(() => {
+                loadCodeFromGitHub();
+            }, 1000);
         });
+        
+        // تهيئة محرر الكود
+        function initCodeEditor() {
+            editor = CodeMirror(document.getElementById('codeEditor'), {
+                mode: 'python',
+                theme: 'monokai',
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                readOnly: true,
+                value: '# انقر على زر "تحميل الكود من GitHub" لبدء العمل\n# أو انقر على "تفعيل التعديل" لكتابة كودك الخاص\n\nprint("مرحباً! قم بتحميل الكود أو ابدأ بالكتابة.")'
+            });
+            
+            // تحديث عدد الأسطر
+            updateLinesCount();
+            editor.on('change', updateLinesCount);
+        }
+        
+        // إعداد أحداث المستخدم
+        function setupEventListeners() {
+            // زر تحميل الكود
+            document.getElementById('loadBtn').addEventListener('click', loadCodeFromGitHub);
+            
+            // زر تشغيل الكود
+            document.getElementById('runBtn').addEventListener('click', runPythonCode);
+            
+            // زر إيقاف التشغيل
+            document.getElementById('stopBtn').addEventListener('click', stopExecution);
+            
+            // زر مسح النتائج
+            document.getElementById('clearBtn').addEventListener('click', clearOutput);
+            
+            // زر تفعيل التعديل
+            document.getElementById('editBtn').addEventListener('click', toggleEditing);
+            
+            // زر إغلاق المودال
+            document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+            document.getElementById('modalOkBtn').addEventListener('click', closeModal);
+            
+            // تحديث حجم المحرر عند تغيير حجم النافذة
+            window.addEventListener('resize', function() {
+                if (editor) {
+                    editor.refresh();
+                }
+            });
+        }
+        
+        // تهيئة Pyodide لتشغيل Python
+        async function initPyodide() {
+            try {
+                updateStatus('connectionStatus', 'جاري التهيئة...', 'warning');
+                updateStatusIcon('connectionStatusIcon', 'warning');
+                
+                outputMessage('جاري تهيئة بيئة Python... قد يستغرق هذا بضع لحظات.', 'info');
+                
+                // تحميل Pyodide
+                pyodide = await loadPyodide({
+                    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.23.4/full/"
+                });
+                
+                // تثبيت حزم Python مبدئية
+                await pyodide.loadPackage(['micropip']);
+                
+                updateStatus('connectionStatus', 'متصل', 'success');
+                updateStatusIcon('connectionStatusIcon', 'success');
+                outputMessage('✅ تم تهيئة بيئة Python بنجاح! جاهز للتشغيل.', 'success');
+                
+                // تفعيل زر التشغيل
+                document.getElementById('runBtn').disabled = false;
+                
+            } catch (error) {
+                console.error('خطأ في تهيئة Pyodide:', error);
+                updateStatus('connectionStatus', 'فشل التهيئة', 'error');
+                updateStatusIcon('connectionStatusIcon', 'error');
+                outputMessage(`❌ خطأ في تهيئة بيئة Python: ${error.message}`, 'error');
+                
+                showModal('خطأ في التهيئة', 
+                    'فشل في تهيئة بيئة Python. تأكد من اتصالك بالإنترنت وحاول تحديث الصفحة.<br><br>' +
+                    'تفاصيل الخطأ:<br>' +
+                    `<div class="error-details">${error.message}</div>`
+                );
+            }
+        }
+        
+        // تحميل الكود من GitHub
+        async function loadCodeFromGitHub() {
+            if (!pyodide) {
+                outputMessage('❌ بيئة Python غير جاهزة بعد. انتظر قليلاً...', 'error');
+                return;
+            }
+            
+            // إظهار مؤشر التحميل
+            document.getElementById('loader').classList.add('active');
+            updateStatus('editorStatus', 'جاري التحميل...', 'warning');
+            document.getElementById('loadBtn').disabled = true;
+            
+            try {
+                outputMessage('🔗 جاري الاتصال بـ GitHub...', 'info');
+                
+                // تحميل الكود باستخدام fetch
+                const response = await fetch(GITHUB_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`فشل في تحميل الملف: ${response.status} ${response.statusText}`);
+                }
+                
+                const code = await response.text();
+                originalCode = code;
+                
+                // تحديث المحرر
+                editor.setValue(code);
+                editor.setOption('readOnly', true);
+                isEditingEnabled = false;
+                document.getElementById('editBtn').innerHTML = '<i class="fas fa-edit"></i> تفعيل التعديل';
+                
+                // تحديث الواجهة
+                updateLinesCount();
+                updateStatus('editorStatus', 'محمل', 'success');
+                outputMessage(`✅ تم تحميل الكود بنجاح! (${code.split('\n').length} سطر)`, 'success');
+                
+                // تحديث وقت التحميل
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('ar-EG') + ' - ' + now.toLocaleDateString('ar-EG');
+                
+                // تحليل وتفسير الكود
+                analyzePythonCode(code);
+                
+            } catch (error) {
+                console.error('خطأ في تحميل الكود:', error);
+                updateStatus('editorStatus', 'فشل التحميل', 'error');
+                outputMessage(`❌ خطأ في تحميل الكود: ${error.message}`, 'error');
+                
+                showModal('خطأ في التحميل', 
+                    'فشل في تحميل الكود من GitHub.<br><br>' +
+                    'الأسباب المحتملة:<br>' +
+                    '1. الملف غير موجود أو تم نقله<br>' +
+                    '2. مشكلة في اتصال الإنترنت<br>' +
+                    '3. قيود على المستودع<br><br>' +
+                    'تفاصيل الخطأ:<br>' +
+                    `<div class="error-details">${error.message}</div>`
+                );
+                
+            } finally {
+                // إخفاء مؤشر التحميل
+                document.getElementById('loader').classList.remove('active');
+                document.getElementById('loadBtn').disabled = false;
+            }
+        }
+        
+        // تحليل وتفسير الكود
+        function analyzePythonCode(code) {
+            try {
+                const lines = code.split('\n');
+                let imports = [];
+                let functions = [];
+                let classes = [];
+                let variables = [];
+                
+                lines.forEach((line, index) => {
+                    const trimmedLine = line.trim();
+                    
+                    // اكتشاف الاستيرادات
+                    if (trimmedLine.startsWith('import ') || trimmedLine.startsWith('from ')) {
+                        imports.push({
+                            line: index + 1,
+                            content: trimmedLine
+                        });
+                    }
+                    
+                    // اكتشاف الدوال
+                    if (trimmedLine.startsWith('def ')) {
+                        const funcName = trimmedLine.substring(4, trimmedLine.indexOf('('));
+                        functions.push({
+                            line: index + 1,
+                            name: funcName,
+                            content: trimmedLine
+                        });
+                    }
+                    
+                    // اكتشاف الكلاسات
+                    if (trimmedLine.startsWith('class ')) {
+                        const className = trimmedLine.substring(6, trimmedLine.indexOf(':'));
+                        classes.push({
+                            line: index + 1,
+                            name: className,
+                            content: trimmedLine
+                        });
+                    }
+                    
+                    // اكتشاف المتغيرات المهمة
+                    if (trimmedLine.includes('=') && !trimmedLine.includes('def ') && !trimmedLine.includes('class ')) {
+                        const varName = trimmedLine.substring(0, trimmedLine.indexOf('=')).trim();
+                        if (varName && varName.length > 0) {
+                            variables.push({
+                                line: index + 1,
+                                name: varName,
+                                content: trimmedLine
+                            });
+                        }
+                    }
+                });
+                
+                // عرض المعلومات في نافذة النتائج
+                outputMessage('🔍 تحليل الكود:', 'info');
+                
+                if (imports.length > 0) {
+                    outputMessage(`📦 المكتبات المستوردة (${imports.length}):`, 'info');
+                    imports.forEach(imp => {
+                        outputMessage(`   السطر ${imp.line}: ${imp.content}`, 'info');
+                    });
+                }
+                
+                if (functions.length > 0) {
+                    outputMessage(`⚡ الدوال المعرفة (${functions.length}):`, 'info');
+                    functions.forEach(func => {
+                        outputMessage(`   السطر ${func.line}: ${func.content}`, 'info');
+                    });
+                }
+                
+                if (classes.length > 0) {
+                    outputMessage(`🏗️  الكلاسات (${classes.length}):`, 'info');
+                    classes.forEach(cls => {
+                        outputMessage(`   السطر ${cls.line}: ${cls.content}`, 'info');
+                    });
+                }
+                
+            } catch (error) {
+                console.error('خطأ في تحليل الكود:', error);
+            }
+        }
+        
+        // تشغيل كود Python
+        async function runPythonCode() {
+            if (!pyodide || isRunning) return;
+            
+            const code = editor.getValue();
+            
+            if (!code || code.trim().length === 0) {
+                outputMessage('❌ لا يوجد كود لتشغيله!', 'error');
+                return;
+            }
+            
+            // تنظيف نافذة النتائج
+            clearOutput();
+            outputMessage('🚀 جاري تشغيل الكود...', 'info');
+            
+            // تحديث حالة التشغيل
+            isRunning = true;
+            updateStatus('executionStatus', 'جاري التشغيل', 'warning');
+            updateStatus('outputStatus', 'جاري التشغيل', 'warning');
+            document.getElementById('runBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            try {
+                // إعداد التقاط الإخراج
+                let outputBuffer = [];
+                
+                // دالة لالتقاط print
+                pyodide.runPython(`
+import sys
+import io
+from js import outputBuffer
+
+class OutputCatcher(io.StringIO):
+    def write(self, text):
+        outputBuffer.append(text)
+        return len(text)
+
+sys.stdout = OutputCatcher()
+sys.stderr = OutputCatcher()
+                `);
+                
+                // ربط buffer مع JavaScript
+                pyodide.globals.set('outputBuffer', outputBuffer);
+                
+                // تنفيذ الكود
+                await pyodide.runPythonAsync(code);
+                
+                // عرض الإخراج
+                if (outputBuffer.length > 0) {
+                    outputMessage('📤 إخراج البرنامج:', 'success');
+                    outputBuffer.forEach(line => {
+                        if (line.trim().length > 0) {
+                            outputMessage(line, 'success');
+                        }
+                    });
+                } else {
+                    outputMessage('✅ تم تنفيذ الكود بنجاح بدون إخراج.', 'success');
+                }
+                
+                updateStatus('executionStatus', 'تم التنفيذ', 'success');
+                updateStatus('outputStatus', 'جاهز', 'success');
+                
+            } catch (error) {
+                console.error('خطأ في تشغيل الكود:', error);
+                
+                // عرض الخطأ بشكل منظم
+                const errorMsg = error.toString();
+                outputMessage('❌ خطأ أثناء التشغيل:', 'error');
+                
+                if (errorMsg.includes('Traceback')) {
+                    // تقسيم تتبع الخطأ
+                    const lines = errorMsg.split('\n');
+                    lines.forEach(line => {
+                        if (line.trim().length > 0) {
+                            outputMessage(line, 'error');
+                        }
+                    });
+                } else {
+                    outputMessage(errorMsg, 'error');
+                }
+                
+                // اقتراحات لحل المشكلة
+                outputMessage('💡 اقتراحات:', 'warning');
+                if (errorMsg.includes('ModuleNotFoundError')) {
+                    const moduleName = errorMsg.match(/ModuleNotFoundError: No module named '(\w+)'/);
+                    if (moduleName) {
+                        outputMessage(`   - المحاولة تثبيت المكتبة: ${moduleName[1]}`, 'warning');
+                        outputMessage(`   - استخدم: import micropip; await micropip.install('${moduleName[1]}')`, 'warning');
+                    }
+                } else if (errorMsg.includes('SyntaxError')) {
+                    outputMessage('   - تحقق من الأخطاء الإملائية في الكود', 'warning');
+                    outputMessage('   - تأكد من الأقواس والفواصل', 'warning');
+                } else if (errorMsg.includes('NameError')) {
+                    outputMessage('   - تأكد من تعريف المتغيرات قبل استخدامها', 'warning');
+                }
+                
+                updateStatus('executionStatus', 'فشل التشغيل', 'error');
+                updateStatus('outputStatus', 'خطأ', 'error');
+                
+            } finally {
+                // إعادة تعليمات التشغيل
+                isRunning = false;
+                document.getElementById('runBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                
+                // إعادة stdout و stderr
+                try {
+                    pyodide.runPython(`
+import sys
+sys.stdout = sys.__stdout__
+sys.stderr = sys.__stderr__
+                    `);
+                } catch (e) {
+                    console.error('خطأ في استعادة الإخراج:', e);
+                }
+            }
+        }
+        
+        // إيقاف التنفيذ
+        function stopExecution() {
+            if (!isRunning) return;
+            
+            outputMessage('⏹️  تم إيقاف التشغيل بواسطة المستخدم.', 'warning');
+            updateStatus('executionStatus', 'متوقف', 'warning');
+            updateStatus('outputStatus', 'جاهز', 'info');
+            
+            // إعادة تعليمات التشغيل
+            isRunning = false;
+            document.getElementById('runBtn').disabled = false;
+            document.getElementById('stopBtn').disabled = true;
+        }
+        
+        // تفعيل/تعطيل التعديل
+        function toggleEditing() {
+            if (isEditingEnabled) {
+                // تعطيل التعديل
+                editor.setOption('readOnly', true);
+                isEditingEnabled = false;
+                document.getElementById('editBtn').innerHTML = '<i class="fas fa-edit"></i> تفعيل التعديل';
+                outputMessage('🔒 تم تعطيل وضع التعديل.', 'info');
+            } else {
+                // تفعيل التعديل
+                editor.setOption('readOnly', false);
+                isEditingEnabled = true;
+                document.getElementById('editBtn').innerHTML = '<i class="fas fa-lock"></i> تعطيل التعديل';
+                outputMessage('✏️  تم تفعيل وضع التعديل. يمكنك الآن تعديل الكود.', 'success');
+            }
+        }
+        
+        // مسح نافذة النتائج
+        function clearOutput() {
+            document.getElementById('output').innerHTML = `
+                <div class="output-line info">
+                    <i class="fas fa-info-circle"></i> نافذة النتائج جاهزة...
+                </div>
+            `;
+            updateStatus('outputStatus', 'جاهز', 'success');
+        }
+        
+        // تحديث عدد الأسطر
+        function updateLinesCount() {
+            const lines = editor.lineCount();
+            document.getElementById('linesCount').textContent = lines;
+        }
+        
+        // إضافة رسالة للناتج
+        function outputMessage(message, type = 'info') {
+            const outputDiv = document.getElementById('output');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `output-line ${type}`;
+            
+            // إضافة أيقونة مناسبة
+            let icon = 'fas fa-info-circle';
+            if (type === 'success') icon = 'fas fa-check-circle';
+            if (type === 'error') icon = 'fas fa-exclamation-circle';
+            if (type === 'warning') icon = 'fas fa-exclamation-triangle';
+            
+            messageDiv.innerHTML = `<i class="${icon}"></i> ${message}`;
+            outputDiv.appendChild(messageDiv);
+            
+            // التمرير للأسفل
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+        
+        // تحديث حالة العنصر
+        function updateStatus(elementId, text, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = text;
+            element.className = `status-value ${type}`;
+        }
+        
+        // تحديث أيقونة الحالة
+        function updateStatusIcon(elementId, type = 'info') {
+            const element = document.getElementById(elementId);
+            let color = '#3b82f6'; // أزرق - info
+            if (type === 'success') color = '#34d399';
+            if (type === 'error') color = '#ef4444';
+            if (type === 'warning') color = '#fbbf24';
+            element.style.color = color;
+        }
+        
+        // عرض نافذة منبثقة
+        function showModal(title, content) {
+            document.getElementById('modalBody').innerHTML = `
+                <h4>${title}</h4>
+                <div>${content}</div>
+            `;
+            document.getElementById('messageModal').classList.add('active');
+        }
+        
+        // إغلاق النافذة المنبثقة
+        function closeModal() {
+            document.getElementById('messageModal').classList.remove('active');
+        }
+        
+        // دالة مساعدة لتحميل مكتبات Python إضافية
+        window.installPackage = async function(packageName) {
+            if (!pyodide) {
+                outputMessage('❌ بيئة Python غير جاهزة.', 'error');
+                return false;
+            }
+            
+            try {
+                outputMessage(`📦 جاري تثبيت ${packageName}...`, 'info');
+                
+                await pyodide.loadPackage('micropip');
+                const micropip = pyodide.pyimport('micropip');
+                await micropip.install(packageName);
+                
+                outputMessage(`✅ تم تثبيت ${packageName} بنجاح!`, 'success');
+                return true;
+            } catch (error) {
+                outputMessage(`❌ فشل تثبيت ${packageName}: ${error.message}`, 'error');
+                return false;
+            }
+        };
     </script>
 </body>
 </html>
