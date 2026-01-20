@@ -3,277 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رادار المجتمع الاحترافي v11</title>
+    <title>رادار المجتمع المستقر v12</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
-        :root {
-            --bg: #0a0c10;
-            --card: #1c1f26;
-            --primary: #238636;
-            --accent: #58a6ff;
-            --gold: #f0883e;
-            --text: #c9d1d9;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 15px;
-        }
-
-        /* Stats Section */
-        .panel {
-            background: var(--card);
-            border-radius: 12px;
-            border: 1px solid #30363d;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: #0d1117;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border-top: 3px solid var(--accent);
-        }
-
-        .stat-card strong {
-            display: block;
-            font-size: 1.4rem;
-            color: white;
-            margin-top: 5px;
-        }
-
-        /* Live Activity Indicator */
-        .status-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .pulse {
-            width: 12px;
-            height: 12px;
-            background: var(--primary);
-            border-radius: 50%;
-            box-shadow: 0 0 0 rgba(35, 134, 54, 0.4);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(35, 134, 54, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(35, 134, 54, 0); }
-        }
-
-        /* Chat & Logs */
-        .chat-section {
-            background: #0d1117;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-
-        .chat-msgs {
-            height: 250px;
-            overflow-y: auto;
-            padding: 15px;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .msg { background: #1c1f26; padding: 8px 12px; border-radius: 6px; border-left: 3px solid var(--accent); }
-        .msg.system { border-left-color: var(--gold); background: rgba(240, 136, 62, 0.1); }
-
-        .chat-input-box {
-            display: flex;
-            padding: 10px;
-            background: #161b22;
-            gap: 8px;
-        }
-
-        input {
-            flex: 1;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            color: white;
-            padding: 10px;
-            border-radius: 6px;
-        }
-
-        /* Treasures Side */
-        .treasure-panel {
-            background: var(--card);
-            border-radius: 12px;
-            border: 1px solid var(--gold);
-            padding: 15px;
-            height: calc(100vh - 40px);
-            position: sticky;
-            top: 10px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        #foundList {
-            flex: 1;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-
-        .wallet-card {
-            background: #0d1117;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-right: 4px solid var(--gold);
-            font-family: monospace;
-            font-size: 0.85rem;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-        .btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        @media (max-width: 900px) {
-            .container { grid-template-columns: 1fr; }
-            .treasure-panel { position: static; height: 500px; }
-        }
+        :root { --bg: #0a0c10; --card: #1c1f26; --primary: #238636; --gold: #f0883e; }
+        body { background: var(--bg); color: #c9d1d9; font-family: sans-serif; margin: 0; padding: 10px; }
+        .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr 350px; gap: 15px; }
+        .panel { background: var(--card); border-radius: 12px; border: 1px solid #30363d; padding: 20px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; text-align: center; }
+        .stat-card { background: #0d1117; padding: 15px; border-radius: 8px; border-top: 3px solid #58a6ff; }
+        .stat-card b { display: block; font-size: 1.3rem; color: white; }
+        .chat-box { background: #0d1117; height: 200px; overflow-y: auto; padding: 10px; border-radius: 8px; border: 1px solid #30363d; margin-top: 15px; font-size: 0.85rem; }
+        .treasure-list { background: rgba(240, 136, 62, 0.05); border: 1px solid var(--gold); border-radius: 12px; height: 500px; overflow-y: auto; padding: 15px; }
+        .wallet-item { background: #161b22; padding: 10px; margin-bottom: 8px; border-radius: 6px; border-right: 4px solid var(--gold); font-family: monospace; font-size: 0.8rem; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 5px; width: 100%; cursor: pointer; font-weight: bold; }
+        .pulse { width: 10px; height: 10px; background: #238636; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="main-content">
+    <div class="main">
         <div class="panel">
-            <div class="status-header">
-                <div class="pulse" id="statusDot"></div>
-                <h2 style="margin:0; font-size: 1.2rem;">رادار الاستكشاف الجماعي v11</h2>
-                <span id="scanStatus" style="font-size: 0.8rem; color: #8b949e; margin-right: auto;">جاري التحميل...</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3>📡 الرادار الجماعي الذكي</h3>
+                <span id="syncStatus" style="font-size: 0.7rem; color: #8b949e;">جاري الاتصال...</span>
+            </div>
+            
+            <div class="stat-grid">
+                <div class="stat-card"><small>المؤشر</small><b id="idx">0</b></div>
+                <div class="stat-card"><small>الملف</small><b id="total">0</b></div>
+                <div class="stat-card" style="border-color:var(--gold)"><small>الكنوز</small><b id="foundCount">0</b></div>
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-card"><small>المؤشر العالمي</small><strong id="idx">0</strong></div>
-                <div class="stat-card"><small>إجمالي الملف</small><strong id="total">0</strong></div>
-                <div class="stat-card" style="border-top-color: var(--gold);"><small>الكنوز</small><strong id="foundCount">0</strong></div>
-            </div>
-
-            <div style="background: #000; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 11px; color: #7d8590; height: 80px; overflow-y: auto;" id="log">
-                > نظام المزامنة السحابية متصل...
-            </div>
-
-            <div class="chat-section">
-                <div style="padding: 10px; background: #161b22; font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid #30363d;">💬 غرفة عمليات المجتمع</div>
-                <div class="chat-msgs" id="chatMsgs"></div>
-                <div class="chat-input-box">
-                    <input type="text" id="chatInput" placeholder="اكتب رسالة..." onkeypress="if(event.key==='Enter') sendChat()">
-                    <button class="btn" onclick="sendChat()">إرسال</button>
-                </div>
+            <button id="btn" class="btn" onclick="toggle()">بدء الفحص اليدوي/الآلي</button>
+            <div class="chat-box" id="msgs"></div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <input type="text" id="chatIn" style="flex:1; background:#0d1117; color:white; border:1px solid #333; padding:8px; border-radius:4px;" placeholder="اكتب هنا...">
+                <button onclick="sendMsg()" class="btn" style="width:70px;">إرسال</button>
             </div>
         </div>
     </div>
 
-    <div class="treasure-panel">
-        <h3 style="margin-top:0; color:var(--gold); display: flex; align-items: center; gap: 8px;">
-            <span>💎</span> الكنوز المكتشفة
-        </h3>
+    <div class="treasure-list">
+        <h4 style="color:var(--gold); margin-top:0;">💎 الكنوز المكتشفة</h4>
         <div id="foundList"></div>
     </div>
 </div>
 
 <script>
-    const config = { databaseURL: "https://blockchain-community-sync-default-rtdb.firebaseio.com/" };
-    firebase.initializeApp(config);
+    // تم استخدام رابط قاعدة بيانات بديلة لضمان الاستقرار
+    const config = { databaseURL: "https://community-scanner-default-rtdb.firebaseio.com/" };
+    if (!firebase.apps.length) firebase.initializeApp(config);
     const db = firebase.database();
 
     let scanning = false;
-    let addrList = [];
-    let curIdx = 0;
-    const myName = "Explorer-" + Math.floor(Math.random() * 999);
+    let addresses = [];
+    let localIdx = parseInt(localStorage.getItem('my_index')) || 0;
+    const name = "Hunter-" + Math.floor(Math.random()*999);
     const RPCs = ['https://eth.llamarpc.com', 'https://bsc-dataseed.binance.org', 'https://polygon-rpc.com'];
 
-    // المزامنة
-    db.ref('global_index').on('value', s => { 
-        curIdx = s.val() || 0; 
-        document.getElementById('idx').innerText = curIdx.toLocaleString();
-        // بدء الفحص تلقائياً بمجرد الحصول على المؤشر وتحميل الملف
-        if(!scanning && addrList.length > 0) startScanning();
+    // مزامنة المؤشر من السحابة
+    db.ref('global_idx').on('value', s => {
+        let cloudIdx = s.val() || 0;
+        // اختيار الرقم الأكبر لضمان عدم الرجوع للبداية
+        localIdx = Math.max(localIdx, cloudIdx);
+        document.getElementById('idx').innerText = localIdx.toLocaleString();
+        saveProgress();
     });
 
-    db.ref('found_wallets').limitToLast(15).on('child_added', s => renderWallet(s.val()));
-    db.ref('chat').limitToLast(20).on('child_added', s => renderChat(s.val()));
+    db.ref('found').limitToLast(10).on('child_added', s => renderW(s.val()));
+    db.ref('chat').limitToLast(20).on('child_added', s => renderM(s.val()));
 
     async function load() {
         try {
             const r = await fetch('32.txt');
-            if(!r.ok) throw new Error();
             const t = await r.text();
-            addrList = t.split(/\s+/).filter(a => ethers.utils.isAddress(a));
-            document.getElementById('total').innerText = addrList.length.toLocaleString();
-            document.getElementById('scanStatus').innerText = "تم تحميل العناوين. جاري بدء الفحص...";
-            if(curIdx > 0) startScanning();
-        } catch(e) { 
-            document.getElementById('log').innerHTML += `<div style="color:#f85149">> خطأ: ملف 32.txt غير موجود.</div>`;
-        }
+            addresses = t.split(/\s+/).filter(a => ethers.utils.isAddress(a.trim()));
+            document.getElementById('total').innerText = addresses.length.toLocaleString();
+            document.getElementById('syncStatus').innerText = "✅ متصل وجاهز";
+            // تشغيل تلقائي
+            setTimeout(() => { if(!scanning) toggle(); }, 2000);
+        } catch(e) { document.getElementById('syncStatus').innerText = "❌ خطأ في الملف"; }
     }
 
-    function startScanning() {
-        scanning = true;
-        document.getElementById('scanStatus').innerText = "نظام الفحص يعمل الآن تلقائياً 🚀";
-        document.getElementById('statusDot').style.background = "var(--primary)";
-        run();
+    function toggle() {
+        scanning = !scanning;
+        document.getElementById('btn').innerText = scanning ? "🛑 إيقاف" : "▶️ استئناف";
+        document.getElementById('btn').style.background = scanning ? "#da3633" : "#238636";
+        if(scanning) run();
     }
 
     async function run() {
-        const BATCH = 30;
-        while(scanning && curIdx < addrList.length) {
-            const chunk = addrList.slice(curIdx, curIdx + BATCH);
-            await Promise.all(chunk.map(async (a) => {
-                const b = await check(a);
+        const BATCH = 25;
+        while(scanning && localIdx < addresses.length) {
+            const batch = addresses.slice(localIdx, localIdx + BATCH);
+            await Promise.all(batch.map(async (a) => {
+                const b = await check(a.trim());
                 if(b) {
-                    const data = { a, b, u: myName, t: new Date().toLocaleTimeString() };
-                    db.ref('found_wallets').push(data);
-                    // تنبيه آلي في الدردشة
-                    db.ref('chat').push({ u: "📡 نظام الرادار", m: `تم اكتشاف كنز جديد بواسطة ${myName}!`, type: 'system' });
+                    db.ref('found').push({ a, b, n: name });
+                    db.ref('chat').push({ n: "🤖 رادار", m: `رصد كنز مع ${name}` });
                 }
             }));
-            curIdx += BATCH;
-            db.ref('global_index').set(curIdx);
-            await new Promise(r => setTimeout(r, 100));
+            localIdx += BATCH;
+            saveProgress();
+            // تحديث السحابة كل دفعتين لتقليل الضغط وضمان المزامنة
+            if(localIdx % 50 === 0) db.ref('global_idx').set(localIdx);
+            await new Promise(r => setTimeout(r, 150));
         }
     }
 
@@ -281,30 +120,33 @@
         try {
             const p = new ethers.providers.JsonRpcProvider(RPCs[Math.floor(Math.random()*RPCs.length)]);
             const b = await p.getBalance(a);
-            return b.gt(0) ? parseFloat(ethers.utils.formatEther(b)).toFixed(5) : null;
+            return b.gt(0) ? ethers.utils.formatEther(b).substring(0,8) : null;
         } catch { return null; }
     }
 
-    function sendChat() {
-        const i = document.getElementById('chatInput');
-        if(!i.value.trim()) return;
-        db.ref('chat').push({ u: myName, m: i.value });
+    function saveProgress() {
+        document.getElementById('idx').innerText = localIdx.toLocaleString();
+        localStorage.setItem('my_index', localIdx);
+    }
+
+    function sendMsg() {
+        const i = document.getElementById('chatIn');
+        if(i.value) db.ref('chat').push({ n: name, m: i.value });
         i.value = "";
     }
 
-    function renderChat(c) {
+    function renderM(c) {
         const d = document.createElement('div');
-        d.className = `msg ${c.type === 'system' ? 'system' : ''}`;
-        d.innerHTML = `<b style="font-size:11px; color:var(--accent)">${c.u}</b><br>${c.m}`;
-        const container = document.getElementById('chatMsgs');
-        container.appendChild(d);
-        container.scrollTop = container.scrollHeight;
+        d.innerHTML = `<small style="color:#58a6ff">${c.n}:</small> ${c.m}`;
+        const box = document.getElementById('msgs');
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
     }
 
-    function renderWallet(w) {
+    function renderW(w) {
         const d = document.createElement('div');
-        d.className = 'wallet-card';
-        d.innerHTML = `<span style="color:var(--gold)">💰 ${w.b} ETH/BNB</span><br><small style="color:#8b949e; word-break:break-all">${w.a}</small>`;
+        d.className = 'wallet-item';
+        d.innerHTML = `<b style="color:var(--gold)">${w.b} ETH/BNB</b><br><small>${w.a}</small>`;
         document.getElementById('foundList').prepend(d);
         document.getElementById('foundCount').innerText = document.getElementById('foundList').childElementCount;
     }
