@@ -3,155 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>رادار المجتمع v13</title>
+    <title>تطبيق الرادار v14</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
-        :root { --bg: #05070a; --card: #12151c; --gold: #f0883e; --blue: #58a6ff; --green: #238636; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: system-ui; overflow-x: hidden; height: 100%; }
-
-        /* الأقسام - ملء الشاشة */
-        section { min-height: 100vh; width: 100vw; padding: 20px; display: flex; flex-direction: column; border-bottom: 1px solid #1f242c; }
-
-        /* اللوحة الرئيسية */
-        .dash-card { background: var(--card); border-radius: 20px; padding: 25px; text-align: center; border: 1px solid #1f242c; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .stat-circle { width: 150px; height: 150px; border: 4px solid var(--blue); border-radius: 50%; margin: 20px auto; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 0 20px rgba(88, 166, 255, 0.2); }
-        .stat-circle big { font-size: 1.8rem; font-weight: 800; }
+        :root { --bg: #080a0f; --card: #151921; --primary: #00d26a; --gold: #ffb100; --blue: #0095ff; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { margin: 0; background: var(--bg); color: white; overflow: hidden; height: 100vh; }
         
-        /* قائمة الكنوز */
-        .treasure-list { flex: 1; overflow-y: auto; padding-top: 10px; }
-        .wallet-item { background: var(--card); border-right: 5px solid var(--gold); padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        /* الحاوية الرئيسية للتنقل بالسحب */
+        .app-wrapper { height: 100vh; overflow-y: auto; scroll-snap-type: y mandatory; }
+        section { height: 100vh; width: 100%; scroll-snap-align: start; padding: 20px; display: flex; flex-direction: column; }
 
-        /* الدردشة */
-        .chat-area { flex: 1; overflow-y: auto; background: #000; border-radius: 15px; padding: 15px; margin-bottom: 15px; }
-        .msg { margin-bottom: 10px; font-size: 0.95rem; line-height: 1.4; }
-        .msg b { color: var(--blue); margin-left: 5px; }
+        /* الشاشة 1: لوحة التحكم */
+        .status-pill { background: rgba(0, 210, 106, 0.1); color: var(--primary); padding: 5px 15px; border-radius: 20px; font-size: 12px; display: inline-block; margin-bottom: 10px; }
+        .main-stat { background: var(--card); border-radius: 30px; padding: 40px 20px; text-align: center; border: 1px solid #2d333b; flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        .counter { font-size: 3rem; font-weight: 900; color: white; text-shadow: 0 0 15px var(--blue); }
+        
+        /* الشاشة 2: الكنوز */
+        .treasure-container { flex: 1; overflow-y: auto; background: #0d1117; border-radius: 15px; padding: 10px; border: 1px solid var(--gold); }
+        .wallet-card { background: #1c2128; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 5px solid var(--gold); }
 
-        .input-group { display: flex; gap: 10px; background: var(--card); padding: 10px; border-radius: 12px; }
-        input { flex: 1; background: transparent; border: none; color: white; outline: none; }
-        .btn { background: var(--green); border: none; color: white; padding: 12px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        /* الشاشة 3: الدردشة */
+        .chat-wrap { flex: 1; background: #000; border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; }
+        #chatBox { flex: 1; overflow-y: auto; padding: 15px; font-size: 14px; }
+        .msg { margin-bottom: 12px; border-radius: 8px; padding: 8px; background: #161b22; }
+        .chat-form { display: flex; gap: 8px; padding: 10px; background: #1c2128; }
+        
+        input { flex: 1; background: #0d1117; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; outline: none; }
+        .btn-send { background: var(--blue); border: none; color: white; padding: 0 20px; border-radius: 8px; font-weight: bold; }
 
-        .hint { font-size: 0.8rem; color: #555; text-align: center; margin-top: 10px; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .nav-hint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #555; pointer-events: none; }
     </style>
 </head>
 <body>
 
-<section id="home">
-    <div class="dash-card">
-        <h2 style="margin:0">📡 رادار المجتمع الموحد</h2>
-        <div class="stat-circle">
-            <small>المؤشر العالمي</small>
-            <big id="idx">0</big>
+<div class="app-wrapper">
+    <section id="screen1">
+        <div class="main-stat">
+            <div id="connectionStatus" class="status-pill">جاري المزامنة...</div>
+            <h2 style="margin:0; font-size: 1rem; color: #8b949e;">المؤشر العالمي للفحص</h2>
+            <div class="counter" id="globalIdx">0</div>
+            <div style="display:flex; justify-content: space-around; margin-top: 30px;">
+                <div><small style="color:#555">المتبقي</small><br><b id="totalCount">0</b></div>
+                <div style="color:var(--gold)"><small style="color:#555">المكتشفات</small><br><b id="foundCount">0</b></div>
+            </div>
+            <div style="margin-top: 30px; font-size: 12px; color: var(--primary);" id="autoInfo">الفحص يعمل تلقائياً الآن ⚡</div>
         </div>
-        <div style="display:flex; justify-content: space-around; margin: 20px 0;">
-            <div><small>الملف</small><br><b id="total">0</b></div>
-            <div style="color:var(--gold)"><small>الكنوز</small><br><b id="foundCount">0</b></div>
-        </div>
-        <div id="status" style="color:var(--green); font-size:0.8rem; margin-bottom:10px;">متصل بالسحابة ✅</div>
-        <p class="hint">اسحب للأعلى لرؤية الكنوز والدردشة 👆</p>
-    </div>
-</section>
+    </section>
 
-<section id="treasures">
-    <h2 style="color:var(--gold)">💎 المحافظ المكتشفة</h2>
-    <div class="treasure-list" id="foundList">
+    <section id="screen2">
+        <h2 style="color:var(--gold); margin-bottom:10px;">💎 الكنوز المكتشفة</h2>
+        <div class="treasure-container" id="treasureList">
+            <p style="text-align:center; color:#555; margin-top:20px;">لم يتم اكتشاف رصيد بعد...</p>
         </div>
-</section>
+    </section>
 
-<section id="community">
-    <h2 style="color:var(--blue)">💬 دردشة الصيادين</h2>
-    <div class="chat-area" id="msgs"></div>
-    <div class="input-group">
-        <input type="text" id="chatIn" placeholder="اكتب رسالة للجميع...">
-        <button class="btn" onclick="sendMsg()">إرسال</button>
-    </div>
-</section>
+    <section id="screen3">
+        <h2 style="color:var(--blue); margin-bottom:10px;">💬 دردشة المجتمع</h2>
+        <div class="chat-wrap">
+            <div id="chatBox"></div>
+            <div class="chat-form">
+                <input type="text" id="chatInput" placeholder="اكتب رسالة...">
+                <button class="btn-send" onclick="sendChat()">إرسال</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="nav-hint">سحب للأعلى للتنقل ↕️</div>
 
 <script>
-    // قاعدة بيانات مجتمعية مستقرة
-    const config = { databaseURL: "https://community-radar-v13-default-rtdb.firebaseio.com/" };
-    if (!firebase.apps.length) firebase.initializeApp(config);
+    // إعدادات القاعدة الجديدة المستقرة
+    const firebaseConfig = { databaseURL: "https://radar-v14-final-default-rtdb.firebaseio.com/" };
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     let addresses = [];
-    let curIdx = 0;
-    const name = "Hunter-" + Math.floor(Math.random() * 999);
-    const RPCs = ['https://eth.llamarpc.com', 'https://bsc-dataseed.binance.org', 'https://polygon-rpc.com'];
+    let currentIdx = 0;
+    const userName = "User-" + Math.floor(Math.random() * 999);
+    const RPCs = ['https://eth.llamarpc.com', 'https://bsc-dataseed.binance.org', 'https://rpc.ankr.com/eth'];
 
-    // مزامنة المؤشر (يعمل في الخلفية دائماً)
+    // مزامنة المؤشر والبيانات
     db.ref('global_idx').on('value', s => {
-        curIdx = s.val() || 0;
-        document.getElementById('idx').innerText = curIdx.toLocaleString();
-        if(addresses.length > 0) startScan();
+        currentIdx = s.val() || 0;
+        document.getElementById('globalIdx').innerText = currentIdx.toLocaleString();
+        if(addresses.length > 0) processBatch();
     });
 
-    // جلب الكنوز السابقة (مزامنة فورية عند الدخول)
-    db.ref('found').on('child_added', s => renderW(s.val()));
+    // جلب الكنوز (مزامنة تاريخية ولحظية)
+    db.ref('found').on('value', s => {
+        const list = document.getElementById('treasureList');
+        list.innerHTML = "";
+        const data = s.val();
+        if(data) {
+            Object.values(data).reverse().forEach(w => {
+                const div = document.createElement('div');
+                div.className = 'wallet-card';
+                div.innerHTML = `<b style="color:var(--gold)">💰 ${w.bal} ETH/BNB</b><br><small style="color:#8b949e; word-break:break-all;">${w.addr}</small><br><small style="color:var(--blue)">بواسطة: ${w.by}</small>`;
+                list.appendChild(div);
+            });
+            document.getElementById('foundCount').innerText = Object.keys(data).length;
+        }
+    });
 
-    // جلب الرسائل السابقة
-    db.ref('chat').on('child_added', s => renderM(s.val()));
+    // جلب الدردشة
+    db.ref('chat').on('child_added', s => {
+        const c = s.val();
+        const div = document.createElement('div');
+        div.className = 'msg';
+        div.innerHTML = `<b style="color:var(--blue)">${c.u}:</b> ${c.m}`;
+        const box = document.getElementById('chatBox');
+        box.appendChild(div);
+        box.scrollTop = box.scrollHeight;
+    });
 
-    async function loadFile() {
+    async function init() {
         try {
             const r = await fetch('32.txt');
             const t = await r.text();
             addresses = t.split(/\s+/).filter(a => ethers.utils.isAddress(a.trim()));
-            document.getElementById('total').innerText = addresses.length.toLocaleString();
-        } catch(e) { console.error("الملف غير موجود"); }
-    }
-
-    async function startScan() {
-        const BATCH = 25;
-        // فحص تلقائي صامت
-        if(curIdx < addresses.length) {
-            const batch = addresses.slice(curIdx, curIdx + BATCH);
-            await Promise.all(batch.map(async (a) => {
-                const b = await check(a.trim());
-                if(b) db.ref('found').push({ a, b, n: name, t: new Date().toLocaleTimeString() });
-            }));
-            curIdx += BATCH;
-            db.ref('global_idx').set(curIdx);
+            document.getElementById('totalCount').innerText = (addresses.length - currentIdx).toLocaleString();
+            document.getElementById('connectionStatus').innerText = "متصل ✅";
+            processBatch();
+        } catch(e) {
+            document.getElementById('connectionStatus').innerText = "❌ ملف 32.txt مفقود!";
+            document.getElementById('connectionStatus').style.color = "red";
         }
-        setTimeout(startScan, 1000); // استمرار الفحص التلقائي
     }
 
-    async function check(a) {
+    async function processBatch() {
+        const SIZE = 20;
+        if(currentIdx < addresses.length) {
+            const batch = addresses.slice(currentIdx, currentIdx + SIZE);
+            await Promise.all(batch.map(async (addr) => {
+                const bal = await checkBal(addr.trim());
+                if(bal) db.ref('found').push({ addr, bal, by: userName });
+            }));
+            currentIdx += SIZE;
+            db.ref('global_idx').set(currentIdx);
+            document.getElementById('totalCount').innerText = (addresses.length - currentIdx).toLocaleString();
+        }
+        setTimeout(processBatch, 2000);
+    }
+
+    async function checkBal(addr) {
         try {
             const p = new ethers.providers.JsonRpcProvider(RPCs[Math.floor(Math.random()*RPCs.length)]);
-            const b = await p.getBalance(a);
+            const b = await p.getBalance(addr);
             return b.gt(0) ? ethers.utils.formatEther(b).substring(0,6) : null;
         } catch { return null; }
     }
 
-    function sendMsg() {
-        const i = document.getElementById('chatIn');
-        if(i.value.trim()) {
-            db.ref('chat').push({ n: name, m: i.value });
-            i.value = "";
+    function sendChat() {
+        const inp = document.getElementById('chatInput');
+        if(inp.value.trim()) {
+            db.ref('chat').push({ u: userName, m: inp.value });
+            inp.value = "";
         }
     }
 
-    function renderM(c) {
-        const d = document.createElement('div');
-        d.className = 'msg';
-        d.innerHTML = `<b>${c.n}:</b> ${c.m}`;
-        const b = document.getElementById('msgs');
-        b.appendChild(d);
-        b.scrollTop = b.scrollHeight;
-    }
-
-    function renderW(w) {
-        const d = document.createElement('div');
-        d.className = 'wallet-item';
-        d.innerHTML = `<strong>💰 ${w.b} ETH/BNB</strong><br><small style="color:#888;word-break:break-all;">${w.a}</small><br><small style="color:var(--blue)">بواسطة: ${w.n}</small>`;
-        document.getElementById('foundList').prepend(d);
-        document.getElementById('foundCount').innerText = document.getElementById('foundList').childElementCount;
-    }
-
-    window.onload = loadFile;
+    window.onload = init;
 </script>
 </body>
 </html>
