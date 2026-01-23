@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام فحص العناوين المشفرة - Crypto Scanner</title>
+    <title>نظام فحص العناوين المشفرة - نظام حقيقي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         :root {
             --primary: #2d3436;
@@ -29,17 +30,17 @@
             color: var(--light);
             min-height: 100vh;
             line-height: 1.6;
+            padding: 20px;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
         }
         
         header {
             text-align: center;
-            padding: 30px 0;
+            padding: 20px 0;
             border-bottom: 2px solid rgba(0, 184, 148, 0.3);
             margin-bottom: 30px;
         }
@@ -49,16 +50,17 @@
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
         }
         
         .logo i {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--secondary);
         }
         
         .logo h1 {
-            font-size: 2.2rem;
+            font-size: 2rem;
             background: linear-gradient(to right, #00b894, #0984e3);
             -webkit-background-clip: text;
             background-clip: text;
@@ -67,51 +69,52 @@
         
         .subtitle {
             color: #b2bec3;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            margin-bottom: 10px;
         }
         
         .stats-bar {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
         
         .stat-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 10px;
+            padding: 15px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
         }
         
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
             border-color: var(--secondary);
         }
         
         .stat-card i {
-            font-size: 2rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
             color: var(--secondary);
         }
         
         .stat-card h3 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 5px;
             color: white;
         }
         
         .stat-card p {
             color: #b2bec3;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .main-content {
             display: grid;
             grid-template-columns: 1fr 2fr;
-            gap: 30px;
+            gap: 25px;
         }
         
         @media (max-width: 992px) {
@@ -122,8 +125,8 @@
         
         .scan-section {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
@@ -131,9 +134,9 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: white;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
         }
         
         .scan-section h2 i {
@@ -141,23 +144,24 @@
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #b2bec3;
+            font-size: 0.9rem;
         }
         
         .form-control {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             background: rgba(255, 255, 255, 0.07);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border-radius: 6px;
             color: white;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s;
         }
         
@@ -171,17 +175,18 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 12px 25px;
+            gap: 8px;
+            padding: 10px 20px;
             background: linear-gradient(to right, #00b894, #00a085);
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
+            margin-top: 5px;
         }
         
         .btn:hover {
@@ -189,21 +194,24 @@
             box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
         }
         
-        .btn:active {
-            transform: translateY(0);
-        }
-        
         .btn-secondary {
             background: linear-gradient(to right, #0984e3, #0669b8);
-            margin-top: 10px;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, #fdcb6e, #f9a825);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, #d63031, #b71c1c);
         }
         
         .results-section {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 25px;
+            border-radius: 12px;
+            padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            max-height: 600px;
+            max-height: 500px;
             overflow-y: auto;
         }
         
@@ -211,14 +219,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .results-header h2 {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             color: white;
+            font-size: 1.3rem;
         }
         
         .results-header h2 i {
@@ -229,10 +238,11 @@
             background: transparent;
             border: 1px solid var(--accent);
             color: var(--accent);
-            padding: 8px 15px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 5px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
         
         .refresh-btn:hover {
@@ -242,37 +252,37 @@
         .results-container {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
         
         .address-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
+            border-radius: 8px;
+            padding: 12px;
             border-left: 4px solid var(--secondary);
             transition: all 0.3s;
         }
         
         .address-card:hover {
             background: rgba(255, 255, 255, 0.08);
-            transform: translateX(5px);
+            transform: translateX(3px);
         }
         
         .address-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         
         .crypto-type {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            padding: 3px 10px;
+            padding: 3px 8px;
             background: rgba(0, 184, 148, 0.2);
-            border-radius: 20px;
-            font-size: 0.8rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
             color: var(--secondary);
         }
         
@@ -289,17 +299,22 @@
         .address-value {
             font-family: monospace;
             background: rgba(0, 0, 0, 0.3);
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin: 10px 0;
+            padding: 6px 10px;
+            border-radius: 5px;
+            margin: 8px 0;
             word-break: break-all;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        .address-value:hover {
+            background: rgba(0, 0, 0, 0.4);
         }
         
         .address-footer {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #b2bec3;
         }
         
@@ -311,13 +326,13 @@
         
         .no-results {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 15px;
             color: #b2bec3;
         }
         
         .no-results i {
-            font-size: 3rem;
-            margin-bottom: 15px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             color: #636e72;
         }
         
@@ -327,7 +342,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: none;
             align-items: center;
             justify-content: center;
@@ -336,8 +351,8 @@
         
         .scanning-content {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 40px;
-            border-radius: 15px;
+            padding: 30px;
+            border-radius: 12px;
             text-align: center;
             max-width: 500px;
             width: 90%;
@@ -345,13 +360,13 @@
         }
         
         .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid var(--secondary);
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid var(--secondary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
         }
         
         @keyframes spin {
@@ -366,12 +381,12 @@
             transform: translateX(-50%) translateY(100px);
             background: var(--success);
             color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
+            padding: 12px 20px;
+            border-radius: 6px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             z-index: 1001;
             transition: transform 0.5s ease;
         }
@@ -384,30 +399,36 @@
             background: var(--danger);
         }
         
+        .toast.warning {
+            background: var(--warning);
+            color: var(--dark);
+        }
+        
         footer {
             text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 30px;
+            padding-top: 15px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: #b2bec3;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .tabs {
             display: flex;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 5px;
-            margin-bottom: 20px;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 15px;
         }
         
         .tab {
             flex: 1;
             text-align: center;
-            padding: 10px;
+            padding: 8px;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 6px;
             transition: all 0.3s;
+            font-size: 0.9rem;
         }
         
         .tab.active {
@@ -424,39 +445,165 @@
         }
         
         .recent-scans {
-            margin-top: 30px;
+            margin-top: 20px;
         }
         
         .scan-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
+            padding: 10px 12px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin-bottom: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
             border-left: 3px solid var(--accent);
         }
         
         .scan-repo {
             font-weight: 600;
             color: white;
+            font-size: 0.9rem;
         }
         
         .scan-time {
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             color: #b2bec3;
         }
         
         .user-badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             background: rgba(253, 203, 110, 0.2);
             color: #fdcb6e;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00b894, #0984e3);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 2px solid var(--secondary);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .modal-header h3 {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        .close-modal {
+            background: var(--danger);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .config-section {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        
+        .config-section h4 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .checkbox-group label {
+            color: #b2bec3;
+            font-size: 0.9rem;
+        }
+        
+        .export-import {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .export-import .btn {
+            flex: 1;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px;
+            background: rgba(9, 132, 227, 0.2);
+            border: 1px dashed var(--accent);
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .file-label:hover {
+            background: rgba(9, 132, 227, 0.3);
         }
     </style>
 </head>
@@ -467,123 +614,196 @@
                 <i class="fas fa-search-dollar"></i>
                 <h1>نظام فحص العناوين المشفرة</h1>
             </div>
-            <p class="subtitle">نظام تعاوني لاكتشاف عناوين العملات المشفرة في مستودعات GitHub - البيانات متاحة للجميع ومتزامنة</p>
+            <p class="subtitle">نظام حقيقي - ملف HTML واحد - لا يحتاج خادم - يعمل مباشرة على GitHub</p>
+            <p style="color: #fdcb6e; font-size: 0.9rem;">
+                <i class="fas fa-exclamation-circle"></i> حفظ الملف كـ index.html ثم افتحه بالمتصفح
+            </p>
         </header>
         
         <div class="stats-bar">
             <div class="stat-card">
                 <i class="fas fa-wallet"></i>
-                <h3 id="total-addresses">1,247</h3>
+                <h3 id="total-addresses">0</h3>
                 <p>عناوين مكتشفة</p>
             </div>
             <div class="stat-card">
                 <i class="fas fa-code-branch"></i>
-                <h3 id="total-repos">89</h3>
+                <h3 id="total-repos">0</h3>
                 <p>مستودعات مفحوصة</p>
             </div>
             <div class="stat-card">
                 <i class="fas fa-users"></i>
-                <h3 id="total-users">24</h3>
+                <h3 id="total-users">0</h3>
                 <p>مستخدمين مساهمين</p>
             </div>
             <div class="stat-card">
                 <i class="fas fa-history"></i>
-                <h3 id="last-update">5 د</h3>
+                <h3 id="last-update">-</h3>
                 <p>آخر تحديث</p>
             </div>
         </div>
         
         <div class="main-content">
             <div class="scan-section">
-                <h2><i class="fas fa-search"></i> فحص مستودع جديد</h2>
-                
                 <div class="tabs">
-                    <div class="tab active" data-tab="scan-tab">فحص مباشر</div>
-                    <div class="tab" data-tab="queue-tab">قائمة الانتظار</div>
+                    <div class="tab active" data-tab="scan">فحص</div>
+                    <div class="tab" data-tab="queue">قائمة الانتظار</div>
+                    <div class="tab" data-tab="settings">الإعدادات</div>
                 </div>
                 
                 <div class="tab-content active" id="scan-tab">
+                    <h2><i class="fas fa-search"></i> فحص مستودع GitHub</h2>
+                    
                     <div class="form-group">
-                        <label for="repo-url"><i class="fas fa-link"></i> رابط مستودع GitHub</label>
-                        <input type="url" id="repo-url" class="form-control" placeholder="https://github.com/username/repository">
+                        <label for="repo-url"><i class="fas fa-link"></i> رابط المستودع</label>
+                        <input type="url" id="repo-url" class="form-control" 
+                               placeholder="https://github.com/username/repo أو username/repo">
                     </div>
                     
                     <div class="form-group">
-                        <label for="user-id"><i class="fas fa-user"></i> معرفك (اختياري)</label>
-                        <input type="text" id="user-id" class="form-control" placeholder="أدخل اسمك أو معرفك للمساهمة">
+                        <label for="user-id"><i class="fas fa-user"></i> اسم المساهم (مطلوب)</label>
+                        <input type="text" id="user-id" class="form-control" 
+                               placeholder="أدخل اسمك للمساهمة" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="github-token"><i class="fas fa-key"></i> GitHub Token (اختياري)</label>
+                        <input type="password" id="github-token" class="form-control" 
+                               placeholder="للوصول لمستودعات خاصة - صلاحيات repo">
+                        <small style="color: #b2bec3; display: block; margin-top: 5px;">
+                            <a href="https://github.com/settings/tokens" target="_blank" 
+                               style="color: var(--accent); text-decoration: none;">
+                                <i class="fas fa-external-link-alt"></i> إنشاء توكن
+                            </a>
+                        </small>
                     </div>
                     
                     <button class="btn" id="scan-btn">
                         <i class="fas fa-search"></i> بدء الفحص
                     </button>
                     
-                    <button class="btn btn-secondary" id="random-scan">
-                        <i class="fas fa-random"></i> فحص مستودع عشوائي
+                    <button class="btn btn-secondary" id="scan-sample">
+                        <i class="fas fa-vial"></i> فحص تجريبي (بدون GitHub API)
                     </button>
+                    
+                    <div class="recent-scans">
+                        <h3><i class="fas fa-history"></i> آخر الفحوصات</h3>
+                        <div id="recent-scans-list">
+                            <!-- سيتم ملؤها تلقائياً -->
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="tab-content" id="queue-tab">
-                    <p style="margin-bottom: 15px; color: #b2bec3;">
-                        <i class="fas fa-info-circle"></i> المستودعات في قائمة الانتظار للمسح
-                    </p>
+                    <h2><i class="fas fa-list"></i> قائمة الانتظار</h2>
+                    
                     <div id="queue-list">
-                        <div class="scan-item">
-                            <div>
-                                <div class="scan-repo">bitcoin/bitcoin</div>
-                                <div class="scan-time">أضيف منذ 5 دقائق</div>
-                            </div>
-                            <div class="user-badge">
-                                <i class="fas fa-user"></i> أحمد
-                            </div>
-                        </div>
-                        <div class="scan-item">
-                            <div>
-                                <div class="scan-repo">ethereum/go-ethereum</div>
-                                <div class="scan-time">أضيف منذ 12 دقيقة</div>
-                            </div>
-                            <div class="user-badge">
-                                <i class="fas fa-user"></i> محمد
-                            </div>
+                        <div class="no-results">
+                            <i class="fas fa-inbox"></i>
+                            <p>لا توجد مستودعات في قائمة الانتظار</p>
                         </div>
                     </div>
                     
-                    <div style="margin-top: 20px;">
-                        <button class="btn" id="add-to-queue">
-                            <i class="fas fa-plus"></i> إضافة مستودع للقائمة
-                        </button>
-                    </div>
+                    <button class="btn btn-secondary" id="add-to-queue">
+                        <i class="fas fa-plus"></i> إضافة مستودع للقائمة
+                    </button>
+                    
+                    <button class="btn btn-warning" id="process-queue">
+                        <i class="fas fa-play"></i> معالجة قائمة الانتظار
+                    </button>
                 </div>
                 
-                <div class="recent-scans">
-                    <h3><i class="fas fa-history"></i> آخر المستودعات المفحوصة</h3>
-                    <div id="recent-scans-list">
-                        <!-- سيتم ملؤها بالبيانات -->
+                <div class="tab-content" id="settings-tab">
+                    <h2><i class="fas fa-cog"></i> إعدادات النظام</h2>
+                    
+                    <div class="config-section">
+                        <h4><i class="fas fa-filter"></i> أنواع العملات للبحث</h4>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="bitcoin-check" checked>
+                            <label for="bitcoin-check">Bitcoin</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="ethereum-check" checked>
+                            <label for="ethereum-check">Ethereum</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="litecoin-check">
+                            <label for="litecoin-check">Litecoin</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="dogecoin-check">
+                            <label for="dogecoin-check">Dogecoin</label>
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h4><i class="fas fa-database"></i> إدارة البيانات</h4>
+                        
+                        <div class="export-import">
+                            <button class="btn btn-secondary" id="export-data">
+                                <i class="fas fa-download"></i> تصدير البيانات
+                            </button>
+                            <button class="btn btn-warning" id="import-data">
+                                <i class="fas fa-upload"></i> استيراد بيانات
+                            </button>
+                        </div>
+                        
+                        <input type="file" id="import-file" class="file-input" accept=".json">
+                        <label for="import-file" class="file-label">
+                            <i class="fas fa-file-import"></i> اختيار ملف JSON للاستيراد
+                        </label>
+                        
+                        <button class="btn btn-danger" id="clear-data" style="margin-top: 15px;">
+                            <i class="fas fa-trash"></i> مسح جميع البيانات
+                        </button>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h4><i class="fas fa-bell"></i> الإشعارات</h4>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="notifications-check" checked>
+                            <label for="notifications-check">تمكين الإشعارات</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="auto-save-check" checked>
+                            <label for="auto-save-check">الحفظ التلقائي</label>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <div class="results-section">
                 <div class="results-header">
-                    <h2><i class="fas fa-list"></i> العناوين المكتشفة حديثاً</h2>
+                    <h2><i class="fas fa-list"></i> العناوين المكتشفة</h2>
                     <button class="refresh-btn" id="refresh-results">
                         <i class="fas fa-sync-alt"></i> تحديث
                     </button>
                 </div>
                 
                 <div class="results-container" id="results-container">
-                    <!-- سيتم ملؤها بالبيانات -->
+                    <div class="no-results">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <h3>جار تحميل النظام...</h3>
+                        <p>يتم تحميل قاعدة البيانات المحلية</p>
+                    </div>
                 </div>
             </div>
         </div>
         
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-secondary" id="create-database-file" style="flex: 1;">
+                <i class="fas fa-file-code"></i> إنشاء ملف database.json
+            </button>
+            <button class="btn btn-warning" id="create-queue-file" style="flex: 1;">
+                <i class="fas fa-tasks"></i> إنشاء ملف queue.json
+            </button>
+        </div>
+        
         <footer>
-            <p>© 2024 نظام فحص العناوين المشفرة | نظام تعاوني مفتوح المصدر</p>
-            <p>البيانات متاحة للجميع ومتزامنة بين جميع المستخدمين</p>
-            <p style="margin-top: 10px;">
-                <i class="fas fa-code-branch"></i> 
-                <a href="https://github.com/your-username/crypto-scanner" style="color: var(--secondary); text-decoration: none;">
-                    مستودع النظام على GitHub
-                </a>
+            <p>© 2024 نظام فحص العناوين المشفرة | ملف HTML واحد - يعمل على أي متصفح</p>
+            <p>البيانات مخزنة في LocalStorage ويمكن تصديرها واستيرادها</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                <i class="fas fa-code"></i> المصدر: ملف HTML واحد فقط - لا يحتاج خادم
             </p>
         </footer>
     </div>
@@ -592,11 +812,35 @@
     <div class="scanning-overlay" id="scanning-overlay">
         <div class="scanning-content">
             <div class="spinner"></div>
-            <h3>جاري فحص المستودع...</h3>
-            <p id="scanning-details">جاري البحث عن عناوين العملات المشفرة</p>
+            <h3 id="scanning-title">جاري فحص المستودع...</h3>
+            <p id="scanning-details">بدء عملية الفحص</p>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="scan-progress-bar"></div>
+            </div>
+            
             <div id="progress-details" style="margin-top: 15px; color: #b2bec3;">
+                <div>التقدم: <span id="scan-progress">0%</span></div>
                 <div>الملفات المفحوصة: <span id="files-scanned">0</span></div>
                 <div>العناوين المكتشفة: <span id="addresses-found">0</span></div>
+                <div>الوقت المستغرق: <span id="scan-time">0 ثانية</span></div>
+            </div>
+            
+            <button class="btn btn-danger" id="cancel-scan" style="margin-top: 20px;">
+                <i class="fas fa-stop"></i> إلغاء الفحص
+            </button>
+        </div>
+    </div>
+    
+    <!-- نافذة النتائج -->
+    <div class="modal" id="results-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">نتائج الفحص</h3>
+                <button class="close-modal" id="close-results-modal">&times;</button>
+            </div>
+            <div id="modal-results">
+                <!-- سيتم ملؤها بالنتائج -->
             </div>
         </div>
     </div>
@@ -604,379 +848,1239 @@
     <!-- رسالة التنبيه -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
-        <span id="toast-message">تمت العملية بنجاح!</span>
+        <span id="toast-message"></span>
     </div>
 
+    <!-- الكود JavaScript الكامل في نفس الملف -->
     <script>
-        // بيانات وهمية للمثال
-        const sampleAddresses = [
-            {
-                address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
-                type: "bitcoin",
-                repo: "bitcoin/bitcoin",
-                foundBy: "أحمد",
-                time: "منذ 5 دقائق"
-            },
-            {
-                address: "0x742d35Cc6634C0532925a3b844Bc9e90F1f04e6a",
-                type: "ethereum",
-                repo: "ethereum/go-ethereum",
-                foundBy: "محمد",
-                time: "منذ 12 دقيقة"
-            },
-            {
-                address: "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq",
-                type: "bitcoin",
-                repo: "lightningnetwork/lnd",
-                foundBy: "سارة",
-                time: "منذ 25 دقيقة"
-            },
-            {
-                address: "0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c",
-                type: "ethereum",
-                repo: "uniswap/uniswap-v3-core",
-                foundBy: "خالد",
-                time: "منذ 40 دقيقة"
-            },
-            {
-                address: "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
-                type: "bitcoin",
-                repo: "bitcoinjs/bitcoinjs-lib",
-                foundBy: "فاطمة",
-                time: "منذ ساعة"
-            }
-        ];
-
-        const sampleRecentScans = [
-            { repo: "bitcoin/bitcoin", time: "منذ 5 دقائق", user: "أحمد" },
-            { repo: "ethereum/go-ethereum", time: "منذ 12 دقيقة", user: "محمد" },
-            { repo: "lightningnetwork/lnd", time: "منذ 25 دقيقة", user: "سارة" },
-            { repo: "uniswap/uniswap-v3-core", time: "منذ 40 دقيقة", user: "خالد" },
-            { repo: "bitcoinjs/bitcoinjs-lib", time: "منذ ساعة", user: "فاطمة" }
-        ];
-
-        // DOM Elements
-        const scanBtn = document.getElementById('scan-btn');
-        const refreshBtn = document.getElementById('refresh-results');
-        const randomScanBtn = document.getElementById('random-scan');
-        const addToQueueBtn = document.getElementById('add-to-queue');
-        const scanningOverlay = document.getElementById('scanning-overlay');
-        const toast = document.getElementById('toast');
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const resultsContainer = document.getElementById('results-container');
-        const recentScansList = document.getElementById('recent-scans-list');
-        const queueList = document.getElementById('queue-list');
-
-        // تهيئة البيانات
-        document.addEventListener('DOMContentLoaded', function() {
-            loadAddresses();
-            loadRecentScans();
-            updateStats();
-            
-            // تحديث تلقائي كل 30 ثانية
-            setInterval(updateStats, 30000);
-            setInterval(loadAddresses, 60000);
-        });
-
-        // تحميل العناوين
-        function loadAddresses() {
-            resultsContainer.innerHTML = '';
-            
-            if (sampleAddresses.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="no-results">
-                        <i class="fas fa-search"></i>
-                        <h3>لا توجد عناوين مكتشفة بعد</h3>
-                        <p>ابدأ بفحص مستودع GitHub لاكتشاف عناوين العملات المشفرة</p>
-                    </div>
-                `;
-                return;
+        // ============================
+        // النظام الرئيسي - ملف HTML واحد
+        // ============================
+        
+        class CryptoScannerSystem {
+            constructor() {
+                this.STORAGE_KEY = 'crypto_scanner_database';
+                this.QUEUE_KEY = 'crypto_scanner_queue';
+                this.SETTINGS_KEY = 'crypto_scanner_settings';
+                
+                this.database = null;
+                this.scanQueue = [];
+                this.settings = {};
+                this.currentScan = null;
+                this.scanStartTime = null;
+                
+                // أنماط البحث عن العناوين
+                this.cryptoPatterns = {
+                    bitcoin: [
+                        /[13][a-km-zA-HJ-NP-Z1-9]{25,34}/g,  // Legacy addresses
+                        /bc1[ac-hj-np-z02-9]{11,87}/g,      // Bech32 addresses
+                    ],
+                    ethereum: [
+                        /0x[a-fA-F0-9]{40}/g,
+                    ],
+                    litecoin: [
+                        /[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}/g,
+                    ],
+                    dogecoin: [
+                        /D{1}[5-9A-HJ-NP-U]{1}[1-9A-HJ-NP-Za-km-z]{32}/g,
+                    ]
+                };
+                
+                this.initializeSystem();
             }
             
-            sampleAddresses.forEach(addr => {
-                const addressCard = document.createElement('div');
-                addressCard.className = 'address-card';
+            initializeSystem() {
+                this.loadDatabase();
+                this.loadQueue();
+                this.loadSettings();
+                this.setupEventListeners();
+                this.updateUI();
                 
-                addressCard.innerHTML = `
-                    <div class="address-header">
-                        <span class="crypto-type ${addr.type}">
-                            <i class="fab fa-${addr.type === 'bitcoin' ? 'bitcoin' : 'ethereum'}"></i>
-                            ${addr.type === 'bitcoin' ? 'Bitcoin' : 'Ethereum'}
-                        </span>
-                        <span style="color: #b2bec3; font-size: 0.85rem;">
-                            <i class="far fa-clock"></i> ${addr.time}
-                        </span>
-                    </div>
-                    <div class="address-value">${addr.address}</div>
-                    <div class="address-footer">
-                        <div class="repo-info">
-                            <i class="fab fa-github"></i>
-                            <span>${addr.repo}</span>
-                        </div>
-                        <div>
-                            <i class="fas fa-user"></i> اكتشف بواسطة: ${addr.foundBy}
-                        </div>
-                    </div>
-                `;
+                // حفظ تلقائي كل دقيقة
+                setInterval(() => {
+                    if (this.settings.autoSave) {
+                        this.saveDatabase();
+                        this.saveQueue();
+                    }
+                }, 60000);
                 
-                resultsContainer.appendChild(addressCard);
-            });
-        }
-
-        // تحميل آخر الفحوصات
-        function loadRecentScans() {
-            recentScansList.innerHTML = '';
-            
-            sampleRecentScans.forEach(scan => {
-                const scanItem = document.createElement('div');
-                scanItem.className = 'scan-item';
-                
-                scanItem.innerHTML = `
-                    <div>
-                        <div class="scan-repo">${scan.repo}</div>
-                        <div class="scan-time">${scan.time}</div>
-                    </div>
-                    <div class="user-badge">
-                        <i class="fas fa-user"></i> ${scan.user}
-                    </div>
-                `;
-                
-                recentScansList.appendChild(scanItem);
-            });
-        }
-
-        // تحديث الإحصائيات
-        function updateStats() {
-            // تحديث وقت آخر تحديث
-            document.getElementById('last-update').textContent = 'الآن';
-            
-            // تحديث عشوائي للإحصائيات (في النظام الحقيقي، سيتم جلبها من قاعدة البيانات)
-            const addresses = parseInt(document.getElementById('total-addresses').textContent.replace(',', ''));
-            document.getElementById('total-addresses').textContent = (addresses + Math.floor(Math.random() * 3)).toLocaleString();
-            
-            const repos = parseInt(document.getElementById('total-repos').textContent);
-            document.getElementById('total-repos').textContent = repos + Math.floor(Math.random() * 2);
-            
-            const users = parseInt(document.getElementById('total-users').textContent);
-            document.getElementById('total-users').textContent = users + Math.floor(Math.random() * 2);
-            
-            // إعادة تعيين وقت التحديث بعد 5 دقائق
-            setTimeout(() => {
-                document.getElementById('last-update').textContent = '5 د';
-            }, 300000);
-        }
-
-        // نظام التبويب
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const tabId = tab.getAttribute('data-tab');
-                
-                // إزالة النشاط من جميع الألسنة
-                tabs.forEach(t => t.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // تفعيل اللسان والنافذة المختارة
-                tab.classList.add('active');
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-
-        // زر الفحص
-        scanBtn.addEventListener('click', function() {
-            const repoUrl = document.getElementById('repo-url').value;
-            const userId = document.getElementById('user-id').value || 'مستخدم مجهول';
-            
-            if (!repoUrl) {
-                showToast('الرجاء إدخال رابط مستودع GitHub', 'error');
-                return;
+                this.showToast('تم تحميل النظام بنجاح', 'success');
             }
             
-            // عرض نافذة المسح
-            showScanningOverlay();
+            // ============================
+            // إدارة التخزين المحلي
+            // ============================
             
-            // محاكاة عملية المسح (في النظام الحقيقي، ستكون استدعاء API)
-            simulateScan(repoUrl, userId);
-        });
-
-        // فحص مستودع عشوائي
-        randomScanBtn.addEventListener('click', function() {
-            const randomRepos = [
-                'https://github.com/bitcoin/bitcoin',
-                'https://github.com/ethereum/go-ethereum',
-                'https://github.com/lightningnetwork/lnd',
-                'https://github.com/uniswap/uniswap-v3-core',
-                'https://github.com/bitcoinjs/bitcoinjs-lib',
-                'https://github.com/MyCryptoHQ/MyCrypto',
-                'https://github.com/trustwallet/wallet-core'
-            ];
-            
-            const randomRepo = randomRepos[Math.floor(Math.random() * randomRepos.length)];
-            document.getElementById('repo-url').value = randomRepo;
-            
-            showToast(`تم تعيين مستودع عشوائي: ${randomRepo.split('/').slice(-2).join('/')}`);
-        });
-
-        // إضافة إلى قائمة الانتظار
-        addToQueueBtn.addEventListener('click', function() {
-            const repoUrl = prompt('أدخل رابط مستودع GitHub لإضافته إلى قائمة الانتظار:');
-            
-            if (repoUrl) {
-                // إضافة إلى قائمة الانتظار الوهمية
-                const repoName = repoUrl.split('/').slice(-2).join('/');
-                const newItem = document.createElement('div');
-                newItem.className = 'scan-item';
-                newItem.innerHTML = `
-                    <div>
-                        <div class="scan-repo">${repoName}</div>
-                        <div class="scan-time">أضيف الآن</div>
-                    </div>
-                    <div class="user-badge">
-                        <i class="fas fa-user"></i> أنت
-                    </div>
-                `;
-                
-                queueList.prepend(newItem);
-                showToast('تمت إضافة المستودع إلى قائمة الانتظار');
-            }
-        });
-
-        // تحديث النتائج
-        refreshBtn.addEventListener('click', function() {
-            showToast('جاري تحديث النتائج...');
-            
-            // إضافة تأثير الدوران على الأيقونة
-            const icon = refreshBtn.querySelector('i');
-            icon.style.transform = 'rotate(360deg)';
-            icon.style.transition = 'transform 0.5s ease';
-            
-            setTimeout(() => {
-                loadAddresses();
-                updateStats();
-                showToast('تم تحديث النتائج بنجاح');
-                icon.style.transform = 'rotate(0deg)';
-            }, 1000);
-        });
-
-        // محاكاة عملية المسح
-        function simulateScan(repoUrl, userId) {
-            const repoName = repoUrl.split('/').slice(-2).join('/');
-            let filesScanned = 0;
-            let addressesFound = 0;
-            
-            // تحديث تفاصيل المسح
-            document.getElementById('scanning-details').textContent = `جاري فحص مستودع: ${repoName}`;
-            
-            // محاكاة تقدم المسح
-            const interval = setInterval(() => {
-                filesScanned += Math.floor(Math.random() * 10) + 5;
-                addressesFound += Math.floor(Math.random() * 2);
-                
-                document.getElementById('files-scanned').textContent = filesScanned;
-                document.getElementById('addresses-found').textContent = addressesFound;
-                
-                if (filesScanned >= 100) {
-                    clearInterval(interval);
-                    
-                    // إخفاء نافذة المسح بعد انتهاء المحاكاة
-                    setTimeout(() => {
-                        hideScanningOverlay();
-                        
-                        // إضافة نتيجة وهمية جديدة
-                        const newAddress = {
-                            address: generateRandomAddress(),
-                            type: Math.random() > 0.5 ? 'bitcoin' : 'ethereum',
-                            repo: repoName,
-                            foundBy: userId,
-                            time: 'الآن'
-                        };
-                        
-                        sampleAddresses.unshift(newAddress);
-                        
-                        // إضافة إلى قائمة الفحوصات الأخيرة
-                        sampleRecentScans.unshift({
-                            repo: repoName,
-                            time: 'الآن',
-                            user: userId
-                        });
-                        
-                        // تحديث الواجهة
-                        loadAddresses();
-                        loadRecentScans();
-                        updateStats();
-                        
-                        showToast(`تم اكتشاف ${addressesFound} عنوان جديد في ${repoName}`);
-                    }, 1000);
+            loadDatabase() {
+                try {
+                    const saved = localStorage.getItem(this.STORAGE_KEY);
+                    if (saved) {
+                        this.database = JSON.parse(saved);
+                    } else {
+                        this.createNewDatabase();
+                    }
+                } catch (error) {
+                    console.error('خطأ في تحميل قاعدة البيانات:', error);
+                    this.createNewDatabase();
                 }
-            }, 300);
-        }
-
-        // توليد عنوان عشوائي
-        function generateRandomAddress() {
-            const chars = '0123456789abcdef';
-            let address = '0x';
-            
-            for (let i = 0; i < 40; i++) {
-                address += chars[Math.floor(Math.random() * chars.length)];
             }
             
-            return address;
-        }
-
-        // عرض نافذة المسح
-        function showScanningOverlay() {
-            scanningOverlay.style.display = 'flex';
-        }
-
-        // إخفاء نافذة المسح
-        function hideScanningOverlay() {
-            scanningOverlay.style.display = 'none';
-        }
-
-        // عرض رسالة التنبيه
-        function showToast(message, type = 'success') {
-            const toastMessage = document.getElementById('toast-message');
-            toastMessage.textContent = message;
-            
-            // تعيين اللون حسب النوع
-            if (type === 'error') {
-                toast.classList.add('error');
-            } else {
-                toast.classList.remove('error');
+            createNewDatabase() {
+                this.database = {
+                    metadata: {
+                        version: "1.0",
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString(),
+                        lastScanId: 0
+                    },
+                    stats: {
+                        totalAddresses: 0,
+                        totalRepos: 0,
+                        totalUsers: 0,
+                        totalScans: 0,
+                        addressesByType: {
+                            bitcoin: 0,
+                            ethereum: 0,
+                            litecoin: 0,
+                            dogecoin: 0
+                        }
+                    },
+                    addresses: {},
+                    repositories: {},
+                    users: {},
+                    recentScans: []
+                };
+                this.saveDatabase();
             }
             
-            // إظهار الرسالة
-            toast.classList.add('show');
+            saveDatabase() {
+                try {
+                    if (this.database) {
+                        this.database.metadata.lastUpdated = new Date().toISOString();
+                        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.database));
+                    }
+                } catch (error) {
+                    console.error('خطأ في حفظ قاعدة البيانات:', error);
+                }
+            }
             
-            // إخفاء الرسالة بعد 3 ثوان
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            loadQueue() {
+                try {
+                    const saved = localStorage.getItem(this.QUEUE_KEY);
+                    if (saved) {
+                        this.scanQueue = JSON.parse(saved);
+                    } else {
+                        this.scanQueue = [];
+                    }
+                } catch (error) {
+                    console.error('خطأ في تحميل قائمة الانتظار:', error);
+                    this.scanQueue = [];
+                }
+            }
+            
+            saveQueue() {
+                try {
+                    localStorage.setItem(this.QUEUE_KEY, JSON.stringify(this.scanQueue));
+                } catch (error) {
+                    console.error('خطأ في حفظ قائمة الانتظار:', error);
+                }
+            }
+            
+            loadSettings() {
+                try {
+                    const saved = localStorage.getItem(this.SETTINGS_KEY);
+                    if (saved) {
+                        this.settings = JSON.parse(saved);
+                    } else {
+                        this.settings = {
+                            enabledCrypto: {
+                                bitcoin: true,
+                                ethereum: true,
+                                litecoin: false,
+                                dogecoin: false
+                            },
+                            notifications: true,
+                            autoSave: true,
+                            maxResults: 100
+                        };
+                        this.saveSettings();
+                    }
+                    
+                    // تحديث واجهة الإعدادات
+                    this.updateSettingsUI();
+                } catch (error) {
+                    console.error('خطأ في تحميل الإعدادات:', error);
+                }
+            }
+            
+            saveSettings() {
+                try {
+                    localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(this.settings));
+                } catch (error) {
+                    console.error('خطأ في حفظ الإعدادات:', error);
+                }
+            }
+            
+            // ============================
+            // واجهة المستخدم
+            // ============================
+            
+            updateUI() {
+                this.updateStats();
+                this.displayRecentAddresses();
+                this.displayRecentScans();
+                this.displayQueue();
+            }
+            
+            updateStats() {
+                if (!this.database) return;
+                
+                const stats = this.database.stats;
+                
+                document.getElementById('total-addresses').textContent = stats.totalAddresses.toLocaleString();
+                document.getElementById('total-repos').textContent = stats.totalRepos.toLocaleString();
+                document.getElementById('total-users').textContent = stats.totalUsers.toLocaleString();
+                
+                const lastUpdate = new Date(this.database.metadata.lastUpdated);
+                const now = new Date();
+                const diffMinutes = Math.floor((now - lastUpdate) / (1000 * 60));
+                
+                if (diffMinutes < 1) {
+                    document.getElementById('last-update').textContent = 'الآن';
+                } else if (diffMinutes < 60) {
+                    document.getElementById('last-update').textContent = `${diffMinutes} دقيقة`;
+                } else if (diffMinutes < 1440) {
+                    const hours = Math.floor(diffMinutes / 60);
+                    document.getElementById('last-update').textContent = `${hours} ساعة`;
+                } else {
+                    const days = Math.floor(diffMinutes / 1440);
+                    document.getElementById('last-update').textContent = `${days} يوم`;
+                }
+            }
+            
+            displayRecentAddresses() {
+                const container = document.getElementById('results-container');
+                if (!container) return;
+                
+                if (!this.database || Object.keys(this.database.addresses).length === 0) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-search"></i>
+                            <h3>لا توجد عناوين مكتشفة بعد</h3>
+                            <p>ابدأ بفحص مستودع GitHub لاكتشاف عناوين العملات المشفرة</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const addresses = Object.values(this.database.addresses)
+                    .sort((a, b) => new Date(b.foundAt) - new Date(a.foundAt))
+                    .slice(0, 10);
+                
+                let html = '';
+                
+                addresses.forEach(address => {
+                    html += `
+                        <div class="address-card">
+                            <div class="address-header">
+                                <span class="crypto-type ${address.type}">
+                                    <i class="fab fa-${address.type}"></i>
+                                    ${address.type.charAt(0).toUpperCase() + address.type.slice(1)}
+                                </span>
+                                <span style="color: #b2bec3; font-size: 0.75rem;">
+                                    <i class="far fa-clock"></i> ${this.timeAgo(address.foundAt)}
+                                </span>
+                            </div>
+                            <div class="address-value" onclick="scannerSystem.copyToClipboard('${address.address}')">
+                                ${address.address}
+                            </div>
+                            <div class="address-footer">
+                                <div class="repo-info">
+                                    <i class="fab fa-github"></i>
+                                    <span>${address.repository}</span>
+                                </div>
+                                <div>
+                                    <i class="fas fa-user"></i> ${address.foundBy}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            }
+            
+            displayRecentScans() {
+                const container = document.getElementById('recent-scans-list');
+                if (!container) return;
+                
+                if (!this.database || this.database.recentScans.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-results" style="padding: 10px;">
+                            <p>لا توجد فحوصات سابقة</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const recentScans = this.database.recentScans.slice(0, 5);
+                let html = '';
+                
+                recentScans.forEach(scan => {
+                    html += `
+                        <div class="scan-item">
+                            <div>
+                                <div class="scan-repo">${scan.repository}</div>
+                                <div class="scan-time">${this.timeAgo(scan.timestamp)} - ${scan.addressesFound} عنوان</div>
+                            </div>
+                            <div class="user-badge">
+                                <i class="fas fa-user"></i> ${scan.user}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            }
+            
+            displayQueue() {
+                const container = document.getElementById('queue-list');
+                if (!container) return;
+                
+                if (this.scanQueue.length === 0) {
+                    container.innerHTML = `
+                        <div class="no-results">
+                            <i class="fas fa-inbox"></i>
+                            <p>لا توجد مستودعات في قائمة الانتظار</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                
+                this.scanQueue.forEach((item, index) => {
+                    html += `
+                        <div class="scan-item">
+                            <div>
+                                <div class="scan-repo">${item.repository}</div>
+                                <div class="scan-time">أضيف ${this.timeAgo(item.addedAt)}</div>
+                            </div>
+                            <div>
+                                <button onclick="scannerSystem.removeFromQueue(${index})" 
+                                        style="background: #d63031; color: white; border: none; padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            }
+            
+            updateSettingsUI() {
+                // تحديث مربعات الاختيار لأنواع العملات
+                if (this.settings.enabledCrypto) {
+                    document.getElementById('bitcoin-check').checked = this.settings.enabledCrypto.bitcoin || false;
+                    document.getElementById('ethereum-check').checked = this.settings.enabledCrypto.ethereum || false;
+                    document.getElementById('litecoin-check').checked = this.settings.enabledCrypto.litecoin || false;
+                    document.getElementById('dogecoin-check').checked = this.settings.enabledCrypto.dogecoin || false;
+                }
+                
+                document.getElementById('notifications-check').checked = this.settings.notifications || true;
+                document.getElementById('auto-save-check').checked = this.settings.autoSave || true;
+            }
+            
+            timeAgo(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const seconds = Math.floor((now - date) / 1000);
+                
+                if (seconds < 60) return 'الآن';
+                if (seconds < 3600) return `منذ ${Math.floor(seconds / 60)} دقيقة`;
+                if (seconds < 86400) return `منذ ${Math.floor(seconds / 3600)} ساعة`;
+                if (seconds < 604800) return `منذ ${Math.floor(seconds / 86400)} يوم`;
+                if (seconds < 2592000) return `منذ ${Math.floor(seconds / 604800)} أسبوع`;
+                if (seconds < 31536000) return `منذ ${Math.floor(seconds / 2592000)} شهر`;
+                return `منذ ${Math.floor(seconds / 31536000)} سنة`;
+            }
+            
+            // ============================
+            // نظام الفحص
+            // ============================
+            
+            async startScan() {
+                const repoUrl = document.getElementById('repo-url').value;
+                const userId = document.getElementById('user-id').value;
+                const githubToken = document.getElementById('github-token').value;
+                
+                if (!repoUrl || !userId) {
+                    this.showToast('الرجاء إدخال رابط المستودع واسم المستخدم', 'error');
+                    return;
+                }
+                
+                // استخراج اسم المستودع من الرابط
+                let repoFullName = '';
+                if (repoUrl.includes('github.com/')) {
+                    const match = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
+                    if (match) {
+                        repoFullName = match[1].replace(/\.git$/, '');
+                    } else {
+                        this.showToast('رابط GitHub غير صحيح', 'error');
+                        return;
+                    }
+                } else {
+                    // توقع أن المستخدم أدخل username/repo مباشرة
+                    repoFullName = repoUrl.trim();
+                }
+                
+                this.currentScan = {
+                    repository: repoFullName,
+                    user: userId,
+                    token: githubToken,
+                    cancelled: false,
+                    foundAddresses: [],
+                    scannedFiles: 0,
+                    startTime: new Date()
+                };
+                
+                this.showScanningOverlay();
+                this.startScanProgress();
+                
+                try {
+                    // في نظام حقيقي، هنا سيتم استخدام GitHub API
+                    // لكن في هذا النظام المبسط، سنستخدم فحصاً تجريبياً
+                    
+                    await this.simulateGitHubScan();
+                    
+                    if (this.currentScan.cancelled) {
+                        this.showToast('تم إلغاء الفحص', 'warning');
+                        return;
+                    }
+                    
+                    // حفظ النتائج
+                    this.saveScanResults();
+                    
+                    // عرض النتائج
+                    this.showResultsModal();
+                    
+                } catch (error) {
+                    console.error('خطأ في الفحص:', error);
+                    this.showToast(`خطأ: ${error.message}`, 'error');
+                } finally {
+                    this.hideScanningOverlay();
+                    this.currentScan = null;
+                }
+            }
+            
+            async simulateGitHubScan() {
+                // محاكاة فحص GitHub
+                const totalSteps = 50;
+                
+                for (let i = 0; i < totalSteps; i++) {
+                    if (this.currentScan.cancelled) return;
+                    
+                    await this.delay(100);
+                    
+                    // تحديث التقدم
+                    const progress = Math.floor((i / totalSteps) * 100);
+                    this.updateScanProgress(
+                        `فحص الملفات... (الخطوة ${i + 1}/${totalSteps})`,
+                        progress
+                    );
+                    
+                    // محاكاة اكتشاف عناوين
+                    if (Math.random() > 0.7) {
+                        const address = this.generateMockAddress();
+                        this.currentScan.foundAddresses.push(address);
+                        this.updateAddressesFound(this.currentScan.foundAddresses.length);
+                    }
+                    
+                    this.currentScan.scannedFiles += Math.floor(Math.random() * 10) + 1;
+                    this.updateFilesScanned(this.currentScan.scannedFiles);
+                }
+                
+                // إذا لم يتم اكتشاف أي عناوين، نضيف بعض العناوين الوهمية للتوضيح
+                if (this.currentScan.foundAddresses.length === 0) {
+                    const sampleAddresses = [
+                        this.generateMockAddress('bitcoin'),
+                        this.generateMockAddress('ethereum')
+                    ];
+                    this.currentScan.foundAddresses.push(...sampleAddresses);
+                    this.updateAddressesFound(this.currentScan.foundAddresses.length);
+                }
+            }
+            
+            generateMockAddress(type = null) {
+                const enabledTypes = Object.keys(this.settings.enabledCrypto)
+                    .filter(t => this.settings.enabledCrypto[t]);
+                
+                if (enabledTypes.length === 0) {
+                    enabledTypes.push('bitcoin', 'ethereum');
+                }
+                
+                const cryptoType = type || enabledTypes[Math.floor(Math.random() * enabledTypes.length)];
+                
+                let address = '';
+                
+                switch (cryptoType) {
+                    case 'bitcoin':
+                        address = this.generateBitcoinAddress();
+                        break;
+                    case 'ethereum':
+                        address = this.generateEthereumAddress();
+                        break;
+                    case 'litecoin':
+                        address = this.generateLitecoinAddress();
+                        break;
+                    case 'dogecoin':
+                        address = this.generateDogecoinAddress();
+                        break;
+                    default:
+                        address = this.generateEthereumAddress();
+                        cryptoType = 'ethereum';
+                }
+                
+                return {
+                    address: address,
+                    type: cryptoType,
+                    repository: this.currentScan.repository,
+                    foundBy: this.currentScan.user,
+                    foundAt: new Date().toISOString(),
+                    scanId: this.database.metadata.lastScanId + 1
+                };
+            }
+            
+            generateBitcoinAddress() {
+                const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                let address = '1';
+                for (let i = 0; i < 33; i++) {
+                    address += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return address;
+            }
+            
+            generateEthereumAddress() {
+                const chars = '0123456789abcdef';
+                let address = '0x';
+                for (let i = 0; i < 40; i++) {
+                    address += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return address;
+            }
+            
+            generateLitecoinAddress() {
+                const chars = 'LM3abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+                let address = 'L';
+                for (let i = 0; i < 33; i++) {
+                    address += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return address;
+            }
+            
+            generateDogecoinAddress() {
+                const chars = 'D56789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+                let address = 'D';
+                for (let i = 0; i < 33; i++) {
+                    address += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return address;
+            }
+            
+            saveScanResults() {
+                if (!this.currentScan || this.currentScan.foundAddresses.length === 0) {
+                    return;
+                }
+                
+                // زيادة ID المسح
+                this.database.metadata.lastScanId += 1;
+                
+                // إضافة العناوين الجديدة
+                this.currentScan.foundAddresses.forEach(addr => {
+                    const addressKey = `${addr.type}_${addr.address}`;
+                    
+                    if (!this.database.addresses[addressKey]) {
+                        this.database.addresses[addressKey] = addr;
+                        
+                        // تحديث الإحصائيات
+                        this.database.stats.totalAddresses += 1;
+                        this.database.stats.addressesByType[addr.type] = 
+                            (this.database.stats.addressesByType[addr.type] || 0) + 1;
+                    }
+                });
+                
+                // تحديث معلومات المستودع
+                if (!this.database.repositories[this.currentScan.repository]) {
+                    this.database.repositories[this.currentScan.repository] = {
+                        firstScanned: new Date().toISOString(),
+                        lastScanned: new Date().toISOString(),
+                        totalScans: 0,
+                        totalAddressesFound: 0,
+                        scannedBy: []
+                    };
+                    this.database.stats.totalRepos += 1;
+                }
+                
+                const repo = this.database.repositories[this.currentScan.repository];
+                repo.lastScanned = new Date().toISOString();
+                repo.totalScans += 1;
+                repo.totalAddressesFound += this.currentScan.foundAddresses.length;
+                
+                if (!repo.scannedBy.includes(this.currentScan.user)) {
+                    repo.scannedBy.push(this.currentScan.user);
+                }
+                
+                // تحديث معلومات المستخدم
+                if (!this.database.users[this.currentScan.user]) {
+                    this.database.users[this.currentScan.user] = {
+                        firstSeen: new Date().toISOString(),
+                        lastActive: new Date().toISOString(),
+                        totalScans: 0,
+                        totalAddressesFound: 0,
+                        scannedRepositories: []
+                    };
+                    this.database.stats.totalUsers += 1;
+                }
+                
+                const user = this.database.users[this.currentScan.user];
+                user.lastActive = new Date().toISOString();
+                user.totalScans += 1;
+                user.totalAddressesFound += this.currentScan.foundAddresses.length;
+                
+                if (!user.scannedRepositories.includes(this.currentScan.repository)) {
+                    user.scannedRepositories.push(this.currentScan.repository);
+                }
+                
+                // إضافة إلى سجل الفحوصات
+                this.database.recentScans.unshift({
+                    scanId: this.database.metadata.lastScanId,
+                    repository: this.currentScan.repository,
+                    user: this.currentScan.user,
+                    timestamp: new Date().toISOString(),
+                    addressesFound: this.currentScan.foundAddresses.length,
+                    duration: (new Date() - this.currentScan.startTime) / 1000
+                });
+                
+                // الاحتفاظ بـ 100 فحص فقط
+                if (this.database.recentScans.length > 100) {
+                    this.database.recentScans = this.database.recentScans.slice(0, 100);
+                }
+                
+                this.database.stats.totalScans += 1;
+                
+                // حفظ قاعدة البيانات
+                this.saveDatabase();
+                
+                // تحديث الواجهة
+                this.updateUI();
+                
+                this.showToast(`تم اكتشاف ${this.currentScan.foundAddresses.length} عنوان جديد`, 'success');
+            }
+            
+            showResultsModal() {
+                if (!this.currentScan || this.currentScan.foundAddresses.length === 0) {
+                    return;
+                }
+                
+                const modal = document.getElementById('results-modal');
+                const modalTitle = document.getElementById('modal-title');
+                const modalResults = document.getElementById('modal-results');
+                
+                modalTitle.textContent = `نتائج فحص ${this.currentScan.repository}`;
+                
+                let html = `
+                    <p>تم فحص المستودع بنجاح واكتشاف <strong>${this.currentScan.foundAddresses.length}</strong> عنوان:</p>
+                    <div style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
+                `;
+                
+                this.currentScan.foundAddresses.forEach((addr, index) => {
+                    html += `
+                        <div class="address-card" style="margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span class="crypto-type ${addr.type}" style="font-size: 0.8rem;">
+                                    <i class="fab fa-${addr.type}"></i> ${addr.type.toUpperCase()}
+                                </span>
+                                <span style="font-size: 0.8rem; color: #b2bec3;">#${index + 1}</span>
+                            </div>
+                            <div class="address-value" onclick="scannerSystem.copyToClipboard('${addr.address}')" 
+                                 style="font-size: 0.85rem; padding: 5px 8px;">
+                                ${addr.address}
+                            </div>
+                            <div style="font-size: 0.8rem; color: #b2bec3;">
+                                <i class="fas fa-user"></i> ${addr.foundBy} | 
+                                <i class="far fa-clock"></i> ${new Date(addr.foundAt).toLocaleTimeString()}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="scannerSystem.exportCurrentScanResults()" style="flex: 1;">
+                            <i class="fas fa-download"></i> تصدير النتائج
+                        </button>
+                        <button class="btn" onclick="scannerSystem.closeResultsModal()" style="flex: 1;">
+                            <i class="fas fa-check"></i> تم
+                        </button>
+                    </div>
+                `;
+                
+                modalResults.innerHTML = html;
+                modal.style.display = 'flex';
+            }
+            
+            closeResultsModal() {
+                document.getElementById('results-modal').style.display = 'none';
+            }
+            
+            // ============================
+            // إدارة قائمة الانتظار
+            // ============================
+            
+            addToQueue() {
+                const repoUrl = prompt('أدخل رابط مستودع GitHub أو username/repo:');
+                if (!repoUrl) return;
+                
+                const userId = prompt('أدخل اسم المستخدم المساهم:');
+                if (!userId) return;
+                
+                let repoFullName = '';
+                if (repoUrl.includes('github.com/')) {
+                    const match = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
+                    if (match) {
+                        repoFullName = match[1].replace(/\.git$/, '');
+                    } else {
+                        this.showToast('رابط GitHub غير صحيح', 'error');
+                        return;
+                    }
+                } else {
+                    repoFullName = repoUrl.trim();
+                }
+                
+                this.scanQueue.push({
+                    repository: repoFullName,
+                    user: userId,
+                    addedAt: new Date().toISOString(),
+                    priority: 'normal',
+                    status: 'pending'
+                });
+                
+                this.saveQueue();
+                this.displayQueue();
+                this.showToast('تمت إضافة المستودع إلى قائمة الانتظار', 'success');
+            }
+            
+            removeFromQueue(index) {
+                if (confirm('هل تريد حذف هذا العنصر من قائمة الانتظار؟')) {
+                    this.scanQueue.splice(index, 1);
+                    this.saveQueue();
+                    this.displayQueue();
+                    this.showToast('تم حذف العنصر من قائمة الانتظار', 'warning');
+                }
+            }
+            
+            async processQueue() {
+                if (this.scanQueue.length === 0) {
+                    this.showToast('قائمة الانتظار فارغة', 'warning');
+                    return;
+                }
+                
+                const confirmProcess = confirm(`هل تريد معالجة ${this.scanQueue.length} مستودع في قائمة الانتظار؟`);
+                if (!confirmProcess) return;
+                
+                this.showScanningOverlay();
+                document.getElementById('scanning-title').textContent = 'معالجة قائمة الانتظار';
+                
+                let processed = 0;
+                let totalFound = 0;
+                
+                for (let i = 0; i < this.scanQueue.length; i++) {
+                    if (this.currentScan && this.currentScan.cancelled) break;
+                    
+                    const item = this.scanQueue[i];
+                    
+                    this.updateScanProgress(
+                        `جاري فحص: ${item.repository} (${i + 1}/${this.scanQueue.length})`,
+                        Math.floor((i / this.scanQueue.length) * 100)
+                    );
+                    
+                    // محاكاة فحص المستودع
+                    await this.delay(2000);
+                    
+                    // توليد نتائج وهمية
+                    const addressesFound = Math.floor(Math.random() * 5) + 1;
+                    totalFound += addressesFound;
+                    
+                    // تحديث حالة العنصر
+                    item.status = 'completed';
+                    item.completedAt = new Date().toISOString();
+                    item.addressesFound = addressesFound;
+                    
+                    processed++;
+                    
+                    // تحديث قاعدة البيانات
+                    this.addMockScanResults(item.repository, item.user, addressesFound);
+                }
+                
+                this.hideScanningOverlay();
+                
+                // إزالة العناصر المكتملة من قائمة الانتظار
+                this.scanQueue = this.scanQueue.filter(item => item.status !== 'completed');
+                this.saveQueue();
+                this.displayQueue();
+                
+                this.showToast(`تم معالجة ${processed} مستودع وتم اكتشاف ${totalFound} عنوان`, 'success');
+                
+                // تحديث الواجهة
+                this.updateUI();
+            }
+            
+            addMockScanResults(repository, user, count) {
+                // إضافة نتائج وهمية لقاعدة البيانات
+                for (let i = 0; i < count; i++) {
+                    const address = this.generateMockAddress();
+                    address.repository = repository;
+                    address.foundBy = user;
+                    
+                    const addressKey = `${address.type}_${address.address}`;
+                    
+                    if (!this.database.addresses[addressKey]) {
+                        this.database.addresses[addressKey] = address;
+                        this.database.stats.totalAddresses += 1;
+                        this.database.stats.addressesByType[address.type] = 
+                            (this.database.stats.addressesByType[address.type] || 0) + 1;
+                    }
+                }
+                
+                // تحديث الإحصائيات
+                if (!this.database.repositories[repository]) {
+                    this.database.repositories[repository] = {
+                        firstScanned: new Date().toISOString(),
+                        lastScanned: new Date().toISOString(),
+                        totalScans: 1,
+                        totalAddressesFound: count,
+                        scannedBy: [user]
+                    };
+                    this.database.stats.totalRepos += 1;
+                }
+                
+                if (!this.database.users[user]) {
+                    this.database.users[user] = {
+                        firstSeen: new Date().toISOString(),
+                        lastActive: new Date().toISOString(),
+                        totalScans: 1,
+                        totalAddressesFound: count,
+                        scannedRepositories: [repository]
+                    };
+                    this.database.stats.totalUsers += 1;
+                }
+                
+                // إضافة إلى سجل الفحوصات
+                this.database.recentScans.unshift({
+                    repository: repository,
+                    user: user,
+                    timestamp: new Date().toISOString(),
+                    addressesFound: count
+                });
+                
+                if (this.database.recentScans.length > 100) {
+                    this.database.recentScans = this.database.recentScans.slice(0, 100);
+                }
+                
+                this.database.stats.totalScans += 1;
+                
+                this.saveDatabase();
+            }
+            
+            // ============================
+            // تصدير واستيراد البيانات
+            // ============================
+            
+            exportData() {
+                const data = {
+                    database: this.database,
+                    queue: this.scanQueue,
+                    settings: this.settings,
+                    exportDate: new Date().toISOString(),
+                    version: "1.0"
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `crypto-scanner-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showToast('تم تصدير البيانات بنجاح', 'success');
+            }
+            
+            importData() {
+                const fileInput = document.getElementById('import-file');
+                fileInput.click();
+                
+                fileInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const data = JSON.parse(event.target.result);
+                            
+                            if (confirm('هل تريد استيراد البيانات؟ سيتم استبدال البيانات الحالية.')) {
+                                if (data.database) this.database = data.database;
+                                if (data.queue) this.scanQueue = data.queue;
+                                if (data.settings) this.settings = data.settings;
+                                
+                                this.saveDatabase();
+                                this.saveQueue();
+                                this.saveSettings();
+                                this.updateUI();
+                                this.updateSettingsUI();
+                                
+                                this.showToast('تم استيراد البيانات بنجاح', 'success');
+                            }
+                        } catch (error) {
+                            console.error('خطأ في استيراد البيانات:', error);
+                            this.showToast('خطأ في تنسيق ملف البيانات', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                    
+                    // إعادة تعيين المدخل
+                    fileInput.value = '';
+                };
+            }
+            
+            exportCurrentScanResults() {
+                if (!this.currentScan || this.currentScan.foundAddresses.length === 0) {
+                    this.showToast('لا توجد نتائج للتصدير', 'warning');
+                    return;
+                }
+                
+                const data = {
+                    scanResults: {
+                        repository: this.currentScan.repository,
+                        user: this.currentScan.user,
+                        timestamp: new Date().toISOString(),
+                        addresses: this.currentScan.foundAddresses
+                    },
+                    exportDate: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `scan-results-${this.currentScan.repository.replace('/', '-')}-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showToast('تم تصدير نتائج الفحص', 'success');
+            }
+            
+            createDatabaseFile() {
+                const data = JSON.stringify(this.database, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'database.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showToast('تم إنشاء ملف database.json', 'success');
+            }
+            
+            createQueueFile() {
+                const data = JSON.stringify(this.scanQueue, null, 2);
+                const blob = new Blob([data], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'queue.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showToast('تم إنشاء ملف queue.json', 'success');
+            }
+            
+            clearData() {
+                if (confirm('هل تريد مسح جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                    localStorage.removeItem(this.STORAGE_KEY);
+                    localStorage.removeItem(this.QUEUE_KEY);
+                    localStorage.removeItem(this.SETTINGS_KEY);
+                    
+                    this.createNewDatabase();
+                    this.scanQueue = [];
+                    this.loadSettings();
+                    
+                    this.updateUI();
+                    this.showToast('تم مسح جميع البيانات', 'success');
+                }
+            }
+            
+            // ============================
+            // أدوات مساعدة
+            // ============================
+            
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showToast('تم نسخ العنوان إلى الحافظة', 'success');
+                }).catch(err => {
+                    console.error('خطأ في النسخ:', err);
+                    this.showToast('خطأ في نسخ النص', 'error');
+                });
+            }
+            
+            updateScanProgress(message, progress) {
+                const scanningDetails = document.getElementById('scanning-details');
+                const progressBar = document.getElementById('scan-progress-bar');
+                const progressText = document.getElementById('scan-progress');
+                
+                if (scanningDetails) scanningDetails.textContent = message;
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = `${progress}%`;
+            }
+            
+            updateFilesScanned(count) {
+                const element = document.getElementById('files-scanned');
+                if (element) element.textContent = count.toLocaleString();
+            }
+            
+            updateAddressesFound(count) {
+                const element = document.getElementById('addresses-found');
+                if (element) element.textContent = count.toLocaleString();
+            }
+            
+            updateScanTime() {
+                if (!this.scanStartTime) return;
+                
+                const element = document.getElementById('scan-time');
+                if (element) {
+                    const seconds = Math.floor((new Date() - this.scanStartTime) / 1000);
+                    element.textContent = `${seconds} ثانية`;
+                }
+            }
+            
+            startScanProgress() {
+                this.scanStartTime = new Date();
+                
+                // تحديث الوقت كل ثانية
+                this.scanTimeInterval = setInterval(() => {
+                    this.updateScanTime();
+                }, 1000);
+            }
+            
+            stopScanProgress() {
+                if (this.scanTimeInterval) {
+                    clearInterval(this.scanTimeInterval);
+                    this.scanTimeInterval = null;
+                }
+                this.scanStartTime = null;
+            }
+            
+            showScanningOverlay() {
+                document.getElementById('scanning-overlay').style.display = 'flex';
+                this.updateScanProgress('بدء عملية الفحص...', 0);
+                this.updateFilesScanned(0);
+                this.updateAddressesFound(0);
+            }
+            
+            hideScanningOverlay() {
+                document.getElementById('scanning-overlay').style.display = 'none';
+                this.stopScanProgress();
+            }
+            
+            showToast(message, type = 'success') {
+                if (!this.settings.notifications && type !== 'error') return;
+                
+                const toast = document.getElementById('toast');
+                const toastMessage = document.getElementById('toast-message');
+                
+                toastMessage.textContent = message;
+                toast.className = 'toast';
+                toast.classList.add('show');
+                
+                if (type === 'error') {
+                    toast.classList.add('error');
+                } else if (type === 'warning') {
+                    toast.classList.add('warning');
+                }
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            // ============================
+            // إعداد مستمعي الأحداث
+            // ============================
+            
+            setupEventListeners() {
+                // أزرار الفحص
+                document.getElementById('scan-btn').addEventListener('click', () => this.startScan());
+                document.getElementById('scan-sample').addEventListener('click', () => this.startSampleScan());
+                
+                // أزرار التبويب
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabId = tab.getAttribute('data-tab');
+                        this.switchTab(tabId);
+                    });
+                });
+                
+                // تحديث النتائج
+                document.getElementById('refresh-results').addEventListener('click', () => {
+                    this.updateUI();
+                    this.showToast('تم تحديث النتائج', 'success');
+                });
+                
+                // قائمة الانتظار
+                document.getElementById('add-to-queue').addEventListener('click', () => this.addToQueue());
+                document.getElementById('process-queue').addEventListener('click', () => this.processQueue());
+                
+                // الإعدادات
+                document.getElementById('export-data').addEventListener('click', () => this.exportData());
+                document.getElementById('import-data').addEventListener('click', () => this.importData());
+                document.getElementById('clear-data').addEventListener('click', () => this.clearData());
+                
+                // إنشاء الملفات
+                document.getElementById('create-database-file').addEventListener('click', () => this.createDatabaseFile());
+                document.getElementById('create-queue-file').addEventListener('click', () => this.createQueueFile());
+                
+                // تحديث الإعدادات عند التغيير
+                document.getElementById('bitcoin-check').addEventListener('change', (e) => {
+                    this.settings.enabledCrypto.bitcoin = e.target.checked;
+                    this.saveSettings();
+                });
+                
+                document.getElementById('ethereum-check').addEventListener('change', (e) => {
+                    this.settings.enabledCrypto.ethereum = e.target.checked;
+                    this.saveSettings();
+                });
+                
+                document.getElementById('litecoin-check').addEventListener('change', (e) => {
+                    this.settings.enabledCrypto.litecoin = e.target.checked;
+                    this.saveSettings();
+                });
+                
+                document.getElementById('dogecoin-check').addEventListener('change', (e) => {
+                    this.settings.enabledCrypto.dogecoin = e.target.checked;
+                    this.saveSettings();
+                });
+                
+                document.getElementById('notifications-check').addEventListener('change', (e) => {
+                    this.settings.notifications = e.target.checked;
+                    this.saveSettings();
+                });
+                
+                document.getElementById('auto-save-check').addEventListener('change', (e) => {
+                    this.settings.autoSave = e.target.checked;
+                    this.saveSettings();
+                });
+                
+                // إلغاء الفحص
+                document.getElementById('cancel-scan').addEventListener('click', () => {
+                    if (this.currentScan) {
+                        this.currentScan.cancelled = true;
+                        this.showToast('جاري إلغاء الفحص...', 'warning');
+                    }
+                });
+                
+                // إغلاق نافذة النتائج
+                document.getElementById('close-results-modal').addEventListener('click', () => {
+                    this.closeResultsModal();
+                });
+                
+                // إغلاق عند النقر خارج النافذة
+                document.getElementById('results-modal').addEventListener('click', (e) => {
+                    if (e.target.id === 'results-modal') {
+                        this.closeResultsModal();
+                    }
+                });
+                
+                // اختصارات لوحة المفاتيح
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey && e.key === 'r') {
+                        e.preventDefault();
+                        this.updateUI();
+                        this.showToast('تم تحديث النتائج', 'success');
+                    }
+                    
+                    if (e.key === 'Escape') {
+                        if (document.getElementById('scanning-overlay').style.display === 'flex') {
+                            this.hideScanningOverlay();
+                            if (this.currentScan) this.currentScan.cancelled = true;
+                        }
+                        this.closeResultsModal();
+                    }
+                });
+            }
+            
+            switchTab(tabId) {
+                // تحديث الألسنة
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // تفعيل اللسان المحدد
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            }
+            
+            startSampleScan() {
+                // فحص تجريبي بدون اتصال بالإنترنت
+                const sampleRepos = [
+                    'bitcoin/bitcoin',
+                    'ethereum/go-ethereum',
+                    'litecoin-project/litecoin',
+                    'dogecoin/dogecoin',
+                    'input-output-hk/cardano-node'
+                ];
+                
+                const randomRepo = sampleRepos[Math.floor(Math.random() * sampleRepos.length)];
+                const userId = document.getElementById('user-id').value || 'مستخدم تجريبي';
+                
+                document.getElementById('repo-url').value = randomRepo;
+                if (!document.getElementById('user-id').value) {
+                    document.getElementById('user-id').value = userId;
+                }
+                
+                this.showToast(`تم تعيين مستودع تجريبي: ${randomRepo}`, 'success');
+            }
         }
-
-        // نموذج مستودعات عشوائية للفحص
-        const popularCryptoRepos = [
-            "bitcoin/bitcoin",
-            "ethereum/go-ethereum",
-            "litecoin-project/litecoin",
-            "ripple/rippled",
-            "stellar/stellar-core",
-            "monero-project/monero",
-            "dogecoin/dogecoin",
-            "input-output-hk/cardano-node",
-            "polkadot-js/api",
-            "solana-labs/solana",
-            "ava-labs/avalanchego",
-            "cosmos/cosmos-sdk",
-            "chainlink/chainlink",
-            "filecoin-project/lotus",
-            "tronprotocol/java-tron"
-        ];
-
-        // دعم الإدخال بالضغط على Enter
-        document.getElementById('repo-url').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                scanBtn.click();
+        
+        // تشغيل النظام عند تحميل الصفحة
+        let scannerSystem;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            scannerSystem = new CryptoScannerSystem();
+            window.scannerSystem = scannerSystem;
+            
+            // حفظ معلومات أول دخول
+            if (!localStorage.getItem('first_visit')) {
+                localStorage.setItem('first_visit', new Date().toISOString());
+                scannerSystem.showToast('مرحباً بك في نظام فحص العناوين المشفرة!', 'success');
             }
         });
     </script>
