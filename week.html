@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 نظام فحص العناوين المشفرة المتكامل</title>
+    <title>🚀 نظام فحص العناوين - التوكن مضمن</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -13,20 +13,13 @@
             --danger: #d63031;
             --warning: #fdcb6e;
             --success: #00b894;
-            --dark: #16213e;
-            --light: #dfe6e9;
         }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         
         body {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
-            color: var(--light);
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #dfe6e9;
             min-height: 100vh;
         }
         
@@ -62,57 +55,45 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 5px;
         }
         
-        /* قسم التوكن */
-        .token-section {
-            background: rgba(0, 0, 0, 0.3);
+        .system-info {
+            background: rgba(0, 184, 148, 0.1);
             padding: 15px;
             border-radius: 10px;
-            border: 2px dashed var(--accent);
+            border: 2px solid #00b894;
         }
         
-        .token-section h3 {
-            color: var(--accent);
+        .system-info h3 {
+            color: #00b894;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
         
-        #github-token {
-            width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: white;
-            font-family: monospace;
+        .info-item {
+            margin: 8px 0;
             font-size: 0.9rem;
         }
         
-        /* قسم الملفات */
+        .info-item i {
+            color: #0984e3;
+            width: 20px;
+        }
+        
         .file-section {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.05);
             padding: 15px;
             border-radius: 10px;
         }
         
-        .file-list {
-            margin-top: 10px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        
         .file-item {
-            padding: 8px;
+            padding: 10px;
             background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 5px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0984e3;
         }
         
         /* المحتوى الرئيسي */
@@ -142,12 +123,6 @@
             margin-bottom: 5px;
         }
         
-        .stat-card p {
-            color: #b2bec3;
-            font-size: 0.9rem;
-        }
-        
-        /* قسم الفحص */
         .scan-section {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
@@ -161,9 +136,9 @@
         }
         
         .btn {
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             display: flex;
@@ -174,24 +149,9 @@
         }
         
         .btn-primary {
-            background: linear-gradient(to right, var(--secondary), #00a085);
+            background: linear-gradient(to right, #00b894, #00a085);
             color: white;
             flex: 1;
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(to right, var(--accent), #0669b8);
-            color: white;
-        }
-        
-        .btn-warning {
-            background: linear-gradient(to right, var(--warning), #f9a825);
-            color: var(--primary);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(to right, var(--danger), #b71c1c);
-            color: white;
         }
         
         .btn:hover {
@@ -199,7 +159,6 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        /* نتائج الفحص */
         .results-section {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
@@ -209,72 +168,35 @@
             flex-direction: column;
         }
         
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
         .results-container {
             flex: 1;
             overflow-y: auto;
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 15px;
+            margin-top: 15px;
         }
         
         .address-card {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 10px;
             padding: 15px;
-            border-left: 4px solid var(--secondary);
+            border-left: 4px solid #00b894;
         }
         
         .address-card.with-balance {
-            border-left-color: var(--warning);
+            border-left-color: #fdcb6e;
             background: rgba(253, 203, 110, 0.1);
-        }
-        
-        .address-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .crypto-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-        
-        .btc-badge { background: rgba(247, 147, 26, 0.2); color: #f7931a; }
-        .eth-badge { background: rgba(98, 126, 234, 0.2); color: #627eea; }
-        
-        .balance {
-            color: var(--warning);
-            font-weight: bold;
-            font-size: 1.1rem;
         }
         
         .address-value {
             font-family: monospace;
             background: rgba(0, 0, 0, 0.3);
-            padding: 8px;
-            border-radius: 5px;
+            padding: 10px;
+            border-radius: 6px;
             margin: 10px 0;
             word-break: break-all;
-            font-size: 0.9rem;
             cursor: pointer;
-        }
-        
-        .address-value:hover {
-            background: rgba(0, 0, 0, 0.4);
         }
         
         /* الدردشة */
@@ -286,72 +208,18 @@
             flex-direction: column;
         }
         
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .online-users {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        
-        .user-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(9, 132, 227, 0.2);
-            color: var(--accent);
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-        }
-        
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 15px;
+            margin: 15px 0;
             padding: 10px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
         }
         
-        .message {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-        }
-        
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 0.85rem;
-            color: #b2bec3;
-        }
-        
-        .message-user {
-            font-weight: bold;
-            color: var(--accent);
-        }
-        
         .chat-input {
             display: flex;
             gap: 10px;
-        }
-        
-        #chat-message {
-            flex: 1;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: white;
         }
         
         /* التحميل */
@@ -372,7 +240,7 @@
             width: 60px;
             height: 60px;
             border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid var(--secondary);
+            border-top: 5px solid #00b894;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -382,35 +250,21 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* التبويبات */
-        .tabs {
-            display: flex;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 4px;
-            margin-bottom: 15px;
+        /* التقدم */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
         }
         
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            background: rgba(0, 184, 148, 0.2);
-            color: var(--secondary);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #00b894, #0984e3);
+            width: 0%;
+            transition: width 0.3s;
         }
         
         /* التنبيهات */
@@ -419,62 +273,38 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: var(--success);
+            background: #00b894;
             color: white;
-            padding: 12px 24px;
+            padding: 15px 25px;
             border-radius: 8px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
             display: flex;
             align-items: center;
             gap: 10px;
             z-index: 1001;
-            transition: transform 0.5s ease;
+            transition: transform 0.5s;
         }
         
         .toast.show {
             transform: translateX(-50%) translateY(0);
         }
         
-        .toast.error {
-            background: var(--danger);
+        .online-users {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
         }
         
-        .toast.warning {
-            background: var(--warning);
-            color: var(--primary);
-        }
-        
-        /* الباج */
-        .badge {
+        .user-badge {
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            min-width: 20px;
-            height: 20px;
-            padding: 0 6px;
-            background: var(--danger);
-            color: white;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-        
-        /* التقدم */
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(to right, var(--secondary), var(--accent));
-            border-radius: 3px;
-            width: 0%;
-            transition: width 0.3s ease;
+            gap: 5px;
+            background: rgba(9, 132, 227, 0.2);
+            color: #0984e3;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -483,57 +313,50 @@
         <!-- الشريط الجانبي -->
         <div class="sidebar">
             <div class="logo">
-                <h1><i class="fas fa-coins"></i> Crypto Scanner Pro</h1>
-                <p style="color: #b2bec3; font-size: 0.9rem;">فحص تلقائي - تخزين مركزي</p>
-            </div>
-            
-            <!-- قسم التوكن -->
-            <div class="token-section">
-                <h3><i class="fas fa-key"></i> GitHub Token</h3>
-                <input type="password" id="github-token" placeholder="الصق التوكن هنا (ghp_xxxxxxxxxxxx)">
-                <button class="btn btn-primary" id="save-token" style="margin-top: 10px;">
-                    <i class="fas fa-save"></i> حفظ التوكن
-                </button>
-                <p style="color: #b2bec3; font-size: 0.8rem; margin-top: 10px;">
-                    <i class="fas fa-info-circle"></i> التوكن مطلوب للتخزين المشترك
-                </p>
-            </div>
-            
-            <!-- قسم الملفات -->
-            <div class="file-section">
-                <h3><i class="fas fa-file-alt"></i> ملفات العناوين</h3>
-                <div class="file-list" id="file-list">
-                    <div class="file-item">
-                        <span>32.txt</span>
-                        <span id="file-count">0 عنوان</span>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" id="reload-files" style="margin-top: 10px; width: 100%;">
-                    <i class="fas fa-sync-alt"></i> تحديث الملفات
-                </button>
+                <h1><i class="fas fa-coins"></i> Crypto Scanner PRO</h1>
+                <p style="color: #b2bec3; font-size: 0.9rem;">التوكن مضمن - يعمل مباشرة</p>
             </div>
             
             <!-- معلومات النظام -->
-            <div class="file-section">
-                <h3><i class="fas fa-cog"></i> إعدادات النظام</h3>
-                <div style="margin-top: 10px;">
-                    <label style="display: block; margin-bottom: 5px; color: #b2bec3;">
-                        <input type="checkbox" id="auto-scan" checked> الفحص التلقائي
-                    </label>
-                    <label style="display: block; margin-bottom: 5px; color: #b2bec3;">
-                        <input type="checkbox" id="check-balance" checked> فحص الرصيد
-                    </label>
-                    <label style="display: block; color: #b2bec3;">
-                        <input type="checkbox" id="notifications" checked> الإشعارات
-                    </label>
+            <div class="system-info">
+                <h3><i class="fas fa-key"></i> النظام جاهز</h3>
+                <div class="info-item">
+                    <i class="fas fa-check-circle"></i> التوكن مضمن في النظام
                 </div>
+                <div class="info-item">
+                    <i class="fas fa-database"></i> البيانات مشتركة تلقائياً
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-users"></i> جميع المستخدمين متصلين
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-bolt"></i> يعمل فور فتح الصفحة
+                </div>
+            </div>
+            
+            <!-- ملف العناوين -->
+            <div class="file-section">
+                <h3><i class="fas fa-file-alt"></i> ملف العناوين</h3>
+                <div id="file-info">
+                    <div class="file-item">
+                        <div style="font-weight: bold;">32.txt</div>
+                        <div style="color: #b2bec3; font-size: 0.9rem;" id="address-count">
+                            جاري تحميل العناوين...
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="load-addresses" style="margin-top: 10px;">
+                    <i class="fas fa-sync-alt"></i> تحديث الملف
+                </button>
             </div>
             
             <!-- المساهمون -->
             <div class="file-section">
-                <h3><i class="fas fa-users"></i> المساهمون النشطون <span class="badge" id="users-count">0</span></h3>
-                <div id="active-users" style="margin-top: 10px;">
-                    <p style="color: #b2bec3; font-size: 0.9rem; text-align: center;">جاري التحميل...</p>
+                <h3><i class="fas fa-users"></i> المتصلون الآن</h3>
+                <div class="online-users" id="online-users">
+                    <div class="user-badge">
+                        <i class="fas fa-user"></i> أنت
+                    </div>
                 </div>
             </div>
         </div>
@@ -555,103 +378,52 @@
                     <p>تحتوي رصيد</p>
                 </div>
                 <div class="stat-card">
-                    <h3 id="total-balance">0 BTC</h3>
-                    <p>إجمالي الرصيد</p>
+                    <h3 id="active-users">1</h3>
+                    <p>مستخدمين نشطين</p>
                 </div>
             </div>
             
-            <!-- تبويبات الفحص -->
-            <div class="tabs">
-                <div class="tab active" data-tab="scan">🔍 الفحص التلقائي</div>
-                <div class="tab" data-tab="manual">✏️ فحص يدوي</div>
-                <div class="tab" data-tab="results">📊 النتائج</div>
-            </div>
-            
-            <!-- محتوى التبويبات -->
-            <div class="tab-content active" id="scan-tab">
-                <div class="scan-section">
-                    <h2><i class="fas fa-robot"></i> الفحص التلقائي</h2>
-                    <p style="color: #b2bec3; margin-bottom: 15px;">
-                        النظام يفحص العناوين تلقائياً من ملف 32.txt ويحفظ النتائج على GitHub
-                    </p>
-                    
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="auto-progress"></div>
-                    </div>
-                    
-                    <div class="scan-controls">
-                        <button class="btn btn-primary" id="start-auto-scan">
-                            <i class="fas fa-play"></i> بدء الفحص التلقائي
-                        </button>
-                        <button class="btn btn-warning" id="pause-scan">
-                            <i class="fas fa-pause"></i> إيقاف مؤقت
-                        </button>
-                        <button class="btn btn-danger" id="stop-scan">
-                            <i class="fas fa-stop"></i> إيقاف
-                        </button>
-                    </div>
-                    
-                    <div style="margin-top: 15px; color: #b2bec3; font-size: 0.9rem;">
-                        <div>المعالجة: <span id="current-address">-</span></div>
-                        <div>المتبقي: <span id="remaining-addresses">0</span> عنوان</div>
-                        <div>السرعة: <span id="scan-speed">0</span> عنوان/ثانية</div>
-                    </div>
+            <!-- الفحص التلقائي -->
+            <div class="scan-section">
+                <h2><i class="fas fa-robot"></i> الفحص التلقائي</h2>
+                <p style="color: #b2bec3; margin: 10px 0;">
+                    النظام يفحص العناوين تلقائياً من ملف 32.txt ويحفظ النتائج للجميع
+                </p>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="scan-progress"></div>
                 </div>
-            </div>
-            
-            <!-- التبويب اليدوي -->
-            <div class="tab-content" id="manual-tab">
-                <div class="scan-section">
-                    <h2><i class="fas fa-search"></i> فحص يدوي</h2>
-                    <textarea id="manual-addresses" placeholder="الصق العناوين هنا (سطر لكل عنوان)" 
-                              style="width: 100%; height: 150px; padding: 10px; background: rgba(255,255,255,0.05); 
-                                     border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; margin-bottom: 15px;"></textarea>
-                    <button class="btn btn-primary" id="scan-manual">
-                        <i class="fas fa-search"></i> فحص العناوين
+                
+                <div class="scan-controls">
+                    <button class="btn btn-primary" id="start-scan">
+                        <i class="fas fa-play"></i> بدء الفحص التلقائي
+                    </button>
+                    <button class="btn btn-primary" id="force-sync">
+                        <i class="fas fa-cloud-upload-alt"></i> مزامنة مع الخادم
                     </button>
                 </div>
-            </div>
-            
-            <!-- التبويب النتائج -->
-            <div class="tab-content" id="results-tab">
-                <div class="scan-section">
-                    <h2><i class="fas fa-chart-bar"></i> إحصائيات النتائج</h2>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
-                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
-                            <div style="color: #b2bec3; font-size: 0.9rem;">Bitcoin</div>
-                            <div style="font-size: 1.5rem; color: #f7931a;" id="btc-count">0</div>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
-                            <div style="color: #b2bec3; font-size: 0.9rem;">Ethereum</div>
-                            <div style="font-size: 1.5rem; color: #627eea;" id="eth-count">0</div>
-                        </div>
-                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
-                            <div style="color: #b2bec3; font-size: 0.9rem;">العناوين الفعالة</div>
-                            <div style="font-size: 1.5rem; color: var(--success);" id="active-count">0</div>
-                        </div>
-                    </div>
+                
+                <div style="margin-top: 15px; color: #b2bec3; font-size: 0.9rem;">
+                    <div>جاري معالجة: <span id="current-processing">-</span></div>
+                    <div>المتبقي: <span id="remaining">0</span> عنوان</div>
+                    <div>السرعة: <span id="speed">0</span> عنوان/ثانية</div>
                 </div>
             </div>
             
-            <!-- نتائج الفحص -->
+            <!-- النتائج -->
             <div class="results-section">
-                <div class="results-header">
-                    <h2><i class="fas fa-list"></i> العناوين المكتشفة <span class="badge" id="results-count">0</span></h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-secondary" id="export-results">
-                            <i class="fas fa-download"></i> تصدير
-                        </button>
-                        <button class="btn btn-secondary" id="refresh-results">
-                            <i class="fas fa-sync-alt"></i> تحديث
-                        </button>
-                    </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2><i class="fas fa-list"></i> العناوين المكتشفة</h2>
+                    <button class="btn btn-primary" id="export-btn">
+                        <i class="fas fa-download"></i> تصدير النتائج
+                    </button>
                 </div>
                 
                 <div class="results-container" id="results-container">
                     <div style="text-align: center; padding: 40px; color: #b2bec3;">
                         <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                        <h3>لم يتم فحص أي عناوين بعد</h3>
-                        <p>ابدأ الفحص التلقائي لاكتشاف العناوين</p>
+                        <h3>ابدأ الفحص التلقائي</h3>
+                        <p>النتائج ستظهر هنا تلقائياً</p>
                     </div>
                 </div>
             </div>
@@ -659,70 +431,76 @@
         
         <!-- الدردشة -->
         <div class="chat-section">
-            <div class="chat-header">
-                <h2><i class="fas fa-comments"></i> الدردشة المشتركة</h2>
-                <div class="online-users" id="online-users">
-                    <!-- المستخدمين المتصلين -->
-                </div>
-            </div>
+            <h2><i class="fas fa-comments"></i> الدردشة المشتركة</h2>
             
             <div class="chat-messages" id="chat-messages">
-                <div class="message">
-                    <div class="message-header">
-                        <span class="message-user">النظام</span>
-                        <span>الآن</span>
-                    </div>
-                    <div>مرحباً بالجميع! يمكنكم التحدث ومشاركة الاكتشافات هنا.</div>
+                <div style="text-align: center; padding: 20px; color: #b2bec3;">
+                    <i class="fas fa-comment" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>مرحباً! يمكنك التحدث مع المستخدمين الآخرين هنا</p>
                 </div>
             </div>
             
             <div class="chat-input">
-                <input type="text" id="chat-message" placeholder="اكتب رسالة...">
-                <button class="btn btn-primary" id="send-message">
+                <input type="text" id="chat-input" placeholder="اكتب رسالة..." 
+                       style="flex: 1; padding: 10px; background: rgba(255,255,255,0.1); 
+                              border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white;">
+                <button class="btn btn-primary" id="send-btn">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
             
             <div style="margin-top: 15px;">
-                <input type="text" id="user-name" placeholder="اسمك" 
-                       style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); 
+                <input type="text" id="username" placeholder="اسمك (اختياري)" 
+                       style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); 
                               border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white;">
             </div>
         </div>
     </div>
     
     <!-- نافذة التحميل -->
-    <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-overlay" id="loading">
         <div style="text-align: center;">
             <div class="spinner"></div>
-            <h3 style="margin-top: 20px;" id="loading-text">جاري التحميل...</h3>
-            <p id="loading-details" style="color: #b2bec3; margin-top: 10px;"></p>
+            <h3 style="margin-top: 20px;" id="loading-text">جاري تهيئة النظام...</h3>
         </div>
     </div>
     
     <!-- التنبيهات -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
-        <span id="toast-message"></span>
+        <span id="toast-msg">النظام جاهز!</span>
     </div>
 
-    <!-- النظام الرئيسي -->
+    <!-- ======================= -->
+    <!-- النظام مع التوكن المضمن -->
+    <!-- ======================= -->
     <script>
-        class AdvancedCryptoScanner {
+        // ===========================================
+        // ضع التوكن هنا - بين علامتي التنصيص
+        // ===========================================
+        const GITHUB_TOKEN = "";
+        // ===========================================
+        // ضع اسم مستخدم GitHub هنا
+        const GITHUB_USERNAME = "crypto-scanner-helper";
+        // ضع اسم المستودع هنا
+        const GITHUB_REPO = "crypto-scanner-data";
+        // ===========================================
+        
+        class EmbeddedTokenScanner {
             constructor() {
-                // إعدادات GitHub
-                this.githubConfig = {
-                    username: 'crypto-scanner-helper',
-                    repo: 'crypto-scanner-database',
-                    token: '',
+                // إعدادات GitHub مع التوكن المضمن
+                this.config = {
+                    username: GITHUB_USERNAME,
+                    repo: GITHUB_REPO,
+                    token: GITHUB_TOKEN,
                     branch: 'main'
                 };
                 
-                // قاعدة البيانات المحلية
-                this.localDatabase = {
+                // قاعدة البيانات
+                this.database = {
                     addresses: {},
                     metadata: {
-                        version: '2.0',
+                        version: '3.0',
                         createdAt: new Date().toISOString(),
                         lastSync: null
                     },
@@ -730,9 +508,7 @@
                         total: 0,
                         scanned: 0,
                         withBalance: 0,
-                        totalBalance: 0,
-                        btcCount: 0,
-                        ethCount: 0
+                        totalBalance: 0
                     },
                     users: {},
                     chat: []
@@ -740,272 +516,220 @@
                 
                 // حالة النظام
                 this.isScanning = false;
-                this.isPaused = false;
-                this.scanSpeed = 0;
-                this.currentUser = 'مستخدم_' + Math.random().toString(36).substr(2, 5);
-                this.autoScanInterval = null;
-                this.addressesQueue = [];
+                this.addresses = [];
+                this.currentUser = 'مستخدم_' + Math.floor(Math.random() * 10000);
                 
-                // عناصر DOM
-                this.elements = {};
-                
-                // أنماط العناوين
-                this.addressPatterns = {
-                    bitcoin: /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bc1[ac-hj-np-z02-9]{11,87}$/,
-                    ethereum: /^0x[a-fA-F0-9]{40}$/
-                };
-                
+                // تهيئة النظام
                 this.init();
             }
             
             async init() {
-                this.cacheElements();
-                this.loadLocalData();
-                this.setupEventListeners();
+                this.showLoading('جاري تهيئة النظام...');
+                
+                // عرض معلومات التوكن
+                this.showTokenInfo();
+                
+                // تحميل العناوين من الملف
+                await this.loadAddressesFromFile();
+                
+                // تحميل البيانات من GitHub
+                await this.loadFromGitHub();
+                
+                // تحديث واجهة المستخدم
+                this.updateUI();
+                
+                // بدء التحديث التلقائي
                 this.startAutoSync();
-                this.loadAddressesFromFile();
                 
-                // تحديث واجهة المستخدم كل ثانية
-                setInterval(() => this.updateUI(), 1000);
+                // بدء الفحص التلقائي بعد 3 ثواني
+                setTimeout(() => {
+                    this.startAutoScan();
+                }, 3000);
+                
+                this.hideLoading();
+                this.showToast('✅ النظام جاهز ويعمل تلقائياً!');
             }
             
-            cacheElements() {
-                // التوكن
-                this.elements.githubToken = document.getElementById('github-token');
-                this.elements.saveToken = document.getElementById('save-token');
+            showTokenInfo() {
+                // عرض معلومات التوكن في واجهة المستخدم
+                const tokenPreview = this.config.token.substring(0, 10) + '...';
+                console.log('🔑 التوكن المضمن:', tokenPreview);
                 
-                // الملفات
-                this.elements.fileList = document.getElementById('file-list');
-                this.elements.fileCount = document.getElementById('file-count');
-                this.elements.reloadFiles = document.getElementById('reload-files');
-                
-                // الإحصائيات
-                this.elements.totalAddresses = document.getElementById('total-addresses');
-                this.elements.scannedAddresses = document.getElementById('scanned-addresses');
-                this.elements.withBalance = document.getElementById('with-balance');
-                this.elements.totalBalance = document.getElementById('total-balance');
-                
-                // التحكم
-                this.elements.startAutoScan = document.getElementById('start-auto-scan');
-                this.elements.pauseScan = document.getElementById('pause-scan');
-                this.elements.stopScan = document.getElementById('stop-scan');
-                this.elements.autoProgress = document.getElementById('auto-progress');
-                this.elements.currentAddress = document.getElementById('current-address');
-                this.elements.remainingAddresses = document.getElementById('remaining-addresses');
-                this.elements.scanSpeed = document.getElementById('scan-speed');
-                
-                // النتائج
-                this.elements.resultsContainer = document.getElementById('results-container');
-                this.elements.resultsCount = document.getElementById('results-count');
-                this.elements.exportResults = document.getElementById('export-results');
-                this.elements.refreshResults = document.getElementById('refresh-results');
-                
-                // الدردشة
-                this.elements.chatMessages = document.getElementById('chat-messages');
-                this.elements.chatMessage = document.getElementById('chat-message');
-                this.elements.sendMessage = document.getElementById('send-message');
-                this.elements.userName = document.getElementById('user-name');
-                this.elements.onlineUsers = document.getElementById('online-users');
-                this.elements.usersCount = document.getElementById('users-count');
-                
-                // التبويبات
-                this.elements.tabs = document.querySelectorAll('.tab');
-                
-                // التحميل
-                this.elements.loadingOverlay = document.getElementById('loading-overlay');
-                this.elements.loadingText = document.getElementById('loading-text');
-                this.elements.loadingDetails = document.getElementById('loading-details');
-                
-                // التنبيهات
-                this.elements.toast = document.getElementById('toast');
-                this.elements.toastMessage = document.getElementById('toast-message');
-            }
-            
-            setupEventListeners() {
-                // حفظ التوكن
-                this.elements.saveToken.addEventListener('click', () => this.saveToken());
-                
-                // تحديث الملفات
-                this.elements.reloadFiles.addEventListener('click', () => this.loadAddressesFromFile());
-                
-                // الفحص التلقائي
-                this.elements.startAutoScan.addEventListener('click', () => this.startAutoScan());
-                this.elements.pauseScan.addEventListener('click', () => this.pauseScan());
-                this.elements.stopScan.addEventListener('click', () => this.stopScan());
-                
-                // تصدير النتائج
-                this.elements.exportResults.addEventListener('click', () => this.exportResults());
-                this.elements.refreshResults.addEventListener('click', () => this.updateUI());
-                
-                // الدردشة
-                this.elements.sendMessage.addEventListener('click', () => this.sendChatMessage());
-                this.elements.chatMessage.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.sendChatMessage();
-                });
-                
-                // اسم المستخدم
-                this.elements.userName.addEventListener('change', (e) => {
-                    if (e.target.value) this.currentUser = e.target.value;
-                });
-                
-                // التبويبات
-                this.elements.tabs.forEach(tab => {
-                    tab.addEventListener('click', () => {
-                        const tabId = tab.getAttribute('data-tab');
-                        this.switchTab(tabId);
-                    });
-                });
+                // إضافة رسالة ترحيبية في الدردشة
+                this.addChatMessage('النظام', `مرحباً! النظام يعمل بتوكن: ${tokenPreview}`);
+                this.addChatMessage('النظام', 'الفحص التلقائي سيبدأ خلال ثواني...');
             }
             
             async loadAddressesFromFile() {
                 try {
-                    this.showLoading('جاري تحميل ملف العناوين...');
-                    
-                    // محاولة قراءة ملف 32.txt
                     const response = await fetch('32.txt');
-                    
                     if (!response.ok) {
-                        // إذا لم يوجد الملف، ننشئ ملفاً افتراضياً
-                        await this.createSampleFile();
+                        // إذا لم يوجد الملف، ننشئ عينات
+                        this.createSampleAddresses();
                         return;
                     }
                     
                     const text = await response.text();
-                    const addresses = text.split('\n')
+                    this.addresses = text.split('\n')
                         .map(line => line.trim())
                         .filter(line => line && !line.startsWith('#'));
                     
-                    this.addressesQueue = addresses;
+                    document.getElementById('address-count').textContent = 
+                        `${this.addresses.length} عنوان`;
                     
-                    // تحديث العد
-                    this.elements.fileCount.textContent = `${addresses.length} عنوان`;
-                    
-                    this.showToast(`تم تحميل ${addresses.length} عنوان من الملف`, 'success');
+                    this.showToast(`📁 تم تحميل ${this.addresses.length} عنوان`);
                     
                 } catch (error) {
                     console.error('خطأ في تحميل الملف:', error);
-                    this.showToast('تعذر تحميل ملف العناوين', 'error');
-                    
-                    // إنشاء ملف تجريبي
-                    await this.createSampleFile();
-                } finally {
-                    this.hideLoading();
+                    this.createSampleAddresses();
                 }
             }
             
-            async createSampleFile() {
-                // إنشاء عناوين تجريبية للاختبار
-                const sampleAddresses = [
-                    '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',  // Bitcoin Genesis
-                    '0x742d35Cc6634C0532925a3b844Bc9e90F1f04e6a', // Ethereum
+            createSampleAddresses() {
+                // إنشاء عناوين تجريبية
+                this.addresses = [
+                    '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+                    '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy',
                     'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
-                    '0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c',
-                    '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy'
+                    '0x742d35Cc6634C0532925a3b844Bc9e90F1f04e6a',
+                    '0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c'
                 ];
                 
-                this.addressesQueue = sampleAddresses;
-                this.elements.fileCount.textContent = `${sampleAddresses.length} عنوان (تجريبي)`;
+                document.getElementById('address-count').textContent = 
+                    `${this.addresses.length} عنوان (تجريبي)`;
                 
-                this.showToast('تم إنشاء ملف تجريبي للاختبار', 'warning');
+                this.showToast('⚠️ تم استخدام عناوين تجريبية');
+            }
+            
+            async loadFromGitHub() {
+                try {
+                    const url = `https://api.github.com/repos/${this.config.username}/${this.config.repo}/contents/database.json`;
+                    
+                    const response = await fetch(url, {
+                        headers: {
+                            'Authorization': `token ${this.config.token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        const content = atob(data.content);
+                        this.database = JSON.parse(content);
+                        
+                        this.showToast('📥 تم تحميل البيانات من الخادم');
+                    } else {
+                        // إنشاء قاعدة بيانات جديدة
+                        await this.createNewDatabase();
+                    }
+                    
+                } catch (error) {
+                    console.error('خطأ في تحميل البيانات:', error);
+                    await this.createNewDatabase();
+                }
+            }
+            
+            async createNewDatabase() {
+                try {
+                    const url = `https://api.github.com/repos/${this.config.username}/${this.config.repo}/contents/database.json`;
+                    
+                    const content = btoa(unescape(encodeURIComponent(
+                        JSON.stringify(this.database, null, 2)
+                    )));
+                    
+                    const response = await fetch(url, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `token ${this.config.token}`,
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: 'إنشاء قاعدة بيانات جديدة',
+                            content: content,
+                            branch: this.config.branch
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        this.showToast('✅ تم إنشاء قاعدة بيانات جديدة على GitHub');
+                    }
+                    
+                } catch (error) {
+                    console.error('خطأ في إنشاء قاعدة البيانات:', error);
+                }
             }
             
             async startAutoScan() {
-                if (this.isScanning) return;
+                if (this.isScanning || this.addresses.length === 0) return;
                 
                 this.isScanning = true;
-                this.isPaused = false;
+                this.showToast('🚀 بدء الفحص التلقائي...');
                 
-                const totalAddresses = this.addressesQueue.length;
-                if (totalAddresses === 0) {
-                    this.showToast('لا توجد عناوين للفحص', 'error');
-                    return;
-                }
-                
-                this.showToast('بدء الفحص التلقائي...', 'success');
-                
-                let scannedCount = 0;
+                const total = this.addresses.length;
+                let processed = 0;
                 const startTime = Date.now();
                 
-                for (let i = 0; i < totalAddresses; i++) {
-                    if (!this.isScanning) break;
+                for (let i = 0; i < total; i++) {
+                    const address = this.addresses[i];
                     
-                    while (this.isPaused) {
-                        await this.sleep(1000);
-                    }
+                    // تحديث واجهة التقدم
+                    document.getElementById('current-processing').textContent = 
+                        address.substring(0, 20) + '...';
+                    document.getElementById('remaining').textContent = total - i - 1;
                     
-                    const address = this.addressesQueue[i];
-                    
-                    // تحديث واجهة المستخدم
-                    this.elements.currentAddress.textContent = address.substring(0, 20) + '...';
-                    this.elements.remainingAddresses.textContent = totalAddresses - i - 1;
-                    
-                    const progress = Math.floor(((i + 1) / totalAddresses) * 100);
-                    this.elements.autoProgress.style.width = `${progress}%`;
+                    const progress = Math.floor(((i + 1) / total) * 100);
+                    document.getElementById('scan-progress').style.width = `${progress}%`;
                     
                     // فحص العنوان
                     await this.scanAddress(address);
-                    scannedCount++;
+                    processed++;
                     
                     // حساب السرعة
                     const elapsed = (Date.now() - startTime) / 1000;
-                    this.scanSpeed = scannedCount / elapsed;
-                    this.elements.scanSpeed.textContent = this.scanSpeed.toFixed(2);
+                    const speed = processed / elapsed;
+                    document.getElementById('speed').textContent = speed.toFixed(2);
                     
-                    // مزامنة كل 10 عناوين
-                    if (scannedCount % 10 === 0) {
+                    // مزامنة كل 5 عناوين
+                    if (processed % 5 === 0) {
                         await this.syncWithGitHub();
                     }
                     
-                    // تأخير لعدم إثقال API
+                    // تأخير صغير
                     await this.sleep(100);
                 }
                 
                 this.isScanning = false;
-                this.showToast('اكتمل الفحص التلقائي', 'success');
                 await this.syncWithGitHub();
-            }
-            
-            pauseScan() {
-                this.isPaused = !this.isPaused;
-                this.elements.pauseScan.innerHTML = this.isPaused ? 
-                    '<i class="fas fa-play"></i> استئناف' : 
-                    '<i class="fas fa-pause"></i> إيقاف مؤقت';
-                
-                this.showToast(this.isPaused ? 'تم الإيقاف المؤقت' : 'تم الاستئناف', 'warning');
-            }
-            
-            stopScan() {
-                this.isScanning = false;
-                this.isPaused = false;
-                this.showToast('تم إيقاف الفحص', 'error');
+                this.showToast('✅ اكتمل الفحص التلقائي!');
             }
             
             async scanAddress(address) {
                 try {
                     // تحديد نوع العنوان
-                    let type = 'unknown';
-                    if (this.addressPatterns.bitcoin.test(address)) {
-                        type = 'bitcoin';
-                        this.localDatabase.stats.btcCount++;
-                    } else if (this.addressPatterns.ethereum.test(address)) {
-                        type = 'ethereum';
-                        this.localDatabase.stats.ethCount++;
-                    } else {
-                        return; // تجاهل العناوين غير المعروفة
-                    }
+                    const isBTC = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bc1[ac-hj-np-z02-9]{11,87}$/.test(address);
+                    const isETH = /^0x[a-fA-F0-9]{40}$/.test(address);
                     
-                    // محاكاة فحص الرصيد (في نظام حقيقي، هنا ستكون API call)
-                    const hasBalance = Math.random() > 0.8; // 20% فرصة أن يحتوي على رصيد
+                    if (!isBTC && !isETH) return;
+                    
+                    const type = isBTC ? 'bitcoin' : 'ethereum';
+                    
+                    // محاكاة فحص الرصيد
+                    const hasBalance = Math.random() > 0.7;
                     let balance = 0;
                     
                     if (hasBalance) {
-                        balance = Math.random() * 10; // رصيد عشوائي
-                        this.localDatabase.stats.withBalance++;
-                        this.localDatabase.stats.totalBalance += balance;
+                        balance = Math.random() * 5;
+                        this.database.stats.withBalance++;
+                        this.database.stats.totalBalance += balance;
+                        
+                        // إشعار في الدردشة للعناوين التي تحتوي رصيد
+                        this.addChatMessage('النظام', 
+                            `💰 اكتشاف: ${address.substring(0, 15)}... - ${balance.toFixed(4)} ${type.toUpperCase()}`);
                     }
                     
                     // حفظ النتيجة
-                    this.localDatabase.addresses[address] = {
+                    this.database.addresses[address] = {
                         address,
                         type,
                         balance,
@@ -1014,14 +738,11 @@
                         scannedBy: this.currentUser
                     };
                     
-                    this.localDatabase.stats.total++;
-                    this.localDatabase.stats.scanned++;
+                    this.database.stats.total++;
+                    this.database.stats.scanned++;
                     
-                    // إضافة إلى الدردشة إذا كان به رصيد
-                    if (hasBalance) {
-                        this.addChatMessage('النظام', 
-                            `🔔 اكتشاف: ${address} - ${balance.toFixed(8)} ${type.toUpperCase()}`);
-                    }
+                    // تحديث الواجهة
+                    this.updateUI();
                     
                 } catch (error) {
                     console.error('خطأ في فحص العنوان:', error);
@@ -1029,37 +750,25 @@
             }
             
             async syncWithGitHub() {
-                if (!this.githubConfig.token) return;
-                
                 try {
-                    this.localDatabase.metadata.lastSync = new Date().toISOString();
+                    // تحديث وقت المزامنة
+                    this.database.metadata.lastSync = new Date().toISOString();
                     
-                    // حفظ البيانات المحلية
-                    this.saveLocalData();
+                    // تحديث معلومات المستخدم
+                    this.database.users[this.currentUser] = {
+                        lastActive: new Date().toISOString(),
+                        totalScans: Object.keys(this.database.addresses).length
+                    };
                     
-                    // رفع إلى GitHub
-                    const success = await this.uploadToGitHub();
-                    
-                    if (success) {
-                        // تحديث المستخدمين النشطين
-                        await this.updateActiveUsers();
-                    }
-                    
-                } catch (error) {
-                    console.error('خطأ في المزامنة:', error);
-                }
-            }
-            
-            async uploadToGitHub() {
-                try {
-                    const url = `https://api.github.com/repos/${this.githubConfig.username}/${this.githubConfig.repo}/contents/database.json`;
+                    // رفع البيانات
+                    const url = `https://api.github.com/repos/${this.config.username}/${this.config.repo}/contents/database.json`;
                     
                     // الحصول على SHA للملف الحالي
                     let sha = null;
                     try {
                         const response = await fetch(url, {
                             headers: {
-                                'Authorization': `token ${this.githubConfig.token}`,
+                                'Authorization': `token ${this.config.token}`,
                                 'Accept': 'application/vnd.github.v3+json'
                             }
                         });
@@ -1069,153 +778,73 @@
                             sha = data.sha;
                         }
                     } catch (e) {
-                        // الملف غير موجود، سننشئه
+                        // الملف غير موجود
                     }
                     
-                    // تحويل البيانات إلى base64
+                    // تحويل البيانات
                     const content = btoa(unescape(encodeURIComponent(
-                        JSON.stringify(this.localDatabase, null, 2)
+                        JSON.stringify(this.database, null, 2)
                     )));
                     
-                    // رفع الملف
+                    // الرفع
                     const response = await fetch(url, {
                         method: 'PUT',
                         headers: {
-                            'Authorization': `token ${this.githubConfig.token}`,
+                            'Authorization': `token ${this.config.token}`,
                             'Accept': 'application/vnd.github.v3+json',
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: `Update ${new Date().toISOString()}`,
+                            message: `تحديث ${new Date().toLocaleTimeString('ar-SA')}`,
                             content: content,
-                            branch: this.githubConfig.branch,
+                            branch: this.config.branch,
                             sha: sha
                         })
                     });
                     
-                    return response.ok;
-                    
-                } catch (error) {
-                    console.error('خطأ في رفع البيانات:', error);
-                    return false;
-                }
-            }
-            
-            async updateActiveUsers() {
-                // تحديث قائمة المستخدمين النشطين
-                if (!this.localDatabase.users[this.currentUser]) {
-                    this.localDatabase.users[this.currentUser] = {
-                        lastActive: new Date().toISOString(),
-                        totalScans: 0
-                    };
-                } else {
-                    this.localDatabase.users[this.currentUser].lastActive = new Date().toISOString();
-                }
-                
-                // تحديث الواجهة
-                this.updateUsersList();
-            }
-            
-            updateUsersList() {
-                const users = Object.keys(this.localDatabase.users)
-                    .filter(user => {
-                        const lastActive = new Date(this.localDatabase.users[user].lastActive);
-                        const minutesAgo = (new Date() - lastActive) / (1000 * 60);
-                        return minutesAgo < 5; // نشط خلال 5 دقائق
-                    });
-                
-                this.elements.usersCount.textContent = users.length;
-                
-                let html = '';
-                users.forEach(user => {
-                    html += `<div class="user-badge"><i class="fas fa-user"></i> ${user}</div>`;
-                });
-                
-                this.elements.onlineUsers.innerHTML = html;
-            }
-            
-            saveToken() {
-                const token = this.elements.githubToken.value.trim();
-                
-                if (!token.startsWith('ghp_')) {
-                    this.showToast('التوكن غير صالح', 'error');
-                    return;
-                }
-                
-                this.githubConfig.token = token;
-                localStorage.setItem('github_token', token);
-                
-                this.showToast('تم حفظ التوكن بنجاح', 'success');
-                this.syncWithGitHub();
-            }
-            
-            loadLocalData() {
-                try {
-                    // تحميل التوكن
-                    const savedToken = localStorage.getItem('github_token');
-                    if (savedToken) {
-                        this.githubConfig.token = savedToken;
-                        this.elements.githubToken.value = savedToken;
-                    }
-                    
-                    // تحميل قاعدة البيانات المحلية
-                    const savedData = localStorage.getItem('crypto_database');
-                    if (savedData) {
-                        this.localDatabase = JSON.parse(savedData);
-                    }
-                    
-                    // تحميل اسم المستخدم
-                    const savedName = localStorage.getItem('user_name');
-                    if (savedName) {
-                        this.currentUser = savedName;
-                        this.elements.userName.value = savedName;
+                    if (response.ok) {
+                        this.showToast('🔄 تم مزامنة البيانات');
                     }
                     
                 } catch (error) {
-                    console.error('خطأ في تحميل البيانات:', error);
-                }
-            }
-            
-            saveLocalData() {
-                try {
-                    localStorage.setItem('crypto_database', JSON.stringify(this.localDatabase));
-                    localStorage.setItem('user_name', this.currentUser);
-                } catch (error) {
-                    console.error('خطأ في حفظ البيانات:', error);
+                    console.error('خطأ في المزامنة:', error);
                 }
             }
             
             updateUI() {
                 // تحديث الإحصائيات
-                this.elements.totalAddresses.textContent = this.localDatabase.stats.total.toLocaleString();
-                this.elements.scannedAddresses.textContent = this.localDatabase.stats.scanned.toLocaleString();
-                this.elements.withBalance.textContent = this.localDatabase.stats.withBalance.toLocaleString();
-                this.elements.totalBalance.textContent = `${this.localDatabase.stats.totalBalance.toFixed(8)} BTC`;
+                document.getElementById('total-addresses').textContent = 
+                    this.database.stats.total;
+                document.getElementById('scanned-addresses').textContent = 
+                    this.database.stats.scanned;
+                document.getElementById('with-balance').textContent = 
+                    this.database.stats.withBalance;
+                document.getElementById('active-users').textContent = 
+                    Object.keys(this.database.users).length;
                 
-                // تحديث نتائج الفحص
-                this.updateResultsDisplay();
+                // تحديث النتائج
+                this.updateResults();
                 
-                // تحديث المساهمين
-                this.updateUsersList();
+                // تحديث المستخدمين النشطين
+                this.updateOnlineUsers();
             }
             
-            updateResultsDisplay() {
-                const addresses = Object.values(this.localDatabase.addresses)
+            updateResults() {
+                const resultsContainer = document.getElementById('results-container');
+                const addresses = Object.values(this.database.addresses)
                     .sort((a, b) => {
                         if (a.hasBalance && !b.hasBalance) return -1;
                         if (!a.hasBalance && b.hasBalance) return 1;
                         return new Date(b.scannedAt) - new Date(a.scannedAt);
                     })
-                    .slice(0, 50); // عرض أول 50 نتيجة فقط
-                
-                this.elements.resultsCount.textContent = addresses.length;
+                    .slice(0, 30);
                 
                 if (addresses.length === 0) {
-                    this.elements.resultsContainer.innerHTML = `
+                    resultsContainer.innerHTML = `
                         <div style="text-align: center; padding: 40px; color: #b2bec3;">
                             <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
-                            <h3>لم يتم فحص أي عناوين بعد</h3>
-                            <p>ابدأ الفحص التلقائي لاكتشاف العناوين</p>
+                            <h3>جاري الفحص...</h3>
+                            <p>النتائج ستظهر هنا قريباً</p>
                         </div>
                     `;
                     return;
@@ -1223,21 +852,24 @@
                 
                 let html = '';
                 addresses.forEach(addr => {
-                    const badgeClass = addr.type === 'bitcoin' ? 'btc-badge' : 'eth-badge';
+                    const badgeColor = addr.type === 'bitcoin' ? '#f7931a' : '#627eea';
                     const icon = addr.type === 'bitcoin' ? 'fab fa-bitcoin' : 'fab fa-ethereum';
                     
                     html += `
                         <div class="address-card ${addr.hasBalance ? 'with-balance' : ''}">
-                            <div class="address-header">
-                                <span class="crypto-badge ${badgeClass}">
-                                    <i class="${icon}"></i> ${addr.type.toUpperCase()}
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="${icon}" style="color: ${badgeColor};"></i>
+                                    <span style="font-weight: bold; text-transform: uppercase;">${addr.type}</span>
                                 </span>
-                                ${addr.hasBalance ? `<span class="balance">${addr.balance.toFixed(8)}</span>` : ''}
+                                ${addr.hasBalance ? 
+                                    `<span style="color: #fdcb6e; font-weight: bold;">${addr.balance.toFixed(4)}</span>` : 
+                                    '<span style="color: #b2bec3;">فارغ</span>'}
                             </div>
                             <div class="address-value" onclick="scanner.copyToClipboard('${addr.address}')">
                                 ${addr.address}
                             </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #b2bec3;">
+                            <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; color: #b2bec3;">
                                 <span><i class="fas fa-user"></i> ${addr.scannedBy}</span>
                                 <span><i class="far fa-clock"></i> ${this.formatTime(addr.scannedAt)}</span>
                             </div>
@@ -1245,131 +877,93 @@
                     `;
                 });
                 
-                this.elements.resultsContainer.innerHTML = html;
+                resultsContainer.innerHTML = html;
             }
             
-            sendChatMessage() {
-                const message = this.elements.chatMessage.value.trim();
-                if (!message || !this.currentUser) return;
+            updateOnlineUsers() {
+                const onlineUsers = document.getElementById('online-users');
+                const users = Object.keys(this.database.users)
+                    .filter(user => {
+                        const lastActive = new Date(this.database.users[user].lastActive);
+                        return (new Date() - lastActive) < 300000; // 5 دقائق
+                    });
                 
-                const chatMessage = {
-                    user: this.currentUser,
-                    message: message,
-                    timestamp: new Date().toISOString()
-                };
+                let html = '';
+                users.forEach(user => {
+                    html += `<div class="user-badge"><i class="fas fa-user"></i> ${user}</div>`;
+                });
                 
-                this.localDatabase.chat.push(chatMessage);
-                this.addChatMessage(chatMessage.user, chatMessage.message);
-                
-                this.elements.chatMessage.value = '';
-                this.saveLocalData();
-                
-                // مزامنة مع GitHub إذا كان هناك توكن
-                if (this.githubConfig.token) {
-                    this.syncWithGitHub();
-                }
+                onlineUsers.innerHTML = html;
             }
             
             addChatMessage(user, message) {
+                const chatMessages = document.getElementById('chat-messages');
                 const time = new Date().toLocaleTimeString('ar-SA', { 
                     hour: '2-digit', 
                     minute: '2-digit' 
                 });
                 
                 const messageDiv = document.createElement('div');
-                messageDiv.className = 'message';
+                messageDiv.style.cssText = `
+                    margin-bottom: 10px;
+                    padding: 10px;
+                    background: rgba(255, 255, 255, 0.05);
+                    border-radius: 8px;
+                `;
+                
                 messageDiv.innerHTML = `
-                    <div class="message-header">
-                        <span class="message-user">${user}</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.85rem; color: #0984e3;">
+                        <span><strong>${user}</strong></span>
                         <span>${time}</span>
                     </div>
                     <div>${message}</div>
                 `;
                 
-                this.elements.chatMessages.appendChild(messageDiv);
-                this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
-            }
-            
-            exportResults() {
-                const data = {
-                    addresses: this.localDatabase.addresses,
-                    metadata: this.localDatabase.metadata,
-                    stats: this.localDatabase.stats,
-                    exportDate: new Date().toISOString()
-                };
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
                 
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `crypto-results-${Date.now()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                this.showToast('تم تصدير النتائج', 'success');
-            }
-            
-            switchTab(tabId) {
-                // إخفاء كل المحتويات
-                document.querySelectorAll('.tab-content').forEach(content => {
-                    content.classList.remove('active');
+                // حفظ في قاعدة البيانات
+                this.database.chat.push({
+                    user,
+                    message,
+                    timestamp: new Date().toISOString()
                 });
-                
-                // إلغاء تفعيل كل الألسنة
-                this.elements.tabs.forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                
-                // تفعيل اللسان والمحتوى المحدد
-                document.getElementById(`${tabId}-tab`).classList.add('active');
-                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
             }
             
             startAutoSync() {
-                // مزامنة تلقائية كل دقيقة
+                // مزامنة تلقائية كل 30 ثانية
                 setInterval(() => {
-                    if (this.githubConfig.token && !this.isScanning) {
+                    if (!this.isScanning) {
                         this.syncWithGitHub();
                     }
+                }, 30000);
+                
+                // تحديث البيانات من الخادم كل دقيقة
+                setInterval(() => {
+                    this.loadFromGitHub();
+                    this.updateUI();
                 }, 60000);
             }
             
             // أدوات مساعدة
-            copyToClipboard(text) {
-                navigator.clipboard.writeText(text).then(() => {
-                    this.showToast('تم نسخ العنوان', 'success');
-                }).catch(err => {
-                    console.error('خطأ في النسخ:', err);
-                });
-            }
-            
-            showLoading(text = 'جاري التحميل...', details = '') {
-                this.elements.loadingText.textContent = text;
-                this.elements.loadingDetails.textContent = details;
-                this.elements.loadingOverlay.style.display = 'flex';
+            showLoading(text) {
+                document.getElementById('loading').style.display = 'flex';
+                document.getElementById('loading-text').textContent = text;
             }
             
             hideLoading() {
-                this.elements.loadingOverlay.style.display = 'none';
+                document.getElementById('loading').style.display = 'none';
             }
             
-            showToast(message, type = 'success') {
-                this.elements.toastMessage.textContent = message;
-                this.elements.toast.className = 'toast';
+            showToast(message) {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toast-msg');
                 
-                if (type === 'error') {
-                    this.elements.toast.classList.add('error');
-                } else if (type === 'warning') {
-                    this.elements.toast.classList.add('warning');
-                }
-                
-                this.elements.toast.classList.add('show');
+                toastMsg.textContent = message;
+                toast.classList.add('show');
                 
                 setTimeout(() => {
-                    this.elements.toast.classList.remove('show');
+                    toast.classList.remove('show');
                 }, 3000);
             }
             
@@ -1387,22 +981,83 @@
             sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
+            
+            copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    this.showToast('تم نسخ العنوان');
+                });
+            }
+            
+            exportResults() {
+                const data = {
+                    addresses: this.database.addresses,
+                    stats: this.database.stats,
+                    exportDate: new Date().toISOString()
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `crypto-results-${Date.now()}.json`;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                this.showToast('تم تصدير النتائج');
+            }
         }
         
-        // تشغيل النظام
-        let scanner;
-        
+        // إعداد المستمعين للأحداث
         document.addEventListener('DOMContentLoaded', () => {
-            scanner = new AdvancedCryptoScanner();
-            window.scanner = scanner;
+            // إنشاء النظام
+            window.scanner = new EmbeddedTokenScanner();
             
-            // تشغيل فحص تلقائي بعد تحميل الملفات
-            setTimeout(() => {
-                const autoScan = document.getElementById('auto-scan');
-                if (autoScan && autoScan.checked) {
-                    scanner.startAutoScan();
+            // أزرار التحكم
+            document.getElementById('start-scan').addEventListener('click', () => {
+                scanner.startAutoScan();
+            });
+            
+            document.getElementById('force-sync').addEventListener('click', () => {
+                scanner.syncWithGitHub();
+            });
+            
+            document.getElementById('export-btn').addEventListener('click', () => {
+                scanner.exportResults();
+            });
+            
+            document.getElementById('load-addresses').addEventListener('click', () => {
+                scanner.loadAddressesFromFile();
+            });
+            
+            // الدردشة
+            document.getElementById('send-btn').addEventListener('click', () => {
+                const input = document.getElementById('chat-input');
+                const message = input.value.trim();
+                
+                if (message) {
+                    const username = document.getElementById('username').value || scanner.currentUser;
+                    scanner.addChatMessage(username, message);
+                    input.value = '';
+                    
+                    // مزامنة مع الخادم
+                    scanner.syncWithGitHub();
                 }
-            }, 3000);
+            });
+            
+            document.getElementById('chat-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('send-btn').click();
+                }
+            });
+            
+            // اسم المستخدم
+            document.getElementById('username').addEventListener('change', (e) => {
+                if (e.target.value) {
+                    scanner.currentUser = e.target.value;
+                    scanner.showToast(`اسمك الآن: ${e.target.value}`);
+                }
+            });
         });
     </script>
 </body>
