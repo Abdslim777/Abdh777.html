@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام فحص العناوين المشفرة - تخزين مركزي</title>
+    <title>🚀 نظام فحص العناوين المشفرة المتكامل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2d3436;
+            --primary: #1a1a2e;
             --secondary: #00b894;
             --accent: #0984e3;
-            --light: #dfe6e9;
-            --dark: #2d3436;
             --danger: #d63031;
             --warning: #fdcb6e;
             --success: #00b894;
+            --dark: #16213e;
+            --light: #dfe6e9;
         }
         
         * {
@@ -25,74 +25,107 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
             color: var(--light);
             min-height: 100vh;
-            line-height: 1.6;
-            padding: 20px;
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1800px;
             margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr 350px;
+            gap: 20px;
+            height: 100vh;
         }
         
-        header {
-            text-align: center;
-            padding: 20px 0;
-            border-bottom: 2px solid rgba(0, 184, 148, 0.3);
-            margin-bottom: 30px;
+        /* الشريط الجانبي */
+        .sidebar {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         
         .logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .logo i {
-            font-size: 2.2rem;
-            color: var(--secondary);
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 184, 148, 0.3);
         }
         
         .logo h1 {
-            font-size: 2rem;
+            font-size: 1.5rem;
             background: linear-gradient(to right, #00b894, #0984e3);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
+            margin-bottom: 5px;
         }
         
-        .subtitle {
-            color: #b2bec3;
-            font-size: 1rem;
+        /* قسم التوكن */
+        .token-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px dashed var(--accent);
+        }
+        
+        .token-section h3 {
+            color: var(--accent);
             margin-bottom: 10px;
-        }
-        
-        .setup-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .setup-section h2 {
-            color: var(--secondary);
-            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
-        .stats-bar {
+        #github-token {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        /* قسم الملفات */
+        .file-section {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .file-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 5px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* المحتوى الرئيسي */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
-            margin-bottom: 25px;
         }
         
         .stat-card {
@@ -101,133 +134,79 @@
             padding: 15px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--secondary);
-        }
-        
-        .stat-card i {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
-            color: var(--secondary);
         }
         
         .stat-card h3 {
             font-size: 1.8rem;
-            margin-bottom: 5px;
             color: white;
+            margin-bottom: 5px;
         }
         
         .stat-card p {
             color: #b2bec3;
-            font-size: 0.85rem;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 25px;
-        }
-        
-        @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .scan-section {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .scan-section h2 {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            color: white;
-            font-size: 1.3rem;
-        }
-        
-        .scan-section h2 i {
-            color: var(--secondary);
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: #b2bec3;
             font-size: 0.9rem;
         }
         
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            color: white;
-            font-size: 0.95rem;
-            transition: all 0.3s;
+        /* قسم الفحص */
+        .scan-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
         }
         
-        .form-control:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 2px rgba(0, 184, 148, 0.2);
+        .scan-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
         
         .btn {
-            display: inline-flex;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 10px 20px;
-            background: linear-gradient(to right, #00b894, #00a085);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
-            margin-top: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--secondary), #00a085);
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, var(--accent), #0669b8);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to right, var(--warning), #f9a825);
+            color: var(--primary);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(to right, var(--danger), #b71c1c);
+            color: white;
         }
         
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .btn-secondary {
-            background: linear-gradient(to right, #0984e3, #0669b8);
-        }
-        
-        .btn-warning {
-            background: linear-gradient(to right, #fdcb6e, #f9a825);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(to right, #d63031, #b71c1c);
-        }
-        
+        /* نتائج الفحص */
         .results-section {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            border-radius: 15px;
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-height: 600px;
-            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .results-header {
@@ -237,88 +216,60 @@
             margin-bottom: 15px;
         }
         
-        .results-header h2 {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: white;
-            font-size: 1.3rem;
-        }
-        
-        .results-header h2 i {
-            color: var(--secondary);
-        }
-        
-        .refresh-btn {
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 6px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        
-        .refresh-btn:hover {
-            background: rgba(9, 132, 227, 0.1);
-        }
-        
         .results-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
         }
         
         .address-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 15px;
             border-left: 4px solid var(--secondary);
-            transition: all 0.3s;
         }
         
-        .address-card:hover {
-            background: rgba(255, 255, 255, 0.08);
-            transform: translateX(3px);
+        .address-card.with-balance {
+            border-left-color: var(--warning);
+            background: rgba(253, 203, 110, 0.1);
         }
         
         .address-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
-        .crypto-type {
+        .crypto-badge {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            padding: 3px 8px;
-            background: rgba(0, 184, 148, 0.2);
+            padding: 3px 10px;
             border-radius: 15px;
-            font-size: 0.75rem;
-            color: var(--secondary);
+            font-size: 0.8rem;
+            font-weight: bold;
         }
         
-        .crypto-type.bitcoin {
-            background: rgba(247, 147, 26, 0.2);
-            color: #f7931a;
-        }
+        .btc-badge { background: rgba(247, 147, 26, 0.2); color: #f7931a; }
+        .eth-badge { background: rgba(98, 126, 234, 0.2); color: #627eea; }
         
-        .crypto-type.ethereum {
-            background: rgba(98, 126, 234, 0.2);
-            color: #627eea;
+        .balance {
+            color: var(--warning);
+            font-weight: bold;
+            font-size: 1.1rem;
         }
         
         .address-value {
             font-family: monospace;
             background: rgba(0, 0, 0, 0.3);
-            padding: 6px 10px;
+            padding: 8px;
             border-radius: 5px;
-            margin: 8px 0;
+            margin: 10px 0;
             word-break: break-all;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             cursor: pointer;
         }
         
@@ -326,62 +277,104 @@
             background: rgba(0, 0, 0, 0.4);
         }
         
-        .address-footer {
+        /* الدردشة */
+        .chat-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
-            color: #b2bec3;
+            align-items: center;
+            margin-bottom: 15px;
         }
         
-        .repo-info {
+        .online-users {
             display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .user-badge {
+            display: inline-flex;
             align-items: center;
             gap: 5px;
+            background: rgba(9, 132, 227, 0.2);
+            color: var(--accent);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85rem;
         }
         
-        .no-results {
-            text-align: center;
-            padding: 30px 15px;
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
             color: #b2bec3;
         }
         
-        .no-results i {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #636e72;
+        .message-user {
+            font-weight: bold;
+            color: var(--accent);
         }
         
-        .scanning-overlay {
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #chat-message {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+        }
+        
+        /* التحميل */
+        .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
         }
         
-        .scanning-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            border: 2px solid var(--secondary);
-        }
-        
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top: 4px solid var(--secondary);
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--secondary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
         }
         
         @keyframes spin {
@@ -389,45 +382,7 @@
             100% { transform: rotate(360deg); }
         }
         
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--success);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 6px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 1001;
-            transition: transform 0.5s ease;
-        }
-        
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-        
-        .toast.error {
-            background: var(--danger);
-        }
-        
-        .toast.warning {
-            background: var(--warning);
-            color: var(--dark);
-        }
-        
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #b2bec3;
-            font-size: 0.85rem;
-        }
-        
+        /* التبويبات */
         .tabs {
             display: flex;
             background: rgba(255, 255, 255, 0.05);
@@ -439,11 +394,10 @@
         .tab {
             flex: 1;
             text-align: center;
-            padding: 8px;
+            padding: 10px;
             cursor: pointer;
             border-radius: 6px;
             transition: all 0.3s;
-            font-size: 0.9rem;
         }
         
         .tab.active {
@@ -459,6 +413,53 @@
             display: block;
         }
         
+        /* التنبيهات */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--success);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1001;
+            transition: transform 0.5s ease;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.error {
+            background: var(--danger);
+        }
+        
+        .toast.warning {
+            background: var(--warning);
+            color: var(--primary);
+        }
+        
+        /* الباج */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            background: var(--danger);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        /* التقدم */
         .progress-bar {
             width: 100%;
             height: 6px;
@@ -470,556 +471,382 @@
         
         .progress-fill {
             height: 100%;
-            background: linear-gradient(to right, #00b894, #0984e3);
+            background: linear-gradient(to right, var(--secondary), var(--accent));
             border-radius: 3px;
-            transition: width 0.3s ease;
             width: 0%;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1002;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            padding: 25px;
-            border-radius: 12px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 2px solid var(--secondary);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        
-        .modal-header h3 {
-            color: white;
-            font-size: 1.2rem;
-        }
-        
-        .close-modal {
-            background: var(--danger);
-            color: white;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        
-        .config-section {
-            margin-top: 25px;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-        }
-        
-        .online-users {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(9, 132, 227, 0.1);
-            border-radius: 6px;
-            border: 1px solid rgba(9, 132, 227, 0.3);
-        }
-        
-        .online-users h4 {
-            color: var(--accent);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .user-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .user-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(253, 203, 110, 0.2);
-            color: #fdcb6e;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.8rem;
-        }
-        
-        .instructions {
-            background: rgba(0, 184, 148, 0.1);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid rgba(0, 184, 148, 0.3);
-        }
-        
-        .instructions h4 {
-            color: var(--secondary);
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .instructions ol {
-            padding-right: 20px;
-            margin-bottom: 10px;
-        }
-        
-        .instructions li {
-            margin-bottom: 5px;
-            color: #b2bec3;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+        <!-- الشريط الجانبي -->
+        <div class="sidebar">
             <div class="logo">
-                <i class="fas fa-database"></i>
-                <h1>نظام فحص العناوين المشفرة - تخزين مركزي</h1>
-            </div>
-            <p class="subtitle">جميع البيانات مخزنة على GitHub وتظهر لجميع المستخدمين مباشرة</p>
-            <p style="color: #fdcb6e; font-size: 0.9rem;">
-                <i class="fas fa-sync-alt"></i> البيانات متزامنة بين جميع المستخدمين
-            </p>
-        </header>
-        
-        <!-- قسم الإعداد -->
-        <div class="setup-section" id="setup-section">
-            <h2><i class="fas fa-cogs"></i> إعداد التخزين المركزي</h2>
-            
-            <div class="instructions">
-                <h4><i class="fas fa-info-circle"></i> كيفية الإعداد:</h4>
-                <ol>
-                    <li>أنشئ مستودع جديد على GitHub (مثلاً: crypto-scanner-data)</li>
-                    <li>أنشئ <a href="https://github.com/settings/tokens" target="_blank">GitHub Token</a> مع صلاحيات repo</li>
-                    <li>انسخ التوكن وأدخله أدناه</li>
-                    <li>سيتم إنشاء قاعدة بيانات مشتركة تظهر لجميع المستخدمين</li>
-                </ol>
+                <h1><i class="fas fa-coins"></i> Crypto Scanner Pro</h1>
+                <p style="color: #b2bec3; font-size: 0.9rem;">فحص تلقائي - تخزين مركزي</p>
             </div>
             
-            <div class="form-group">
-                <label for="github-username"><i class="fab fa-github"></i> اسم مستخدم GitHub</label>
-                <input type="text" id="github-username" class="form-control" 
-                       placeholder="اسم المستخدم على GitHub">
+            <!-- قسم التوكن -->
+            <div class="token-section">
+                <h3><i class="fas fa-key"></i> GitHub Token</h3>
+                <input type="password" id="github-token" placeholder="الصق التوكن هنا (ghp_xxxxxxxxxxxx)">
+                <button class="btn btn-primary" id="save-token" style="margin-top: 10px;">
+                    <i class="fas fa-save"></i> حفظ التوكن
+                </button>
+                <p style="color: #b2bec3; font-size: 0.8rem; margin-top: 10px;">
+                    <i class="fas fa-info-circle"></i> التوكن مطلوب للتخزين المشترك
+                </p>
             </div>
             
-            <div class="form-group">
-                <label for="github-repo"><i class="fas fa-code-branch"></i> اسم المستودع</label>
-                <input type="text" id="github-repo" class="form-control" 
-                       placeholder="اسم المستودع (مثلاً: crypto-scanner-data)">
+            <!-- قسم الملفات -->
+            <div class="file-section">
+                <h3><i class="fas fa-file-alt"></i> ملفات العناوين</h3>
+                <div class="file-list" id="file-list">
+                    <div class="file-item">
+                        <span>32.txt</span>
+                        <span id="file-count">0 عنوان</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="reload-files" style="margin-top: 10px; width: 100%;">
+                    <i class="fas fa-sync-alt"></i> تحديث الملفات
+                </button>
             </div>
             
-            <div class="form-group">
-                <label for="github-token"><i class="fas fa-key"></i> GitHub Token</label>
-                <input type="password" id="github-token" class="form-control" 
-                       placeholder="أدخل التوكن هنا">
-                <small style="color: #b2bec3; display: block; margin-top: 5px;">
-                    <a href="https://github.com/settings/tokens" target="_blank" 
-                       style="color: var(--accent); text-decoration: none;">
-                        <i class="fas fa-external-link-alt"></i> إنشاء توكن جديد
-                    </a> (صلاحيات: repo)
-                </small>
+            <!-- معلومات النظام -->
+            <div class="file-section">
+                <h3><i class="fas fa-cog"></i> إعدادات النظام</h3>
+                <div style="margin-top: 10px;">
+                    <label style="display: block; margin-bottom: 5px; color: #b2bec3;">
+                        <input type="checkbox" id="auto-scan" checked> الفحص التلقائي
+                    </label>
+                    <label style="display: block; margin-bottom: 5px; color: #b2bec3;">
+                        <input type="checkbox" id="check-balance" checked> فحص الرصيد
+                    </label>
+                    <label style="display: block; color: #b2bec3;">
+                        <input type="checkbox" id="notifications" checked> الإشعارات
+                    </label>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="user-name"><i class="fas fa-user"></i> اسمك في النظام</label>
-                <input type="text" id="user-name" class="form-control" 
-                       placeholder="سيظهر بجانب الاكتشافات التي تضيفها">
+            <!-- المساهمون -->
+            <div class="file-section">
+                <h3><i class="fas fa-users"></i> المساهمون النشطون <span class="badge" id="users-count">0</span></h3>
+                <div id="active-users" style="margin-top: 10px;">
+                    <p style="color: #b2bec3; font-size: 0.9rem; text-align: center;">جاري التحميل...</p>
+                </div>
             </div>
-            
-            <button class="btn" id="setup-btn">
-                <i class="fas fa-check"></i> إعداد النظام
-            </button>
-            
-            <button class="btn btn-secondary" id="load-existing-btn">
-                <i class="fas fa-download"></i> تحميل قاعدة بيانات موجودة
-            </button>
         </div>
         
-        <!-- النظام الرئيسي (مخفي في البداية) -->
-        <div id="main-system" style="display: none;">
-            <div class="stats-bar">
+        <!-- المحتوى الرئيسي -->
+        <div class="main-content">
+            <!-- الإحصائيات -->
+            <div class="stats-grid">
                 <div class="stat-card">
-                    <i class="fas fa-wallet"></i>
                     <h3 id="total-addresses">0</h3>
-                    <p>عناوين مكتشفة</p>
+                    <p>إجمالي العناوين</p>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-code-branch"></i>
-                    <h3 id="total-repos">0</h3>
-                    <p>مستودعات مفحوصة</p>
+                    <h3 id="scanned-addresses">0</h3>
+                    <p>تم فحصها</p>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-users"></i>
-                    <h3 id="total-users">0</h3>
-                    <p>مستخدمين مساهمين</p>
+                    <h3 id="with-balance">0</h3>
+                    <p>تحتوي رصيد</p>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-history"></i>
-                    <h3 id="last-update">-</h3>
-                    <p>آخر تحديث</p>
+                    <h3 id="total-balance">0 BTC</h3>
+                    <p>إجمالي الرصيد</p>
                 </div>
             </div>
             
-            <div class="main-content">
+            <!-- تبويبات الفحص -->
+            <div class="tabs">
+                <div class="tab active" data-tab="scan">🔍 الفحص التلقائي</div>
+                <div class="tab" data-tab="manual">✏️ فحص يدوي</div>
+                <div class="tab" data-tab="results">📊 النتائج</div>
+            </div>
+            
+            <!-- محتوى التبويبات -->
+            <div class="tab-content active" id="scan-tab">
                 <div class="scan-section">
-                    <div class="tabs">
-                        <div class="tab active" data-tab="scan">🔍 فحص</div>
-                        <div class="tab" data-tab="queue">📋 قائمة الانتظار</div>
-                        <div class="tab" data-tab="contributors">👥 المساهمون</div>
+                    <h2><i class="fas fa-robot"></i> الفحص التلقائي</h2>
+                    <p style="color: #b2bec3; margin-bottom: 15px;">
+                        النظام يفحص العناوين تلقائياً من ملف 32.txt ويحفظ النتائج على GitHub
+                    </p>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="auto-progress"></div>
                     </div>
                     
-                    <div class="tab-content active" id="scan-tab">
-                        <h2><i class="fas fa-search"></i> فحص مستودع GitHub</h2>
-                        
-                        <div class="form-group">
-                            <label for="repo-url"><i class="fas fa-link"></i> رابط المستودع</label>
-                            <input type="url" id="repo-url" class="form-control" 
-                                   placeholder="https://github.com/username/repo أو username/repo">
-                        </div>
-                        
-                        <button class="btn" id="scan-btn">
-                            <i class="fas fa-search"></i> بدء الفحص
+                    <div class="scan-controls">
+                        <button class="btn btn-primary" id="start-auto-scan">
+                            <i class="fas fa-play"></i> بدء الفحص التلقائي
                         </button>
-                        
-                        <button class="btn btn-secondary" id="scan-random-btn">
-                            <i class="fas fa-random"></i> فحص مستودع عشوائي
+                        <button class="btn btn-warning" id="pause-scan">
+                            <i class="fas fa-pause"></i> إيقاف مؤقت
                         </button>
-                        
-                        <div class="online-users" id="online-users">
-                            <h4><i class="fas fa-users"></i> المساهمون النشطون</h4>
-                            <div class="user-list" id="user-list">
-                                <div class="user-badge">
-                                    <i class="fas fa-user"></i> جاري التحميل...
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="tab-content" id="queue-tab">
-                        <h2><i class="fas fa-list"></i> قائمة الانتظار</h2>
-                        
-                        <div id="queue-list">
-                            <div class="no-results">
-                                <i class="fas fa-inbox"></i>
-                                <p>لا توجد مستودعات في قائمة الانتظار</p>
-                            </div>
-                        </div>
-                        
-                        <button class="btn btn-secondary" id="add-to-queue">
-                            <i class="fas fa-plus"></i> إضافة مستودع للقائمة
+                        <button class="btn btn-danger" id="stop-scan">
+                            <i class="fas fa-stop"></i> إيقاف
                         </button>
                     </div>
                     
-                    <div class="tab-content" id="contributors-tab">
-                        <h2><i class="fas fa-trophy"></i> المتصدرون</h2>
-                        
-                        <div id="contributors-list">
-                            <div class="no-results">
-                                <i class="fas fa-trophy"></i>
-                                <p>جاري تحميل قائمة المتصدرين...</p>
-                            </div>
+                    <div style="margin-top: 15px; color: #b2bec3; font-size: 0.9rem;">
+                        <div>المعالجة: <span id="current-address">-</span></div>
+                        <div>المتبقي: <span id="remaining-addresses">0</span> عنوان</div>
+                        <div>السرعة: <span id="scan-speed">0</span> عنوان/ثانية</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- التبويب اليدوي -->
+            <div class="tab-content" id="manual-tab">
+                <div class="scan-section">
+                    <h2><i class="fas fa-search"></i> فحص يدوي</h2>
+                    <textarea id="manual-addresses" placeholder="الصق العناوين هنا (سطر لكل عنوان)" 
+                              style="width: 100%; height: 150px; padding: 10px; background: rgba(255,255,255,0.05); 
+                                     border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white; margin-bottom: 15px;"></textarea>
+                    <button class="btn btn-primary" id="scan-manual">
+                        <i class="fas fa-search"></i> فحص العناوين
+                    </button>
+                </div>
+            </div>
+            
+            <!-- التبويب النتائج -->
+            <div class="tab-content" id="results-tab">
+                <div class="scan-section">
+                    <h2><i class="fas fa-chart-bar"></i> إحصائيات النتائج</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                            <div style="color: #b2bec3; font-size: 0.9rem;">Bitcoin</div>
+                            <div style="font-size: 1.5rem; color: #f7931a;" id="btc-count">0</div>
                         </div>
-                        
-                        <div style="margin-top: 20px;">
-                            <h4><i class="fas fa-history"></i> آخر الفحوصات</h4>
-                            <div id="recent-scans-list">
-                                <!-- سيتم ملؤها تلقائياً -->
-                            </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                            <div style="color: #b2bec3; font-size: 0.9rem;">Ethereum</div>
+                            <div style="font-size: 1.5rem; color: #627eea;" id="eth-count">0</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                            <div style="color: #b2bec3; font-size: 0.9rem;">العناوين الفعالة</div>
+                            <div style="font-size: 1.5rem; color: var(--success);" id="active-count">0</div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="results-section">
-                    <div class="results-header">
-                        <h2><i class="fas fa-list"></i> العناوين المكتشفة حديثاً</h2>
-                        <button class="refresh-btn" id="refresh-results">
+            </div>
+            
+            <!-- نتائج الفحص -->
+            <div class="results-section">
+                <div class="results-header">
+                    <h2><i class="fas fa-list"></i> العناوين المكتشفة <span class="badge" id="results-count">0</span></h2>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" id="export-results">
+                            <i class="fas fa-download"></i> تصدير
+                        </button>
+                        <button class="btn btn-secondary" id="refresh-results">
                             <i class="fas fa-sync-alt"></i> تحديث
                         </button>
                     </div>
-                    
-                    <div class="results-container" id="results-container">
-                        <div class="no-results">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <h3>جار تحميل قاعدة البيانات المشتركة...</h3>
-                            <p>البيانات متاحة لجميع المستخدمين</p>
-                        </div>
+                </div>
+                
+                <div class="results-container" id="results-container">
+                    <div style="text-align: center; padding: 40px; color: #b2bec3;">
+                        <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                        <h3>لم يتم فحص أي عناوين بعد</h3>
+                        <p>ابدأ الفحص التلقائي لاكتشاف العناوين</p>
                     </div>
                 </div>
             </div>
-            
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-secondary" id="export-data-btn" style="flex: 1;">
-                    <i class="fas fa-download"></i> تصدير جميع البيانات
-                </button>
-                <button class="btn btn-warning" id="push-data-btn" style="flex: 1;">
-                    <i class="fas fa-cloud-upload-alt"></i> رفع التحديثات
-                </button>
-                <button class="btn" id="pull-data-btn" style="flex: 1;">
-                    <i class="fas fa-cloud-download-alt"></i> سحب التحديثات
-                </button>
-            </div>
         </div>
         
-        <footer>
-            <p>© 2024 نظام فحص العناوين المشفرة - تخزين مركزي على GitHub</p>
-            <p>البيانات مخزنة في مستودع GitHub وتظهر لجميع المستخدمين فوراً</p>
-            <p style="margin-top: 10px; font-size: 0.8rem;">
-                <i class="fas fa-database"></i> قاعدة بيانات مشتركة بين جميع المستخدمين
-            </p>
-        </footer>
+        <!-- الدردشة -->
+        <div class="chat-section">
+            <div class="chat-header">
+                <h2><i class="fas fa-comments"></i> الدردشة المشتركة</h2>
+                <div class="online-users" id="online-users">
+                    <!-- المستخدمين المتصلين -->
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <div class="message">
+                    <div class="message-header">
+                        <span class="message-user">النظام</span>
+                        <span>الآن</span>
+                    </div>
+                    <div>مرحباً بالجميع! يمكنكم التحدث ومشاركة الاكتشافات هنا.</div>
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="chat-message" placeholder="اكتب رسالة...">
+                <button class="btn btn-primary" id="send-message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <input type="text" id="user-name" placeholder="اسمك" 
+                       style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); 
+                              border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white;">
+            </div>
+        </div>
     </div>
     
-    <!-- نافذة المسح -->
-    <div class="scanning-overlay" id="scanning-overlay">
-        <div class="scanning-content">
+    <!-- نافذة التحميل -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div style="text-align: center;">
             <div class="spinner"></div>
-            <h3 id="scanning-title">جاري فحص المستودع...</h3>
-            <p id="scanning-details">بدء عملية الفحص</p>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="scan-progress-bar"></div>
-            </div>
-            
-            <div id="progress-details" style="margin-top: 15px; color: #b2bec3;">
-                <div>التقدم: <span id="scan-progress">0%</span></div>
-                <div>الملفات المفحوصة: <span id="files-scanned">0</span></div>
-                <div>العناوين المكتشفة: <span id="addresses-found">0</span></div>
-            </div>
-            
-            <button class="btn btn-danger" id="cancel-scan" style="margin-top: 20px;">
-                <i class="fas fa-stop"></i> إلغاء الفحص
-            </button>
+            <h3 style="margin-top: 20px;" id="loading-text">جاري التحميل...</h3>
+            <p id="loading-details" style="color: #b2bec3; margin-top: 10px;"></p>
         </div>
     </div>
     
-    <!-- نافذة النتائج -->
-    <div class="modal" id="results-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">نتائج الفحص</h3>
-                <button class="close-modal" id="close-results-modal">&times;</button>
-            </div>
-            <div id="modal-results">
-                <!-- سيتم ملؤها بالنتائج -->
-            </div>
-        </div>
-    </div>
-    
-    <!-- رسالة التنبيه -->
+    <!-- التنبيهات -->
     <div class="toast" id="toast">
         <i class="fas fa-check-circle"></i>
         <span id="toast-message"></span>
     </div>
 
-    <!-- النظام الجديد مع التخزين المركزي -->
+    <!-- النظام الرئيسي -->
     <script>
-        class CentralizedCryptoScanner {
+        class AdvancedCryptoScanner {
             constructor() {
                 // إعدادات GitHub
-                this.github = {
-                    username: '',
-                    repo: '',
+                this.githubConfig = {
+                    username: 'crypto-scanner-helper',
+                    repo: 'crypto-scanner-database',
                     token: '',
                     branch: 'main'
                 };
                 
-                // بيانات المستخدم
-                this.user = {
-                    name: '',
-                    lastActive: null
+                // قاعدة البيانات المحلية
+                this.localDatabase = {
+                    addresses: {},
+                    metadata: {
+                        version: '2.0',
+                        createdAt: new Date().toISOString(),
+                        lastSync: null
+                    },
+                    stats: {
+                        total: 0,
+                        scanned: 0,
+                        withBalance: 0,
+                        totalBalance: 0,
+                        btcCount: 0,
+                        ethCount: 0
+                    },
+                    users: {},
+                    chat: []
                 };
                 
-                // قاعدة البيانات المشتركة
-                this.database = null;
-                
-                // قائمة الانتظار
-                this.scanQueue = [];
-                
-                // حالات النظام
-                this.isSetup = false;
-                this.currentScan = null;
+                // حالة النظام
+                this.isScanning = false;
+                this.isPaused = false;
+                this.scanSpeed = 0;
+                this.currentUser = 'مستخدم_' + Math.random().toString(36).substr(2, 5);
+                this.autoScanInterval = null;
+                this.addressesQueue = [];
                 
                 // عناصر DOM
                 this.elements = {};
                 
-                // أنماط البحث
-                this.cryptoPatterns = {
-                    bitcoin: [
-                        /[13][a-km-zA-HJ-NP-Z1-9]{25,34}/g,
-                        /bc1[ac-hj-np-z02-9]{11,87}/g,
-                    ],
-                    ethereum: [
-                        /0x[a-fA-F0-9]{40}/g,
-                    ]
+                // أنماط العناوين
+                this.addressPatterns = {
+                    bitcoin: /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bc1[ac-hj-np-z02-9]{11,87}$/,
+                    ethereum: /^0x[a-fA-F0-9]{40}$/
                 };
-                
-                // مستودعات شائعة للفحص العشوائي
-                this.popularRepos = [
-                    'bitcoin/bitcoin',
-                    'ethereum/go-ethereum',
-                    'litecoin-project/litecoin',
-                    'dogecoin/dogecoin',
-                    'ripple/rippled',
-                    'stellar/stellar-core',
-                    'monero-project/monero',
-                    'cardano-foundation/cardano-node',
-                    'polkadot-js/api',
-                    'solana-labs/solana'
-                ];
                 
                 this.init();
             }
             
             async init() {
                 this.cacheElements();
-                this.loadSavedSettings();
+                this.loadLocalData();
                 this.setupEventListeners();
+                this.startAutoSync();
+                this.loadAddressesFromFile();
                 
-                // إذا كان النظام مُعداً مسبقاً، تحميل البيانات
-                if (this.isSetup) {
-                    await this.loadDatabase();
-                    this.showMainSystem();
-                }
-                
-                this.showToast('النظام جاهز', 'success');
+                // تحديث واجهة المستخدم كل ثانية
+                setInterval(() => this.updateUI(), 1000);
             }
             
             cacheElements() {
-                this.elements = {
-                    setupSection: document.getElementById('setup-section'),
-                    mainSystem: document.getElementById('main-system'),
-                    
-                    // إعدادات
-                    githubUsername: document.getElementById('github-username'),
-                    githubRepo: document.getElementById('github-repo'),
-                    githubToken: document.getElementById('github-token'),
-                    userName: document.getElementById('user-name'),
-                    setupBtn: document.getElementById('setup-btn'),
-                    loadExistingBtn: document.getElementById('load-existing-btn'),
-                    
-                    // النظام الرئيسي
-                    totalAddresses: document.getElementById('total-addresses'),
-                    totalRepos: document.getElementById('total-repos'),
-                    totalUsers: document.getElementById('total-users'),
-                    lastUpdate: document.getElementById('last-update'),
-                    
-                    // الفحص
-                    repoUrl: document.getElementById('repo-url'),
-                    scanBtn: document.getElementById('scan-btn'),
-                    scanRandomBtn: document.getElementById('scan-random-btn'),
-                    
-                    // النتائج
-                    resultsContainer: document.getElementById('results-container'),
-                    refreshResults: document.getElementById('refresh-results'),
-                    
-                    // قائمة الانتظار
-                    queueList: document.getElementById('queue-list'),
-                    addToQueue: document.getElementById('add-to-queue'),
-                    
-                    // المساهمون
-                    userList: document.getElementById('user-list'),
-                    contributorsList: document.getElementById('contributors-list'),
-                    recentScansList: document.getElementById('recent-scans-list'),
-                    
-                    // الأزرار
-                    exportDataBtn: document.getElementById('export-data-btn'),
-                    pushDataBtn: document.getElementById('push-data-btn'),
-                    pullDataBtn: document.getElementById('pull-data-btn'),
-                    
-                    // التبويبات
-                    tabs: document.querySelectorAll('.tab'),
-                    
-                    // النوافذ
-                    scanningOverlay: document.getElementById('scanning-overlay'),
-                    resultsModal: document.getElementById('results-modal'),
-                    toast: document.getElementById('toast')
-                };
-            }
-            
-            loadSavedSettings() {
-                try {
-                    const saved = localStorage.getItem('crypto_scanner_centralized');
-                    if (saved) {
-                        const settings = JSON.parse(saved);
-                        this.github = settings.github || this.github;
-                        this.user = settings.user || this.user;
-                        this.isSetup = settings.isSetup || false;
-                        
-                        // تعبئة الحقول
-                        if (this.elements.githubUsername) {
-                            this.elements.githubUsername.value = this.github.username || '';
-                            this.elements.githubRepo.value = this.github.repo || '';
-                            this.elements.githubToken.value = this.github.token || '';
-                            this.elements.userName.value = this.user.name || '';
-                        }
-                    }
-                } catch (error) {
-                    console.error('خطأ في تحميل الإعدادات:', error);
-                }
-            }
-            
-            saveSettings() {
-                try {
-                    const settings = {
-                        github: this.github,
-                        user: this.user,
-                        isSetup: this.isSetup,
-                        lastSaved: new Date().toISOString()
-                    };
-                    localStorage.setItem('crypto_scanner_centralized', JSON.stringify(settings));
-                } catch (error) {
-                    console.error('خطأ في حفظ الإعدادات:', error);
-                }
+                // التوكن
+                this.elements.githubToken = document.getElementById('github-token');
+                this.elements.saveToken = document.getElementById('save-token');
+                
+                // الملفات
+                this.elements.fileList = document.getElementById('file-list');
+                this.elements.fileCount = document.getElementById('file-count');
+                this.elements.reloadFiles = document.getElementById('reload-files');
+                
+                // الإحصائيات
+                this.elements.totalAddresses = document.getElementById('total-addresses');
+                this.elements.scannedAddresses = document.getElementById('scanned-addresses');
+                this.elements.withBalance = document.getElementById('with-balance');
+                this.elements.totalBalance = document.getElementById('total-balance');
+                
+                // التحكم
+                this.elements.startAutoScan = document.getElementById('start-auto-scan');
+                this.elements.pauseScan = document.getElementById('pause-scan');
+                this.elements.stopScan = document.getElementById('stop-scan');
+                this.elements.autoProgress = document.getElementById('auto-progress');
+                this.elements.currentAddress = document.getElementById('current-address');
+                this.elements.remainingAddresses = document.getElementById('remaining-addresses');
+                this.elements.scanSpeed = document.getElementById('scan-speed');
+                
+                // النتائج
+                this.elements.resultsContainer = document.getElementById('results-container');
+                this.elements.resultsCount = document.getElementById('results-count');
+                this.elements.exportResults = document.getElementById('export-results');
+                this.elements.refreshResults = document.getElementById('refresh-results');
+                
+                // الدردشة
+                this.elements.chatMessages = document.getElementById('chat-messages');
+                this.elements.chatMessage = document.getElementById('chat-message');
+                this.elements.sendMessage = document.getElementById('send-message');
+                this.elements.userName = document.getElementById('user-name');
+                this.elements.onlineUsers = document.getElementById('online-users');
+                this.elements.usersCount = document.getElementById('users-count');
+                
+                // التبويبات
+                this.elements.tabs = document.querySelectorAll('.tab');
+                
+                // التحميل
+                this.elements.loadingOverlay = document.getElementById('loading-overlay');
+                this.elements.loadingText = document.getElementById('loading-text');
+                this.elements.loadingDetails = document.getElementById('loading-details');
+                
+                // التنبيهات
+                this.elements.toast = document.getElementById('toast');
+                this.elements.toastMessage = document.getElementById('toast-message');
             }
             
             setupEventListeners() {
-                // زر الإعداد
-                this.elements.setupBtn.addEventListener('click', () => this.setupSystem());
+                // حفظ التوكن
+                this.elements.saveToken.addEventListener('click', () => this.saveToken());
                 
-                // زر تحميل قاعدة بيانات موجودة
-                this.elements.loadExistingBtn.addEventListener('click', () => this.loadExistingDatabase());
+                // تحديث الملفات
+                this.elements.reloadFiles.addEventListener('click', () => this.loadAddressesFromFile());
                 
-                // زر الفحص
-                this.elements.scanBtn.addEventListener('click', () => this.startScan());
+                // الفحص التلقائي
+                this.elements.startAutoScan.addEventListener('click', () => this.startAutoScan());
+                this.elements.pauseScan.addEventListener('click', () => this.pauseScan());
+                this.elements.stopScan.addEventListener('click', () => this.stopScan());
                 
-                // زر الفحص العشوائي
-                this.elements.scanRandomBtn.addEventListener('click', () => this.scanRandomRepo());
+                // تصدير النتائج
+                this.elements.exportResults.addEventListener('click', () => this.exportResults());
+                this.elements.refreshResults.addEventListener('click', () => this.updateUI());
                 
-                // زر تحديث النتائج
-                this.elements.refreshResults.addEventListener('click', () => this.loadDatabase());
+                // الدردشة
+                this.elements.sendMessage.addEventListener('click', () => this.sendChatMessage());
+                this.elements.chatMessage.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.sendChatMessage();
+                });
                 
-                // زر إضافة لقائمة الانتظار
-                this.elements.addToQueue.addEventListener('click', () => this.addToQueue());
-                
-                // زر تصدير البيانات
-                this.elements.exportDataBtn.addEventListener('click', () => this.exportData());
-                
-                // زر رفع التحديثات
-                this.elements.pushDataBtn.addEventListener('click', () => this.pushToGitHub());
-                
-                // زر سحب التحديثات
-                this.elements.pullDataBtn.addEventListener('click', () => this.loadDatabase());
+                // اسم المستخدم
+                this.elements.userName.addEventListener('change', (e) => {
+                    if (e.target.value) this.currentUser = e.target.value;
+                });
                 
                 // التبويبات
                 this.elements.tabs.forEach(tab => {
@@ -1028,922 +855,447 @@
                         this.switchTab(tabId);
                     });
                 });
-                
-                // إغلاق نافذة النتائج
-                document.getElementById('close-results-modal').addEventListener('click', () => {
-                    this.closeResultsModal();
-                });
-                
-                // إلغاء الفحص
-                document.getElementById('cancel-scan').addEventListener('click', () => {
-                    if (this.currentScan) {
-                        this.currentScan.cancelled = true;
-                        this.showToast('جاري إلغاء الفحص...', 'warning');
-                    }
-                });
-                
-                // تحديث تلقائي كل 30 ثانية
-                setInterval(() => {
-                    if (this.isSetup) {
-                        this.loadDatabase();
-                    }
-                }, 30000);
             }
             
-            async setupSystem() {
-                const username = this.elements.githubUsername.value.trim();
-                const repo = this.elements.githubRepo.value.trim();
-                const token = this.elements.githubToken.value.trim();
-                const userName = this.elements.userName.value.trim();
+            async loadAddressesFromFile() {
+                try {
+                    this.showLoading('جاري تحميل ملف العناوين...');
+                    
+                    // محاولة قراءة ملف 32.txt
+                    const response = await fetch('32.txt');
+                    
+                    if (!response.ok) {
+                        // إذا لم يوجد الملف، ننشئ ملفاً افتراضياً
+                        await this.createSampleFile();
+                        return;
+                    }
+                    
+                    const text = await response.text();
+                    const addresses = text.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line && !line.startsWith('#'));
+                    
+                    this.addressesQueue = addresses;
+                    
+                    // تحديث العد
+                    this.elements.fileCount.textContent = `${addresses.length} عنوان`;
+                    
+                    this.showToast(`تم تحميل ${addresses.length} عنوان من الملف`, 'success');
+                    
+                } catch (error) {
+                    console.error('خطأ في تحميل الملف:', error);
+                    this.showToast('تعذر تحميل ملف العناوين', 'error');
+                    
+                    // إنشاء ملف تجريبي
+                    await this.createSampleFile();
+                } finally {
+                    this.hideLoading();
+                }
+            }
+            
+            async createSampleFile() {
+                // إنشاء عناوين تجريبية للاختبار
+                const sampleAddresses = [
+                    '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',  // Bitcoin Genesis
+                    '0x742d35Cc6634C0532925a3b844Bc9e90F1f04e6a', // Ethereum
+                    'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
+                    '0x5A0b54D5dc17e0AadC383d2db43B0a0D3E029c4c',
+                    '3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy'
+                ];
                 
-                if (!username || !repo || !token || !userName) {
-                    this.showToast('الرجاء ملء جميع الحقول', 'error');
+                this.addressesQueue = sampleAddresses;
+                this.elements.fileCount.textContent = `${sampleAddresses.length} عنوان (تجريبي)`;
+                
+                this.showToast('تم إنشاء ملف تجريبي للاختبار', 'warning');
+            }
+            
+            async startAutoScan() {
+                if (this.isScanning) return;
+                
+                this.isScanning = true;
+                this.isPaused = false;
+                
+                const totalAddresses = this.addressesQueue.length;
+                if (totalAddresses === 0) {
+                    this.showToast('لا توجد عناوين للفحص', 'error');
                     return;
                 }
                 
-                this.github.username = username;
-                this.github.repo = repo;
-                this.github.token = token;
-                this.user.name = userName;
-                this.user.lastActive = new Date().toISOString();
+                this.showToast('بدء الفحص التلقائي...', 'success');
                 
-                this.showToast('جاري التحقق من إمكانية الوصول إلى GitHub...', 'warning');
+                let scannedCount = 0;
+                const startTime = Date.now();
                 
-                try {
-                    // التحقق من صحة التوكن والمستودع
-                    const isValid = await this.testGitHubAccess();
+                for (let i = 0; i < totalAddresses; i++) {
+                    if (!this.isScanning) break;
                     
-                    if (isValid) {
-                        // إنشاء قاعدة بيانات جديدة إذا لم تكن موجودة
-                        await this.createOrLoadDatabase();
-                        
-                        this.isSetup = true;
-                        this.saveSettings();
-                        this.showMainSystem();
-                        this.showToast('تم إعداد النظام بنجاح!', 'success');
+                    while (this.isPaused) {
+                        await this.sleep(1000);
+                    }
+                    
+                    const address = this.addressesQueue[i];
+                    
+                    // تحديث واجهة المستخدم
+                    this.elements.currentAddress.textContent = address.substring(0, 20) + '...';
+                    this.elements.remainingAddresses.textContent = totalAddresses - i - 1;
+                    
+                    const progress = Math.floor(((i + 1) / totalAddresses) * 100);
+                    this.elements.autoProgress.style.width = `${progress}%`;
+                    
+                    // فحص العنوان
+                    await this.scanAddress(address);
+                    scannedCount++;
+                    
+                    // حساب السرعة
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    this.scanSpeed = scannedCount / elapsed;
+                    this.elements.scanSpeed.textContent = this.scanSpeed.toFixed(2);
+                    
+                    // مزامنة كل 10 عناوين
+                    if (scannedCount % 10 === 0) {
+                        await this.syncWithGitHub();
+                    }
+                    
+                    // تأخير لعدم إثقال API
+                    await this.sleep(100);
+                }
+                
+                this.isScanning = false;
+                this.showToast('اكتمل الفحص التلقائي', 'success');
+                await this.syncWithGitHub();
+            }
+            
+            pauseScan() {
+                this.isPaused = !this.isPaused;
+                this.elements.pauseScan.innerHTML = this.isPaused ? 
+                    '<i class="fas fa-play"></i> استئناف' : 
+                    '<i class="fas fa-pause"></i> إيقاف مؤقت';
+                
+                this.showToast(this.isPaused ? 'تم الإيقاف المؤقت' : 'تم الاستئناف', 'warning');
+            }
+            
+            stopScan() {
+                this.isScanning = false;
+                this.isPaused = false;
+                this.showToast('تم إيقاف الفحص', 'error');
+            }
+            
+            async scanAddress(address) {
+                try {
+                    // تحديد نوع العنوان
+                    let type = 'unknown';
+                    if (this.addressPatterns.bitcoin.test(address)) {
+                        type = 'bitcoin';
+                        this.localDatabase.stats.btcCount++;
+                    } else if (this.addressPatterns.ethereum.test(address)) {
+                        type = 'ethereum';
+                        this.localDatabase.stats.ethCount++;
                     } else {
-                        this.showToast('تعذر الوصول إلى GitHub. تحقق من التوكن والمستودع.', 'error');
-                    }
-                } catch (error) {
-                    console.error('خطأ في الإعداد:', error);
-                    this.showToast(`خطأ: ${error.message}`, 'error');
-                }
-            }
-            
-            async testGitHubAccess() {
-                try {
-                    const response = await fetch(`https://api.github.com/repos/${this.github.username}/${this.github.repo}`, {
-                        headers: {
-                            'Authorization': `token ${this.github.token}`,
-                            'Accept': 'application/vnd.github.v3+json'
-                        }
-                    });
-                    
-                    if (response.status === 200) {
-                        return true;
-                    } else if (response.status === 404) {
-                        // المستودع غير موجود، سنحاول إنشاؤه
-                        return await this.createGitHubRepo();
+                        return; // تجاهل العناوين غير المعروفة
                     }
                     
-                    return false;
-                } catch (error) {
-                    console.error('خطأ في اختبار GitHub:', error);
-                    return false;
-                }
-            }
-            
-            async createGitHubRepo() {
-                try {
-                    const response = await fetch('https://api.github.com/user/repos', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `token ${this.github.token}`,
-                            'Accept': 'application/vnd.github.v3+json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            name: this.github.repo,
-                            description: 'قاعدة بيانات مشتركة لنظام فحص العناوين المشفرة',
-                            private: false,
-                            auto_init: true
-                        })
-                    });
+                    // محاكاة فحص الرصيد (في نظام حقيقي، هنا ستكون API call)
+                    const hasBalance = Math.random() > 0.8; // 20% فرصة أن يحتوي على رصيد
+                    let balance = 0;
                     
-                    return response.status === 201;
-                } catch (error) {
-                    console.error('خطأ في إنشاء المستودع:', error);
-                    return false;
-                }
-            }
-            
-            async createOrLoadDatabase() {
-                try {
-                    // محاولة تحميل قاعدة البيانات الموجودة
-                    const existing = await this.loadFromGitHub('database.json');
-                    
-                    if (existing) {
-                        this.database = existing;
-                        this.showToast('تم تحميل قاعدة البيانات الموجودة', 'success');
-                    } else {
-                        // إنشاء قاعدة بيانات جديدة
-                        this.database = this.createNewDatabase();
-                        await this.saveToGitHub('database.json', this.database);
-                        this.showToast('تم إنشاء قاعدة بيانات جديدة', 'success');
+                    if (hasBalance) {
+                        balance = Math.random() * 10; // رصيد عشوائي
+                        this.localDatabase.stats.withBalance++;
+                        this.localDatabase.stats.totalBalance += balance;
                     }
                     
-                    this.updateUI();
+                    // حفظ النتيجة
+                    this.localDatabase.addresses[address] = {
+                        address,
+                        type,
+                        balance,
+                        hasBalance,
+                        scannedAt: new Date().toISOString(),
+                        scannedBy: this.currentUser
+                    };
+                    
+                    this.localDatabase.stats.total++;
+                    this.localDatabase.stats.scanned++;
+                    
+                    // إضافة إلى الدردشة إذا كان به رصيد
+                    if (hasBalance) {
+                        this.addChatMessage('النظام', 
+                            `🔔 اكتشاف: ${address} - ${balance.toFixed(8)} ${type.toUpperCase()}`);
+                    }
                     
                 } catch (error) {
-                    console.error('خطأ في إنشاء/تحميل قاعدة البيانات:', error);
-                    throw error;
+                    console.error('خطأ في فحص العنوان:', error);
                 }
             }
             
-            createNewDatabase() {
-                return {
-                    metadata: {
-                        version: "2.0",
-                        createdAt: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString(),
-                        createdBy: this.user.name,
-                        totalUpdates: 0
-                    },
-                    stats: {
-                        totalAddresses: 0,
-                        totalRepos: 0,
-                        totalUsers: 0,
-                        totalScans: 0
-                    },
-                    addresses: {},
-                    repositories: {},
-                    users: {},
-                    recentScans: [],
-                    scanQueue: []
-                };
-            }
-            
-            async loadExistingDatabase() {
-                const username = prompt('أدخل اسم مستخدم GitHub:');
-                const repo = prompt('أدخل اسم المستودع:');
-                
-                if (!username || !repo) {
-                    this.showToast('الرجاء إدخال اسم المستخدم والمستودع', 'error');
-                    return;
-                }
-                
-                this.github.username = username;
-                this.github.repo = repo;
-                this.github.token = ''; // محاولة الوصول بدون توكن للقراءة فقط
+            async syncWithGitHub() {
+                if (!this.githubConfig.token) return;
                 
                 try {
-                    const database = await this.loadFromGitHub('database.json');
+                    this.localDatabase.metadata.lastSync = new Date().toISOString();
                     
-                    if (database) {
-                        this.database = database;
-                        this.isSetup = true;
-                        this.showMainSystem();
-                        this.updateUI();
-                        this.showToast('تم تحميل قاعدة البيانات بنجاح (وضع القراءة فقط)', 'success');
-                    } else {
-                        this.showToast('تعذر العثور على قاعدة بيانات في هذا المستودع', 'error');
-                    }
-                } catch (error) {
-                    console.error('خطأ في تحميل قاعدة البيانات:', error);
-                    this.showToast(`خطأ: ${error.message}`, 'error');
-                }
-            }
-            
-            showMainSystem() {
-                this.elements.setupSection.style.display = 'none';
-                this.elements.mainSystem.style.display = 'block';
-            }
-            
-            async loadDatabase() {
-                if (!this.isSetup) return;
-                
-                try {
-                    const database = await this.loadFromGitHub('database.json');
+                    // حفظ البيانات المحلية
+                    this.saveLocalData();
                     
-                    if (database) {
-                        this.database = database;
-                        this.updateUI();
-                        
-                        // تحديث وقت النشاط للمستخدم
-                        this.updateUserActivity();
-                        
-                        this.showToast('تم تحديث البيانات من الخادم', 'success');
-                    }
-                } catch (error) {
-                    console.error('خطأ في تحميل قاعدة البيانات:', error);
-                    this.showToast('خطأ في تحميل البيانات', 'error');
-                }
-            }
-            
-            async loadFromGitHub(filePath) {
-                try {
-                    const url = `https://raw.githubusercontent.com/${this.github.username}/${this.github.repo}/${this.github.branch}/${filePath}`;
-                    const response = await fetch(url + `?t=${Date.now()}`);
+                    // رفع إلى GitHub
+                    const success = await this.uploadToGitHub();
                     
-                    if (response.ok) {
-                        return await response.json();
-                    } else if (response.status === 404) {
-                        return null; // الملف غير موجود
-                    } else {
-                        throw new Error(`خطأ ${response.status}`);
+                    if (success) {
+                        // تحديث المستخدمين النشطين
+                        await this.updateActiveUsers();
                     }
+                    
                 } catch (error) {
-                    console.error(`خطأ في تحميل ${filePath}:`, error);
-                    throw error;
+                    console.error('خطأ في المزامنة:', error);
                 }
             }
             
-            async saveToGitHub(filePath, data) {
-                if (!this.github.token) {
-                    this.showToast('لا يمكن الحفظ بدون GitHub Token', 'error');
-                    return false;
-                }
-                
+            async uploadToGitHub() {
                 try {
-                    // أولاً: الحصول على SHA للملف الحالي إذا كان موجوداً
+                    const url = `https://api.github.com/repos/${this.githubConfig.username}/${this.githubConfig.repo}/contents/database.json`;
+                    
+                    // الحصول على SHA للملف الحالي
                     let sha = null;
-                    const apiUrl = `https://api.github.com/repos/${this.github.username}/${this.github.repo}/contents/${filePath}`;
-                    
                     try {
-                        const response = await fetch(apiUrl, {
+                        const response = await fetch(url, {
                             headers: {
-                                'Authorization': `token ${this.github.token}`,
+                                'Authorization': `token ${this.githubConfig.token}`,
                                 'Accept': 'application/vnd.github.v3+json'
                             }
                         });
                         
                         if (response.ok) {
-                            const fileData = await response.json();
-                            sha = fileData.sha;
+                            const data = await response.json();
+                            sha = data.sha;
                         }
-                    } catch (error) {
-                        // الملف غير موجود، سنقوم بإنشائه
-                        console.log('الملف غير موجود، سيتم إنشاؤه جديداً');
+                    } catch (e) {
+                        // الملف غير موجود، سننشئه
                     }
                     
-                    // ثانياً: رفع الملف
-                    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+                    // تحويل البيانات إلى base64
+                    const content = btoa(unescape(encodeURIComponent(
+                        JSON.stringify(this.localDatabase, null, 2)
+                    )));
                     
-                    const response = await fetch(apiUrl, {
+                    // رفع الملف
+                    const response = await fetch(url, {
                         method: 'PUT',
                         headers: {
-                            'Authorization': `token ${this.github.token}`,
+                            'Authorization': `token ${this.githubConfig.token}`,
                             'Accept': 'application/vnd.github.v3+json',
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            message: `Update ${filePath} - ${new Date().toISOString()}`,
+                            message: `Update ${new Date().toISOString()}`,
                             content: content,
-                            branch: this.github.branch,
+                            branch: this.githubConfig.branch,
                             sha: sha
                         })
                     });
                     
-                    if (response.ok || response.status === 201) {
-                        this.database.metadata.totalUpdates += 1;
-                        return true;
-                    } else {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || `خطأ ${response.status}`);
-                    }
+                    return response.ok;
+                    
                 } catch (error) {
-                    console.error(`خطأ في حفظ ${filePath}:`, error);
-                    throw error;
+                    console.error('خطأ في رفع البيانات:', error);
+                    return false;
                 }
             }
             
-            async pushToGitHub() {
-                if (!this.github.token) {
-                    this.showToast('لا يمكن رفع التحديثات بدون GitHub Token', 'error');
+            async updateActiveUsers() {
+                // تحديث قائمة المستخدمين النشطين
+                if (!this.localDatabase.users[this.currentUser]) {
+                    this.localDatabase.users[this.currentUser] = {
+                        lastActive: new Date().toISOString(),
+                        totalScans: 0
+                    };
+                } else {
+                    this.localDatabase.users[this.currentUser].lastActive = new Date().toISOString();
+                }
+                
+                // تحديث الواجهة
+                this.updateUsersList();
+            }
+            
+            updateUsersList() {
+                const users = Object.keys(this.localDatabase.users)
+                    .filter(user => {
+                        const lastActive = new Date(this.localDatabase.users[user].lastActive);
+                        const minutesAgo = (new Date() - lastActive) / (1000 * 60);
+                        return minutesAgo < 5; // نشط خلال 5 دقائق
+                    });
+                
+                this.elements.usersCount.textContent = users.length;
+                
+                let html = '';
+                users.forEach(user => {
+                    html += `<div class="user-badge"><i class="fas fa-user"></i> ${user}</div>`;
+                });
+                
+                this.elements.onlineUsers.innerHTML = html;
+            }
+            
+            saveToken() {
+                const token = this.elements.githubToken.value.trim();
+                
+                if (!token.startsWith('ghp_')) {
+                    this.showToast('التوكن غير صالح', 'error');
                     return;
                 }
                 
-                this.showToast('جاري رفع التحديثات إلى GitHub...', 'warning');
+                this.githubConfig.token = token;
+                localStorage.setItem('github_token', token);
                 
+                this.showToast('تم حفظ التوكن بنجاح', 'success');
+                this.syncWithGitHub();
+            }
+            
+            loadLocalData() {
                 try {
-                    // تحديث بيانات المستخدم أولاً
-                    this.updateUserActivity();
-                    
-                    // حفظ قاعدة البيانات
-                    const success = await this.saveToGitHub('database.json', this.database);
-                    
-                    if (success) {
-                        this.showToast('تم رفع التحديثات بنجاح', 'success');
-                    } else {
-                        this.showToast('فشل في رفع التحديثات', 'error');
+                    // تحميل التوكن
+                    const savedToken = localStorage.getItem('github_token');
+                    if (savedToken) {
+                        this.githubConfig.token = savedToken;
+                        this.elements.githubToken.value = savedToken;
                     }
+                    
+                    // تحميل قاعدة البيانات المحلية
+                    const savedData = localStorage.getItem('crypto_database');
+                    if (savedData) {
+                        this.localDatabase = JSON.parse(savedData);
+                    }
+                    
+                    // تحميل اسم المستخدم
+                    const savedName = localStorage.getItem('user_name');
+                    if (savedName) {
+                        this.currentUser = savedName;
+                        this.elements.userName.value = savedName;
+                    }
+                    
                 } catch (error) {
-                    console.error('خطأ في رفع التحديثات:', error);
-                    this.showToast(`خطأ: ${error.message}`, 'error');
+                    console.error('خطأ في تحميل البيانات:', error);
                 }
             }
             
-            updateUserActivity() {
-                if (!this.database || !this.user.name) return;
-                
-                if (!this.database.users[this.user.name]) {
-                    this.database.users[this.user.name] = {
-                        firstSeen: new Date().toISOString(),
-                        lastActive: new Date().toISOString(),
-                        totalScans: 0,
-                        totalAddresses: 0,
-                        scannedRepos: []
-                    };
-                    
-                    this.database.stats.totalUsers = Object.keys(this.database.users).length;
-                } else {
-                    this.database.users[this.user.name].lastActive = new Date().toISOString();
+            saveLocalData() {
+                try {
+                    localStorage.setItem('crypto_database', JSON.stringify(this.localDatabase));
+                    localStorage.setItem('user_name', this.currentUser);
+                } catch (error) {
+                    console.error('خطأ في حفظ البيانات:', error);
                 }
             }
             
             updateUI() {
-                if (!this.database) return;
-                
                 // تحديث الإحصائيات
-                this.elements.totalAddresses.textContent = this.database.stats.totalAddresses.toLocaleString();
-                this.elements.totalRepos.textContent = this.database.stats.totalRepos.toLocaleString();
-                this.elements.totalUsers.textContent = this.database.stats.totalUsers.toLocaleString();
+                this.elements.totalAddresses.textContent = this.localDatabase.stats.total.toLocaleString();
+                this.elements.scannedAddresses.textContent = this.localDatabase.stats.scanned.toLocaleString();
+                this.elements.withBalance.textContent = this.localDatabase.stats.withBalance.toLocaleString();
+                this.elements.totalBalance.textContent = `${this.localDatabase.stats.totalBalance.toFixed(8)} BTC`;
                 
-                const lastUpdate = new Date(this.database.metadata.lastUpdated);
-                const now = new Date();
-                const diffMinutes = Math.floor((now - lastUpdate) / (1000 * 60));
+                // تحديث نتائج الفحص
+                this.updateResultsDisplay();
                 
-                if (diffMinutes < 1) {
-                    this.elements.lastUpdate.textContent = 'الآن';
-                } else if (diffMinutes < 60) {
-                    this.elements.lastUpdate.textContent = `${diffMinutes} د`;
-                } else if (diffMinutes < 1440) {
-                    const hours = Math.floor(diffMinutes / 60);
-                    this.elements.lastUpdate.textContent = `${hours} س`;
-                } else {
-                    const days = Math.floor(diffMinutes / 1440);
-                    this.elements.lastUpdate.textContent = `${days} ي`;
-                }
-                
-                // عرض العناوين الحديثة
-                this.displayRecentAddresses();
-                
-                // عرض المساهمين النشطين
-                this.displayActiveUsers();
-                
-                // عرض المتصدرين
-                this.displayTopContributors();
-                
-                // عرض آخر الفحوصات
-                this.displayRecentScans();
-                
-                // عرض قائمة الانتظار
-                this.displayQueue();
+                // تحديث المساهمين
+                this.updateUsersList();
             }
             
-            displayRecentAddresses() {
-                const container = this.elements.resultsContainer;
-                if (!container) return;
+            updateResultsDisplay() {
+                const addresses = Object.values(this.localDatabase.addresses)
+                    .sort((a, b) => {
+                        if (a.hasBalance && !b.hasBalance) return -1;
+                        if (!a.hasBalance && b.hasBalance) return 1;
+                        return new Date(b.scannedAt) - new Date(a.scannedAt);
+                    })
+                    .slice(0, 50); // عرض أول 50 نتيجة فقط
                 
-                if (!this.database || Object.keys(this.database.addresses).length === 0) {
-                    container.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-search"></i>
-                            <h3>لا توجد عناوين مكتشفة بعد</h3>
-                            <p>ابدأ بفحص مستودع GitHub لاكتشاف عناوين العملات المشفرة</p>
+                this.elements.resultsCount.textContent = addresses.length;
+                
+                if (addresses.length === 0) {
+                    this.elements.resultsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #b2bec3;">
+                            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
+                            <h3>لم يتم فحص أي عناوين بعد</h3>
+                            <p>ابدأ الفحص التلقائي لاكتشاف العناوين</p>
                         </div>
                     `;
                     return;
                 }
                 
-                const addresses = Object.values(this.database.addresses)
-                    .sort((a, b) => new Date(b.foundAt) - new Date(a.foundAt))
-                    .slice(0, 15);
-                
                 let html = '';
-                
-                addresses.forEach(address => {
+                addresses.forEach(addr => {
+                    const badgeClass = addr.type === 'bitcoin' ? 'btc-badge' : 'eth-badge';
+                    const icon = addr.type === 'bitcoin' ? 'fab fa-bitcoin' : 'fab fa-ethereum';
+                    
                     html += `
-                        <div class="address-card">
+                        <div class="address-card ${addr.hasBalance ? 'with-balance' : ''}">
                             <div class="address-header">
-                                <span class="crypto-type ${address.type}">
-                                    <i class="fab fa-${address.type}"></i>
-                                    ${address.type.charAt(0).toUpperCase() + address.type.slice(1)}
+                                <span class="crypto-badge ${badgeClass}">
+                                    <i class="${icon}"></i> ${addr.type.toUpperCase()}
                                 </span>
-                                <span style="color: #b2bec3; font-size: 0.75rem;">
-                                    <i class="far fa-clock"></i> ${this.timeAgo(address.foundAt)}
-                                </span>
+                                ${addr.hasBalance ? `<span class="balance">${addr.balance.toFixed(8)}</span>` : ''}
                             </div>
-                            <div class="address-value" onclick="scanner.copyToClipboard('${address.address.replace(/'/g, "\\'")}')">
-                                ${address.address}
-                            </div>
-                            <div class="address-footer">
-                                <div class="repo-info">
-                                    <i class="fab fa-github"></i>
-                                    <span>${address.repository}</span>
-                                </div>
-                                <div>
-                                    <i class="fas fa-user"></i> ${address.foundBy}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-            }
-            
-            displayActiveUsers() {
-                const container = this.elements.userList;
-                if (!container || !this.database) return;
-                
-                const users = Object.entries(this.database.users)
-                    .sort((a, b) => new Date(b[1].lastActive) - new Date(a[1].lastActive))
-                    .slice(0, 10);
-                
-                let html = '';
-                
-                users.forEach(([username, userData]) => {
-                    const isActive = (new Date() - new Date(userData.lastActive)) < 300000; // 5 دقائق
-                    
-                    html += `
-                        <div class="user-badge" title="${username} - ${userData.totalScans} فحص">
-                            <i class="fas fa-user${isActive ? '' : '-clock'}"></i>
-                            ${username} (${userData.totalScans})
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html || '<div class="user-badge">لا يوجد مستخدمين نشطين</div>';
-            }
-            
-            displayTopContributors() {
-                const container = this.elements.contributorsList;
-                if (!container || !this.database) return;
-                
-                const contributors = Object.entries(this.database.users)
-                    .sort((a, b) => b[1].totalAddresses - a[1].totalAddresses)
-                    .slice(0, 10);
-                
-                if (contributors.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-trophy"></i>
-                            <p>لا يوجد مساهمين بعد</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let html = '<div style="display: flex; flex-direction: column; gap: 10px;">';
-                
-                contributors.forEach(([username, userData], index) => {
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
-                    
-                    html += `
-                        <div style="display: flex; justify-content: space-between; align-items: center; 
-                                    padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 1.2rem;">${medal}</span>
-                                <div>
-                                    <strong>${username}</strong>
-                                    <div style="font-size: 0.8rem; color: #b2bec3;">
-                                        ${userData.totalScans} فحص | ${userData.totalAddresses} عنوان
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="font-size: 0.8rem; color: #00b894;">
-                                ${userData.scannedRepos.length} مستودع
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-                container.innerHTML = html;
-            }
-            
-            displayRecentScans() {
-                const container = this.elements.recentScansList;
-                if (!container || !this.database) return;
-                
-                const recentScans = this.database.recentScans.slice(0, 5);
-                
-                if (recentScans.length === 0) {
-                    container.innerHTML = '<div style="color: #b2bec3; text-align: center;">لا توجد فحوصات حديثة</div>';
-                    return;
-                }
-                
-                let html = '';
-                
-                recentScans.forEach(scan => {
-                    html += `
-                        <div style="padding: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-                                    font-size: 0.85rem;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span><i class="fab fa-github"></i> ${scan.repository.split('/').pop()}</span>
-                                <span style="color: #fdcb6e;">${scan.addressesFound} عنوان</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; color: #b2bec3; font-size: 0.75rem;">
-                                <span><i class="fas fa-user"></i> ${scan.user}</span>
-                                <span>${this.timeAgo(scan.timestamp)}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-            }
-            
-            displayQueue() {
-                const container = this.elements.queueList;
-                if (!container || !this.database) return;
-                
-                const queue = this.database.scanQueue || [];
-                
-                if (queue.length === 0) {
-                    container.innerHTML = `
-                        <div class="no-results">
-                            <i class="fas fa-inbox"></i>
-                            <p>لا توجد مستودعات في قائمة الانتظار</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                let html = '';
-                
-                queue.forEach((item, index) => {
-                    html += `
-                        <div style="padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.05); 
-                                    border-radius: 6px; border-left: 3px solid var(--accent);">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <div style="font-weight: bold;">${item.repository}</div>
-                                    <div style="font-size: 0.8rem; color: #b2bec3;">
-                                        <i class="fas fa-user"></i> ${item.addedBy} • ${this.timeAgo(item.addedAt)}
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 5px;">
-                                    <button onclick="scanner.processQueueItem(${index})" 
-                                            style="background: #00b894; color: white; border: none; padding: 4px 8px; 
-                                                   border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-                                        فحص
-                                    </button>
-                                    <button onclick="scanner.removeQueueItem(${index})" 
-                                            style="background: #d63031; color: white; border: none; padding: 4px 8px; 
-                                                   border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
-                                        حذف
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-            }
-            
-            async startScan() {
-                if (!this.isSetup) {
-                    this.showToast('الرجاء إعداد النظام أولاً', 'error');
-                    return;
-                }
-                
-                const repoUrl = this.elements.repoUrl.value.trim();
-                if (!repoUrl) {
-                    this.showToast('الرجاء إدخال رابط المستودع', 'error');
-                    return;
-                }
-                
-                let repoFullName = '';
-                if (repoUrl.includes('github.com/')) {
-                    const match = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
-                    if (match) {
-                        repoFullName = match[1].replace(/\.git$/, '');
-                    } else {
-                        this.showToast('رابط GitHub غير صحيح', 'error');
-                        return;
-                    }
-                } else {
-                    repoFullName = repoUrl.trim();
-                }
-                
-                this.currentScan = {
-                    repository: repoFullName,
-                    user: this.user.name,
-                    cancelled: false,
-                    foundAddresses: [],
-                    scannedFiles: 0,
-                    startTime: new Date()
-                };
-                
-                this.showScanningOverlay();
-                this.updateScanProgress('بدء عملية الفحص...', 0);
-                
-                try {
-                    // محاكاة الفحص (في نظام حقيقي، سيكون اتصال بـ GitHub API)
-                    await this.simulateGitHubScan();
-                    
-                    if (this.currentScan.cancelled) {
-                        this.showToast('تم إلغاء الفحص', 'warning');
-                        return;
-                    }
-                    
-                    // حفظ النتائج في قاعدة البيانات المشتركة
-                    await this.saveScanResults();
-                    
-                    // رفع التحديثات إلى GitHub
-                    await this.pushToGitHub();
-                    
-                    // عرض النتائج
-                    this.showResultsModal();
-                    
-                } catch (error) {
-                    console.error('خطأ في الفحص:', error);
-                    this.showToast(`خطأ: ${error.message}`, 'error');
-                } finally {
-                    this.hideScanningOverlay();
-                    this.currentScan = null;
-                }
-            }
-            
-            async simulateGitHubScan() {
-                // محاكاة فحص GitHub
-                const totalSteps = 30;
-                
-                for (let i = 0; i < totalSteps; i++) {
-                    if (this.currentScan.cancelled) return;
-                    
-                    await this.delay(200);
-                    
-                    const progress = Math.floor((i / totalSteps) * 100);
-                    this.updateScanProgress(
-                        `فحص الملفات... (${i + 1}/${totalSteps})`,
-                        progress
-                    );
-                    
-                    // محاكاة اكتشاف عناوين
-                    if (Math.random() > 0.7) {
-                        const address = this.generateMockAddress();
-                        this.currentScan.foundAddresses.push(address);
-                        this.updateAddressesFound(this.currentScan.foundAddresses.length);
-                    }
-                    
-                    this.currentScan.scannedFiles += Math.floor(Math.random() * 5) + 1;
-                    this.updateFilesScanned(this.currentScan.scannedFiles);
-                }
-                
-                // إذا لم يتم اكتشاف أي عناوين، نضيف بعض العناوين الوهمية للتوضيح
-                if (this.currentScan.foundAddresses.length === 0) {
-                    const sampleAddresses = [
-                        this.generateMockAddress('bitcoin'),
-                        this.generateMockAddress('ethereum')
-                    ];
-                    this.currentScan.foundAddresses.push(...sampleAddresses);
-                    this.updateAddressesFound(this.currentScan.foundAddresses.length);
-                }
-            }
-            
-            generateMockAddress(type = null) {
-                const types = ['bitcoin', 'ethereum'];
-                const cryptoType = type || types[Math.floor(Math.random() * types.length)];
-                
-                let address = '';
-                if (cryptoType === 'bitcoin') {
-                    const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-                    address = '1';
-                    for (let i = 0; i < 33; i++) {
-                        address += chars[Math.floor(Math.random() * chars.length)];
-                    }
-                } else {
-                    const chars = '0123456789abcdef';
-                    address = '0x';
-                    for (let i = 0; i < 40; i++) {
-                        address += chars[Math.floor(Math.random() * chars.length)];
-                    }
-                }
-                
-                return {
-                    address: address,
-                    type: cryptoType,
-                    repository: this.currentScan.repository,
-                    foundBy: this.currentScan.user,
-                    foundAt: new Date().toISOString()
-                };
-            }
-            
-            async saveScanResults() {
-                if (!this.currentScan || this.currentScan.foundAddresses.length === 0) {
-                    return;
-                }
-                
-                // تحديث قاعدة البيانات المحلية
-                this.currentScan.foundAddresses.forEach(addr => {
-                    const addressKey = `${addr.type}_${addr.address}`;
-                    
-                    if (!this.database.addresses[addressKey]) {
-                        this.database.addresses[addressKey] = addr;
-                        this.database.stats.totalAddresses += 1;
-                    }
-                });
-                
-                // تحديث معلومات المستودع
-                if (!this.database.repositories[this.currentScan.repository]) {
-                    this.database.repositories[this.currentScan.repository] = {
-                        firstScanned: new Date().toISOString(),
-                        lastScanned: new Date().toISOString(),
-                        totalScans: 1,
-                        totalAddressesFound: this.currentScan.foundAddresses.length,
-                        scannedBy: [this.currentScan.user]
-                    };
-                    this.database.stats.totalRepos += 1;
-                } else {
-                    const repo = this.database.repositories[this.currentScan.repository];
-                    repo.lastScanned = new Date().toISOString();
-                    repo.totalScans += 1;
-                    repo.totalAddressesFound += this.currentScan.foundAddresses.length;
-                    
-                    if (!repo.scannedBy.includes(this.currentScan.user)) {
-                        repo.scannedBy.push(this.currentScan.user);
-                    }
-                }
-                
-                // تحديث معلومات المستخدم
-                if (!this.database.users[this.currentScan.user]) {
-                    this.database.users[this.currentScan.user] = {
-                        firstSeen: new Date().toISOString(),
-                        lastActive: new Date().toISOString(),
-                        totalScans: 1,
-                        totalAddresses: this.currentScan.foundAddresses.length,
-                        scannedRepos: [this.currentScan.repository]
-                    };
-                    this.database.stats.totalUsers = Object.keys(this.database.users).length;
-                } else {
-                    const user = this.database.users[this.currentScan.user];
-                    user.lastActive = new Date().toISOString();
-                    user.totalScans += 1;
-                    user.totalAddresses += this.currentScan.foundAddresses.length;
-                    
-                    if (!user.scannedRepos.includes(this.currentScan.repository)) {
-                        user.scannedRepos.push(this.currentScan.repository);
-                    }
-                }
-                
-                // إضافة إلى سجل الفحوصات
-                this.database.recentScans.unshift({
-                    repository: this.currentScan.repository,
-                    user: this.currentScan.user,
-                    timestamp: new Date().toISOString(),
-                    addressesFound: this.currentScan.foundAddresses.length,
-                    duration: (new Date() - this.currentScan.startTime) / 1000
-                });
-                
-                if (this.database.recentScans.length > 100) {
-                    this.database.recentScans = this.database.recentScans.slice(0, 100);
-                }
-                
-                this.database.stats.totalScans += 1;
-                this.database.metadata.lastUpdated = new Date().toISOString();
-                
-                // تحديث الواجهة
-                this.updateUI();
-            }
-            
-            showResultsModal() {
-                if (!this.currentScan || this.currentScan.foundAddresses.length === 0) {
-                    return;
-                }
-                
-                const modal = document.getElementById('results-modal');
-                const modalTitle = document.getElementById('modal-title');
-                const modalResults = document.getElementById('modal-results');
-                
-                modalTitle.textContent = `نتائج فحص ${this.currentScan.repository}`;
-                
-                let html = `
-                    <p>تم فحص المستودع بنجاح واكتشف <strong>${this.currentScan.foundAddresses.length}</strong> عنوان.</p>
-                    <p style="color: #b2bec3; font-size: 0.9rem; margin-bottom: 15px;">
-                        <i class="fas fa-info-circle"></i> تم حفظ النتائج في قاعدة البيانات المشتركة وسيتمكن جميع المستخدمين من رؤيتها.
-                    </p>
-                    <div style="max-height: 300px; overflow-y: auto; margin-bottom: 20px;">
-                `;
-                
-                this.currentScan.foundAddresses.forEach((addr, index) => {
-                    html += `
-                        <div style="padding: 10px; margin-bottom: 8px; background: rgba(255, 255, 255, 0.05); 
-                                    border-radius: 6px; border-left: 3px solid #00b894;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                <span style="font-weight: bold; color: #fdcb6e;">${addr.type.toUpperCase()}</span>
-                                <span style="font-size: 0.8rem; color: #b2bec3;">#${index + 1}</span>
-                            </div>
-                            <div style="font-family: monospace; font-size: 0.85rem; word-break: break-all; 
-                                        padding: 8px; background: rgba(0, 0, 0, 0.3); border-radius: 4px; margin-bottom: 5px;">
+                            <div class="address-value" onclick="scanner.copyToClipboard('${addr.address}')">
                                 ${addr.address}
                             </div>
-                            <div style="font-size: 0.8rem; color: #b2bec3; display: flex; justify-content: space-between;">
-                                <span><i class="fas fa-user"></i> ${addr.foundBy}</span>
-                                <span>${new Date(addr.foundAt).toLocaleTimeString()}</span>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #b2bec3;">
+                                <span><i class="fas fa-user"></i> ${addr.scannedBy}</span>
+                                <span><i class="far fa-clock"></i> ${this.formatTime(addr.scannedAt)}</span>
                             </div>
                         </div>
                     `;
                 });
                 
-                html += `
-                    </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn" onclick="scanner.closeResultsModal()" style="flex: 1;">
-                            <i class="fas fa-check"></i> تم
-                        </button>
-                    </div>
-                `;
+                this.elements.resultsContainer.innerHTML = html;
+            }
+            
+            sendChatMessage() {
+                const message = this.elements.chatMessage.value.trim();
+                if (!message || !this.currentUser) return;
                 
-                modalResults.innerHTML = html;
-                modal.style.display = 'flex';
-            }
-            
-            closeResultsModal() {
-                document.getElementById('results-modal').style.display = 'none';
-            }
-            
-            scanRandomRepo() {
-                const randomRepo = this.popularRepos[Math.floor(Math.random() * this.popularRepos.length)];
-                this.elements.repoUrl.value = randomRepo;
-                this.showToast(`تم تعيين مستودع عشوائي: ${randomRepo}`, 'success');
-            }
-            
-            addToQueue() {
-                const repoUrl = prompt('أدخل رابط مستودع GitHub أو username/repo:');
-                if (!repoUrl) return;
+                const chatMessage = {
+                    user: this.currentUser,
+                    message: message,
+                    timestamp: new Date().toISOString()
+                };
                 
-                let repoFullName = '';
-                if (repoUrl.includes('github.com/')) {
-                    const match = repoUrl.match(/github\.com\/([^\/]+\/[^\/]+)/);
-                    if (match) {
-                        repoFullName = match[1].replace(/\.git$/, '');
-                    } else {
-                        this.showToast('رابط GitHub غير صحيح', 'error');
-                        return;
-                    }
-                } else {
-                    repoFullName = repoUrl.trim();
+                this.localDatabase.chat.push(chatMessage);
+                this.addChatMessage(chatMessage.user, chatMessage.message);
+                
+                this.elements.chatMessage.value = '';
+                this.saveLocalData();
+                
+                // مزامنة مع GitHub إذا كان هناك توكن
+                if (this.githubConfig.token) {
+                    this.syncWithGitHub();
                 }
-                
-                if (!this.database.scanQueue) {
-                    this.database.scanQueue = [];
-                }
-                
-                this.database.scanQueue.push({
-                    repository: repoFullName,
-                    addedBy: this.user.name,
-                    addedAt: new Date().toISOString(),
-                    priority: 'normal'
+            }
+            
+            addChatMessage(user, message) {
+                const time = new Date().toLocaleTimeString('ar-SA', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
                 });
                 
-                this.pushToGitHub();
-                this.displayQueue();
-                this.showToast('تمت إضافة المستودع إلى قائمة الانتظار المشتركة', 'success');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message';
+                messageDiv.innerHTML = `
+                    <div class="message-header">
+                        <span class="message-user">${user}</span>
+                        <span>${time}</span>
+                    </div>
+                    <div>${message}</div>
+                `;
+                
+                this.elements.chatMessages.appendChild(messageDiv);
+                this.elements.chatMessages.scrollTop = this.elements.chatMessages.scrollHeight;
             }
             
-            async processQueueItem(index) {
-                if (!this.database.scanQueue || index >= this.database.scanQueue.length) {
-                    return;
-                }
-                
-                const item = this.database.scanQueue[index];
-                this.elements.repoUrl.value = item.repository;
-                
-                // إزالة العنصر من قائمة الانتظار
-                this.database.scanQueue.splice(index, 1);
-                await this.pushToGitHub();
-                
-                // بدء الفحص
-                this.startScan();
-            }
-            
-            async removeQueueItem(index) {
-                if (!this.database.scanQueue || index >= this.database.scanQueue.length) {
-                    return;
-                }
-                
-                if (confirm('هل تريد حذف هذا العنصر من قائمة الانتظار؟')) {
-                    this.database.scanQueue.splice(index, 1);
-                    await this.pushToGitHub();
-                    this.displayQueue();
-                    this.showToast('تم حذف العنصر من قائمة الانتظار', 'warning');
-                }
-            }
-            
-            exportData() {
-                if (!this.database) {
-                    this.showToast('لا توجد بيانات للتصدير', 'error');
-                    return;
-                }
-                
+            exportResults() {
                 const data = {
-                    database: this.database,
-                    exportDate: new Date().toISOString(),
-                    exportedBy: this.user.name
+                    addresses: this.localDatabase.addresses,
+                    metadata: this.localDatabase.metadata,
+                    stats: this.localDatabase.stats,
+                    exportDate: new Date().toISOString()
                 };
                 
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1951,96 +1303,88 @@
                 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `crypto-scanner-data-${new Date().toISOString().split('T')[0]}.json`;
+                a.download = `crypto-results-${Date.now()}.json`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                this.showToast('تم تصدير جميع البيانات', 'success');
+                this.showToast('تم تصدير النتائج', 'success');
+            }
+            
+            switchTab(tabId) {
+                // إخفاء كل المحتويات
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // إلغاء تفعيل كل الألسنة
+                this.elements.tabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // تفعيل اللسان والمحتوى المحدد
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            }
+            
+            startAutoSync() {
+                // مزامنة تلقائية كل دقيقة
+                setInterval(() => {
+                    if (this.githubConfig.token && !this.isScanning) {
+                        this.syncWithGitHub();
+                    }
+                }, 60000);
             }
             
             // أدوات مساعدة
             copyToClipboard(text) {
                 navigator.clipboard.writeText(text).then(() => {
-                    this.showToast('تم نسخ العنوان إلى الحافظة', 'success');
+                    this.showToast('تم نسخ العنوان', 'success');
                 }).catch(err => {
                     console.error('خطأ في النسخ:', err);
-                    this.showToast('خطأ في نسخ النص', 'error');
                 });
             }
             
-            updateScanProgress(message, progress) {
-                const scanningDetails = document.getElementById('scanning-details');
-                const progressBar = document.getElementById('scan-progress-bar');
-                const progressText = document.getElementById('scan-progress');
-                
-                if (scanningDetails) scanningDetails.textContent = message;
-                if (progressBar) progressBar.style.width = `${progress}%`;
-                if (progressText) progressText.textContent = `${progress}%`;
+            showLoading(text = 'جاري التحميل...', details = '') {
+                this.elements.loadingText.textContent = text;
+                this.elements.loadingDetails.textContent = details;
+                this.elements.loadingOverlay.style.display = 'flex';
             }
             
-            updateFilesScanned(count) {
-                const element = document.getElementById('files-scanned');
-                if (element) element.textContent = count.toLocaleString();
-            }
-            
-            updateAddressesFound(count) {
-                const element = document.getElementById('addresses-found');
-                if (element) element.textContent = count.toLocaleString();
-            }
-            
-            showScanningOverlay() {
-                document.getElementById('scanning-overlay').style.display = 'flex';
-                this.updateScanProgress('بدء عملية الفحص...', 0);
-                this.updateFilesScanned(0);
-                this.updateAddressesFound(0);
-            }
-            
-            hideScanningOverlay() {
-                document.getElementById('scanning-overlay').style.display = 'none';
+            hideLoading() {
+                this.elements.loadingOverlay.style.display = 'none';
             }
             
             showToast(message, type = 'success') {
-                const toast = document.getElementById('toast');
-                const toastMessage = document.getElementById('toast-message');
-                
-                toastMessage.textContent = message;
-                toast.className = 'toast';
-                toast.classList.add('show');
+                this.elements.toastMessage.textContent = message;
+                this.elements.toast.className = 'toast';
                 
                 if (type === 'error') {
-                    toast.classList.add('error');
+                    this.elements.toast.classList.add('error');
                 } else if (type === 'warning') {
-                    toast.classList.add('warning');
+                    this.elements.toast.classList.add('warning');
                 }
                 
+                this.elements.toast.classList.add('show');
+                
                 setTimeout(() => {
-                    toast.classList.remove('show');
+                    this.elements.toast.classList.remove('show');
                 }, 3000);
             }
             
-            switchTab(tabId) {
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
-                document.getElementById(`${tabId}-tab`).classList.add('active');
-            }
-            
-            timeAgo(dateString) {
+            formatTime(dateString) {
                 const date = new Date(dateString);
                 const now = new Date();
-                const seconds = Math.floor((now - date) / 1000);
+                const diff = (now - date) / 1000;
                 
-                if (seconds < 60) return 'الآن';
-                if (seconds < 3600) return `منذ ${Math.floor(seconds / 60)} دقيقة`;
-                if (seconds < 86400) return `منذ ${Math.floor(seconds / 3600)} ساعة`;
-                if (seconds < 604800) return `منذ ${Math.floor(seconds / 86400)} يوم`;
-                return `منذ ${Math.floor(seconds / 604800)} أسبوع`;
+                if (diff < 60) return 'الآن';
+                if (diff < 3600) return `منذ ${Math.floor(diff / 60)} د`;
+                if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} س`;
+                return date.toLocaleDateString('ar-SA');
             }
             
-            delay(ms) {
+            sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             }
         }
@@ -2049,8 +1393,16 @@
         let scanner;
         
         document.addEventListener('DOMContentLoaded', () => {
-            scanner = new CentralizedCryptoScanner();
+            scanner = new AdvancedCryptoScanner();
             window.scanner = scanner;
+            
+            // تشغيل فحص تلقائي بعد تحميل الملفات
+            setTimeout(() => {
+                const autoScan = document.getElementById('auto-scan');
+                if (autoScan && autoScan.checked) {
+                    scanner.startAutoScan();
+                }
+            }, 3000);
         });
     </script>
 </body>
