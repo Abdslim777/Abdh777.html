@@ -19,6 +19,7 @@
             --danger: #dc3545;
             --gray: #6a737d;
             --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --sidebar-width: 320px;
         }
 
         * {
@@ -36,83 +37,159 @@
             overflow-x: hidden;
         }
 
-        /* تخطيط الشبكة */
-        .app-container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            grid-template-rows: 70px 1fr;
+        /* تخطيط التطبيق */
+        .app-wrapper {
+            display: flex;
             height: 100vh;
             max-width: 1600px;
             margin: 0 auto;
             background: white;
             box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        /* الهيدر */
-        .app-header {
-            grid-column: 1 / -1;
+        /* زر القائمة الجانبية */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .menu-toggle i {
+            font-size: 1.3rem;
+        }
+
+        /* القائمة الجانبية */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 998;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: var(--sidebar-width);
+            height: 100%;
+            background: white;
+            z-index: 999;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            padding: 25px;
             background: var(--dark);
             color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 30px;
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .logo {
+        .sidebar-header h2 {
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
         }
 
-        .logo i {
-            color: var(--primary);
-            font-size: 1.8rem;
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
         }
 
-        .user-info {
+        /* علامات التبويب الجانبية */
+        .sidebar-tabs {
             display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        /* الشريط الجانبي */
-        .sidebar {
             background: var(--light);
-            border-right: 1px solid var(--border);
-            padding: 25px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            background: white;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        /* محتوى علامات التبويب */
+        .tab-content {
+            display: none;
+            padding: 25px;
+            height: calc(100vh - 160px);
             overflow-y: auto;
         }
 
-        .sidebar-section {
-            margin-bottom: 30px;
-        }
-
-        .sidebar-title {
-            font-size: 0.9rem;
-            color: var(--gray);
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        .tab-content.active {
+            display: block;
         }
 
         /* قائمة المحادثات */
@@ -121,23 +198,42 @@
         }
 
         .chat-item {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.2s;
+            border: 1px solid transparent;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
         }
 
         .chat-item:hover {
-            background: rgba(0,0,0,0.05);
+            background: var(--light);
+            border-color: var(--border);
         }
 
         .chat-item.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary);
+        }
+
+        .chat-item.active .chat-meta {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .chat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
         }
 
         .chat-info {
@@ -146,68 +242,213 @@
 
         .chat-name {
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 5px;
+            font-size: 1rem;
         }
 
         .chat-last-msg {
             font-size: 0.85rem;
             opacity: 0.8;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
+            margin-bottom: 5px;
+        }
+
+        .chat-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--gray);
         }
 
         .chat-unread {
             background: var(--danger);
             color: white;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             padding: 2px 8px;
             border-radius: 10px;
             min-width: 20px;
             text-align: center;
         }
 
-        /* زر جديد */
-        .btn-new-chat {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
+        /* منطقة الإعدادات */
+        .settings-group {
+            margin-bottom: 25px;
+        }
+
+        .settings-title {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 164, 79, 0.1);
+        }
+
+        .form-hint {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* التقييمات */
+        .rating-section {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .rating-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .rating-stars {
+            display: flex;
             justify-content: center;
-            gap: 10px;
-            transition: background 0.3s;
-            margin-bottom: 20px;
+            gap: 5px;
+            margin-bottom: 15px;
         }
 
-        .btn-new-chat:hover {
-            background: var(--primary-dark);
+        .rating-star {
+            font-size: 1.8rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        /* منطقة المحادثة */
+        .rating-star:hover,
+        .rating-star.active {
+            color: var(--warning);
+            transform: scale(1.1);
+        }
+
+        .rating-count {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* الإحصائيات */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+
+        /* منطقة المحادثة الرئيسية */
         .chat-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
             background: white;
+            position: relative;
         }
 
         .chat-header {
             padding: 20px 30px;
+            background: white;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .chat-title-section {
+            flex: 1;
         }
 
         .chat-title {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .chat-subtitle {
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--danger);
+        }
+
+        .status-dot.online {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .chat-actions {
@@ -215,9 +456,39 @@
             gap: 10px;
         }
 
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: white;
+            color: var(--gray);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .action-btn.primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* منطقة الرسائل */
         .messages-container {
             flex: 1;
-            padding: 25px;
+            padding: 25px 30px;
             overflow-y: auto;
             background: #f8f9fa;
             display: flex;
@@ -273,8 +544,38 @@
 
         .message.sent .message-time {
             text-align: right;
+            opacity: 0.9;
         }
 
+        .message-actions {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            display: flex;
+            gap: 5px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message-action {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        /* حالة الدردشة الفارغة */
         .empty-chat {
             display: flex;
             flex-direction: column;
@@ -283,6 +584,7 @@
             height: 100%;
             color: var(--gray);
             text-align: center;
+            padding: 40px;
         }
 
         .empty-chat i {
@@ -291,16 +593,53 @@
             opacity: 0.3;
         }
 
+        .empty-chat h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .empty-chat p {
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
         /* منطقة الإدخال */
         .input-area {
             padding: 20px 30px;
-            border-top: 1px solid var(--border);
             background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            padding: 8px 15px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: var(--light);
+            color: var(--dark);
         }
 
         .message-input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             align-items: flex-end;
         }
 
@@ -308,45 +647,22 @@
             flex: 1;
             padding: 15px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 12px;
             resize: none;
             font-size: 1rem;
             line-height: 1.5;
             min-height: 60px;
             max-height: 150px;
+            transition: all 0.3s;
         }
 
         .message-input:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(46, 164, 79, 0.1);
         }
 
-        .input-actions {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-
-        .btn-action {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 1px solid var(--border);
-            background: white;
-            color: var(--gray);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .btn-action:hover {
-            background: var(--light);
-            color: var(--dark);
-        }
-
-        .btn-send {
+        .send-btn {
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -357,14 +673,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s;
+            transition: all 0.3s;
         }
 
-        .btn-send:hover {
+        .send-btn:hover {
             background: var(--primary-dark);
+            transform: scale(1.05);
         }
 
-        /* النماذج والنوافذ المنبثقة */
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* النوافذ المنبثقة */
         .modal {
             display: none;
             position: fixed;
@@ -373,62 +696,53 @@
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.5);
-            z-index: 1000;
+            z-index: 1001;
             justify-content: center;
             align-items: center;
         }
 
+        .modal.active {
+            display: flex;
+        }
+
         .modal-content {
             background: white;
-            border-radius: 12px;
+            border-radius: 15px;
             width: 90%;
             max-width: 500px;
             max-height: 90vh;
-            overflow-y: auto;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
 
         .modal-header {
-            padding: 20px;
+            padding: 20px 25px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        .modal-header h3 {
+            font-size: 1.2rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         .modal-body {
-            padding: 20px;
+            padding: 25px;
+            overflow-y: auto;
+            max-height: 60vh;
         }
 
         .modal-footer {
-            padding: 20px;
+            padding: 20px 25px;
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
         }
 
         .btn {
@@ -459,120 +773,23 @@
             background: #e9ecef;
         }
 
-        /* التقييمات */
-        .rating {
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .star {
-            color: var(--gray);
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .star:hover,
-        .star.active {
-            color: var(--warning);
-        }
-
-        /* الإحصائيات */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            background: var(--light);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--gray);
-            margin-top: 5px;
-        }
-
-        /* التكيف مع الشاشات الصغيرة */
-        @media (max-width: 1024px) {
-            .app-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                display: none;
-            }
-            
-            .sidebar.active {
-                display: block;
-                position: fixed;
-                top: 70px;
-                left: 0;
-                width: 280px;
-                height: calc(100vh - 70px);
-                z-index: 100;
-            }
-            
-            .mobile-menu-btn {
-                display: block;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .app-header {
-                padding: 0 15px;
-            }
-            
-            .chat-header, .messages-container, .input-area {
-                padding: 15px;
-            }
-            
-            .message {
-                max-width: 85%;
-            }
-        }
-
-        /* أحمال الرسوم المتحركة */
-        .loader {
-            width: 40px;
-            height: 40px;
-            border: 3px solid var(--border);
-            border-top: 3px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         /* التنبيهات */
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
             padding: 15px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             background: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
-            gap: 10px;
-            z-index: 1001;
+            gap: 12px;
+            z-index: 1002;
             transform: translateX(150%);
             transition: transform 0.3s;
+            border-left: 4px solid var(--primary);
+            max-width: 350px;
         }
 
         .notification.show {
@@ -580,15 +797,42 @@
         }
 
         .notification.success {
-            border-left: 4px solid var(--success);
+            border-left-color: var(--success);
         }
 
         .notification.error {
-            border-left: 4px solid var(--danger);
+            border-left-color: var(--danger);
         }
 
         .notification.info {
-            border-left: 4px solid var(--secondary);
+            border-left-color: var(--secondary);
+        }
+
+        .notification-icon {
+            font-size: 1.2rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: var(--dark);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .close-notification {
+            background: none;
+            border: none;
+            color: var(--gray);
+            cursor: pointer;
+            font-size: 1rem;
         }
 
         /* تخصيص شريط التمرير */
@@ -599,6 +843,7 @@
 
         ::-webkit-scrollbar-track {
             background: var(--light);
+            border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -610,398 +855,523 @@
             background: var(--dark);
         }
 
-        /* الأحجام والأيقونات */
-        .icon-lg {
-            font-size: 1.5rem;
+        /* الحالة النقالية */
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 100%;
+            }
+            
+            .menu-toggle {
+                top: 15px;
+                right: 15px;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .chat-header,
+            .messages-container,
+            .input-area {
+                padding: 15px;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10px;
+            }
         }
 
-        .icon-sm {
-            font-size: 0.9rem;
+        /* تحميل الرسوم المتحركة */
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
 
-        .text-muted {
-            color: var(--gray);
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* نمط تلميح الأداة */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 6px 12px;
+            background: var(--dark);
+            color: white;
+            font-size: 0.8rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 8px;
+        }
+
+        [data-tooltip]:hover::after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--dark);
+            margin-bottom: -2px;
         }
     </style>
 </head>
 <body>
-    <!-- الهيكل الرئيسي -->
-    <div class="app-container">
-        <!-- الهيدر -->
-        <header class="app-header">
-            <div class="logo">
-                <i class="fab fa-github"></i>
-                <h1>محادثة GitHub</h1>
-            </div>
-            
-            <div class="user-info">
-                <span id="current-user">زائر</span>
-                <div class="user-avatar" id="user-avatar">ز</div>
-                <button class="btn-action" onclick="openSettings()">
-                    <i class="fas fa-cog"></i>
-                </button>
-            </div>
-        </header>
+    <!-- زر القائمة الجانبية -->
+    <button class="menu-toggle" id="menuToggle" data-tooltip="فتح القائمة">
+        <i class="fas fa-bars"></i>
+    </button>
 
-        <!-- الشريط الجانبي -->
-        <aside class="sidebar">
-            <button class="btn-new-chat" onclick="openNewChatModal()">
-                <i class="fas fa-plus"></i>
-                محادثة جديدة
+    <!-- طبقة التغطية -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- القائمة الجانبية -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fab fa-github"></i> إدارة المحادثات</h2>
+            <button class="close-sidebar" id="closeSidebar">
+                <i class="fas fa-times"></i>
             </button>
+        </div>
 
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">
-                    <i class="fas fa-comments"></i>
-                    المحادثات النشطة
+        <!-- علامات التبويب -->
+        <div class="sidebar-tabs">
+            <button class="tab-btn active" data-tab="chats">
+                <i class="fas fa-comments"></i> المحادثات
+            </button>
+            <button class="tab-btn" data-tab="settings">
+                <i class="fas fa-cog"></i> الإعدادات
+            </button>
+            <button class="tab-btn" data-tab="stats">
+                <i class="fas fa-chart-bar"></i> الإحصائيات
+            </button>
+        </div>
+
+        <!-- محتوى المحادثات -->
+        <div class="tab-content active" id="chats-tab">
+            <div class="settings-group">
+                <h3 class="settings-title">
+                    <i class="fas fa-database"></i> مستودعات GitHub
                 </h3>
-                <ul class="chat-list" id="chat-list">
+                <div class="form-group">
+                    <select class="form-input" id="repoSelect">
+                        <option value="">جاري التحميل...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3 class="settings-title">
+                    <i class="fas fa-list"></i> قائمة المحادثات
+                </h3>
+                <ul class="chat-list" id="chatList">
                     <!-- سيتم ملؤها بواسطة JavaScript -->
                 </ul>
             </div>
 
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">
-                    <i class="fas fa-chart-bar"></i>
-                    الإحصائيات
+            <button class="btn btn-primary" onclick="openNewChatModal()" style="width: 100%; margin-top: 20px;">
+                <i class="fas fa-plus-circle"></i> محادثة جديدة
+            </button>
+        </div>
+
+        <!-- محتوى الإعدادات -->
+        <div class="tab-content" id="settings-tab">
+            <div class="rating-section">
+                <h3 class="rating-title">تقييم التطبيق</h3>
+                <div class="rating-stars" id="ratingStars">
+                    <i class="fas fa-star rating-star" data-rating="1"></i>
+                    <i class="fas fa-star rating-star" data-rating="2"></i>
+                    <i class="fas fa-star rating-star" data-rating="3"></i>
+                    <i class="fas fa-star rating-star" data-rating="4"></i>
+                    <i class="fas fa-star rating-star" data-rating="5"></i>
+                </div>
+                <div class="rating-count" id="ratingCount">لم يتم التقييم بعد</div>
+            </div>
+
+            <div class="settings-group">
+                <h3 class="settings-title">
+                    <i class="fas fa-user"></i> بيانات المستخدم
                 </h3>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-messages">0</div>
-                        <div class="stat-label">الرسائل</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="total-chats">0</div>
-                        <div class="stat-label">المحادثات</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="active-users">0</div>
-                        <div class="stat-label">المستخدمون</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar-section">
-                <h3 class="sidebar-title">
-                    <i class="fas fa-star"></i>
-                    تقييم التطبيق
-                </h3>
-                <div class="rating" id="app-rating">
-                    <i class="fas fa-star star" data-value="1"></i>
-                    <i class="fas fa-star star" data-value="2"></i>
-                    <i class="fas fa-star star" data-value="3"></i>
-                    <i class="fas fa-star star" data-value="4"></i>
-                    <i class="fas fa-star star" data-value="5"></i>
-                </div>
-            </div>
-        </aside>
-
-        <!-- منطقة المحادثة الرئيسية -->
-        <main class="chat-area">
-            <div class="chat-header">
-                <div>
-                    <h2 class="chat-title" id="current-chat-title">اختر محادثة</h2>
-                    <div class="text-muted" id="chat-info"></div>
-                </div>
-                <div class="chat-actions">
-                    <button class="btn-action" onclick="refreshChat()" title="تحديث">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
-                    <button class="btn-action" onclick="exportChat()" title="تصدير">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button class="btn-action" onclick="clearChat()" title="مسح">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="messages-container" id="messages-container">
-                <div class="empty-chat">
-                    <i class="fas fa-comment-dots"></i>
-                    <h3>مرحبًا في محادثة GitHub!</h3>
-                    <p>اختر محادثة من القائمة الجانبية أو أنشئ محادثة جديدة</p>
-                </div>
-            </div>
-
-            <div class="input-area">
-                <div class="input-actions">
-                    <button class="btn-action" onclick="attachFile()" title="إرفاق ملف">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                    <button class="btn-action" onclick="attachImage()" title="إرسال صورة">
-                        <i class="fas fa-image"></i>
-                    </button>
-                    <button class="btn-action" onclick="sendEmoji()" title="إضافة إيموجي">
-                        <i class="fas fa-smile"></i>
-                    </button>
-                </div>
-                
-                <div class="message-input-wrapper">
-                    <textarea 
-                        class="message-input" 
-                        id="message-input" 
-                        placeholder="اكتب رسالتك هنا..."
-                        rows="3"
-                    ></textarea>
-                    <button class="btn-send" onclick="sendMessage()" id="send-button">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- نافذة الإعدادات -->
-    <div class="modal" id="settings-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-cog"></i> الإعدادات</h3>
-                <button class="btn-action" onclick="closeSettings()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">اسم المستخدم</label>
-                    <input type="text" class="form-input" id="settings-username" placeholder="أدخل اسمك">
+                    <input type="text" class="form-input" id="usernameInput" placeholder="أدخل اسمك">
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">رمز GitHub</label>
-                    <input type="password" class="form-input" id="settings-token" placeholder="أدخل رمز GitHub">
-                    <small class="text-muted">يتم حفظ الرمز محليًا ولا يتم إرساله لأي مكان</small>
+                    <label class="form-label">رمز GitHub (Token)</label>
+                    <input type="password" class="form-input" id="tokenInput" placeholder="أدخل رمز GitHub">
+                    <div class="form-hint">
+                        <i class="fas fa-info-circle"></i> يتم حفظ الرمز محليًا فقط في متصفحك
+                    </div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">المستودع الافتراضي</label>
-                    <input type="text" class="form-input" id="default-repo" value="msg775" readonly>
-                    <small class="text-muted">سيتم استخدام هذا المستودع تلقائيًا</small>
+                <button class="btn btn-primary" onclick="saveSettings()" style="width: 100%;">
+                    <i class="fas fa-save"></i> حفظ الإعدادات
+                </button>
+            </div>
+        </div>
+
+        <!-- محتوى الإحصائيات -->
+        <div class="tab-content" id="stats-tab">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalMessages">0</div>
+                    <div class="stat-label">الرسائل الكلية</div>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">فترة التحديث (ثانية)</label>
-                    <input type="range" class="form-input" id="refresh-interval" min="1" max="30" value="3">
-                    <span id="interval-value">3 ثواني</span>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalChats">0</div>
+                    <div class="stat-label">المحادثات</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="activeUsers">1</div>
+                    <div class="stat-label">المستخدمون النشطون</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="responseTime">0</div>
+                    <div class="stat-label">سرعة الاستجابة (مللي)</div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeSettings()">إلغاء</button>
-                <button class="btn btn-primary" onclick="saveSettings()">حفظ</button>
+
+            <div class="settings-group" style="margin-top: 30px;">
+                <h3 class="settings-title">
+                    <i class="fas fa-sliders-h"></i> إعدادات التحديث
+                </h3>
+                <div class="form-group">
+                    <label class="form-label">سرعة التحديث</label>
+                    <input type="range" class="form-input" id="refreshSpeed" min="1" max="10" value="3">
+                    <div class="form-hint" id="speedHint">سرعة متوسطة (3 ثواني)</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- منطقة المحادثة الرئيسية -->
+    <div class="chat-area">
+        <header class="chat-header">
+            <div class="chat-title-section">
+                <h1 class="chat-title" id="chatTitle">👋 مرحبًا في محادثة GitHub</h1>
+                <div class="chat-subtitle">
+                    <span class="status-indicator">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span id="statusText">جاري الاتصال...</span>
+                    </span>
+                    <span id="repoInfo">المستودع: msg775</span>
+                </div>
+            </div>
+            <div class="chat-actions">
+                <button class="action-btn" onclick="refreshMessages()" data-tooltip="تحديث الرسائل">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="action-btn" onclick="exportChat()" data-tooltip="تصدير المحادثة">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button class="action-btn" onclick="clearCurrentChat()" data-tooltip="مسح المحادثة">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="action-btn primary" onclick="showQuickActions()" data-tooltip="إجراءات سريعة">
+                    <i class="fas fa-bolt"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="messages-container" id="messagesContainer">
+            <div class="empty-chat">
+                <i class="fas fa-comments"></i>
+                <h3>💬 ابدأ محادثة جديدة</h3>
+                <p>اختر محادثة من القائمة الجانبية أو أنشئ محادثة جديدة للبدء</p>
+                <p style="margin-top: 20px; font-size: 0.9rem; color: var(--gray);">
+                    <i class="fas fa-lightbulb"></i> تلميح: استخدم Ctrl+Enter لإرسال الرسائل بسرعة
+                </p>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-toolbar">
+                <button class="tool-btn" onclick="attachFile('image')">
+                    <i class="fas fa-image"></i> صورة
+                </button>
+                <button class="tool-btn" onclick="attachFile('file')">
+                    <i class="fas fa-file"></i> ملف
+                </button>
+                <button class="tool-btn" onclick="showEmojiPicker()">
+                    <i class="fas fa-smile"></i> إيموجي
+                </button>
+                <button class="tool-btn" onclick="formatText('bold')">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button class="tool-btn" onclick="formatText('italic')">
+                    <i class="fas fa-italic"></i>
+                </button>
+            </div>
+            <div class="message-input-wrapper">
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="اكتب رسالتك هنا... (Ctrl+Enter للإرسال)"
+                    rows="3"
+                ></textarea>
+                <button class="send-btn" id="sendButton" onclick="sendMessage()" data-tooltip="إرسال (Ctrl+Enter)">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
     </div>
 
     <!-- نافذة محادثة جديدة -->
-    <div class="modal" id="new-chat-modal">
+    <div class="modal" id="newChatModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-plus-circle"></i> محادثة جديدة</h3>
-                <button class="btn-action" onclick="closeNewChatModal()">
+                <h3><i class="fas fa-plus-circle"></i> إنشاء محادثة جديدة</h3>
+                <button class="action-btn" onclick="closeNewChatModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">اسم المحادثة</label>
-                    <input type="text" class="form-input" id="new-chat-name" placeholder="مثال: فريق العمل">
+                    <input type="text" class="form-input" id="newChatName" placeholder="مثال: فريق العمل - المشروع الجديد">
                 </div>
-                
                 <div class="form-group">
-                    <label class="form-label">اختر مستودعًا</label>
-                    <select class="form-input" id="repo-select">
+                    <label class="form-label">اختر المستودع</label>
+                    <select class="form-input" id="newChatRepo">
                         <option value="msg775">msg775 (الافتراضي)</option>
                     </select>
                 </div>
-                
-                <div class="form-group">
-                    <label class="form-label">أو أنشئ مستودع جديد</label>
-                    <input type="text" class="form-input" id="new-repo-name" placeholder="اسم المستودع الجديد">
-                </div>
-                
                 <div class="form-group">
                     <label class="form-label">نوع المحادثة</label>
-                    <div style="display: flex; gap: 10px;">
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="radio" name="chat-type" value="public" checked> عامة
+                    <div style="display: flex; gap: 20px; margin-top: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="radio" name="chatType" value="public" checked>
+                            <span>عامة</span>
                         </label>
-                        <label style="display: flex; align-items: center; gap: 5px;">
-                            <input type="radio" name="chat-type" value="private"> خاصة
+                        <label style="display: flex; align-items: center; gap: 8px;">
+                            <input type="radio" name="chatType" value="private">
+                            <span>خاصة</span>
                         </label>
                     </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">وصف المحادثة (اختياري)</label>
+                    <textarea class="form-input" id="chatDescription" rows="3" placeholder="وصف قصير عن المحادثة..."></textarea>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeNewChatModal()">إلغاء</button>
-                <button class="btn btn-primary" onclick="createNewChat()">إنشاء</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- نافذة رفع الملفات -->
-    <div class="modal" id="file-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-upload"></i> رفع ملف</h3>
-                <button class="btn-action" onclick="closeFileModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div style="text-align: center; padding: 40px 20px;">
-                    <i class="fas fa-cloud-upload-alt icon-lg" style="color: var(--gray); margin-bottom: 20px;"></i>
-                    <p>اسحب وأفلت الملفات هنا أو</p>
-                    <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-                        اختر ملف
-                    </button>
-                    <input type="file" id="file-input" style="display: none;" multiple>
-                </div>
-                <div id="file-list"></div>
+                <button class="btn btn-primary" onclick="createNewChat()">إنشاء المحادثة</button>
             </div>
         </div>
     </div>
 
     <!-- منطقة التنبيهات -->
-    <div id="notification-area"></div>
+    <div id="notificationContainer"></div>
 
     <script>
         // ========== حالة التطبيق ==========
         const appState = {
-            token: '',
-            username: 'مستخدم',
-            defaultRepo: 'msg775',
+            token: localStorage.getItem('github_chat_token') || '',
+            username: localStorage.getItem('github_chat_username') || 'مستخدم',
             currentChat: null,
             chats: [],
             messages: [],
-            refreshInterval: 3000, // 3 ثواني
+            repos: [],
+            currentRepo: 'msg775',
+            refreshInterval: 3000,
             refreshTimer: null,
             isConnected: false,
-            userRepos: []
+            userRating: localStorage.getItem('app_rating') || 0,
+            stats: {
+                totalMessages: 0,
+                totalChats: 0,
+                activeUsers: 1,
+                responseTime: 0
+            }
         };
 
         // ========== تهيئة التطبيق ==========
         document.addEventListener('DOMContentLoaded', async function() {
+            initializeUI();
             loadSettings();
             setupEventListeners();
-            await initializeApp();
+            
+            if (appState.token) {
+                await initializeApp();
+            } else {
+                showNotification('مرحبًا! الرجاء إدخال رمز GitHub في الإعدادات', 'info');
+            }
         });
 
-        // تحميل الإعدادات من localStorage
-        function loadSettings() {
-            const savedToken = localStorage.getItem('github_chat_token');
-            const savedUsername = localStorage.getItem('github_chat_username');
-            const savedInterval = localStorage.getItem('github_chat_interval');
+        // تهيئة واجهة المستخدم
+        function initializeUI() {
+            // تحديث اسم المستخدم
+            document.getElementById('usernameInput').value = appState.username;
+            document.getElementById('tokenInput').value = appState.token;
             
-            if (savedToken) {
-                appState.token = savedToken;
-                document.getElementById('settings-token').value = savedToken;
-            }
+            // تحديث التقييم
+            updateRatingUI();
             
-            if (savedUsername) {
-                appState.username = savedUsername;
-                document.getElementById('settings-username').value = savedUsername;
-                document.getElementById('current-user').textContent = savedUsername;
-                document.getElementById('user-avatar').textContent = savedUsername.charAt(0);
-            }
+            // تحديث سرعة التحديث
+            document.getElementById('refreshSpeed').value = appState.refreshInterval / 1000;
+            updateSpeedHint();
             
-            if (savedInterval) {
-                appState.refreshInterval = parseInt(savedInterval);
-                document.getElementById('refresh-interval').value = appState.refreshInterval;
-                document.getElementById('interval-value').textContent = `${appState.refreshInterval} ثواني`;
-            }
-        }
-
-        // حفظ الإعدادات
-        function saveSettings() {
-            const token = document.getElementById('settings-token').value.trim();
-            const username = document.getElementById('settings-username').value.trim() || 'مستخدم';
-            
-            if (token) {
-                appState.token = token;
-                localStorage.setItem('github_chat_token', token);
-            }
-            
-            if (username) {
-                appState.username = username;
-                localStorage.setItem('github_chat_username', username);
-                document.getElementById('current-user').textContent = username;
-                document.getElementById('user-avatar').textContent = username.charAt(0);
-            }
-            
-            const interval = parseInt(document.getElementById('refresh-interval').value);
-            appState.refreshInterval = interval;
-            localStorage.setItem('github_chat_interval', interval);
-            
-            closeSettings();
-            showNotification('تم حفظ الإعدادات بنجاح', 'success');
-            
-            // إعادة تهيئة التطبيق
-            initializeApp();
+            // تحديث الحالة
+            updateConnectionStatus();
         }
 
         // إعداد مستمعي الأحداث
         function setupEventListeners() {
-            // تحديث قيمة الفترة
-            document.getElementById('refresh-interval').addEventListener('input', function() {
-                document.getElementById('interval-value').textContent = `${this.value} ثواني`;
+            // القائمة الجانبية
+            document.getElementById('menuToggle').addEventListener('click', toggleSidebar);
+            document.getElementById('closeSidebar').addEventListener('click', toggleSidebar);
+            document.getElementById('sidebarOverlay').addEventListener('click', toggleSidebar);
+            
+            // علامات التبويب
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
             });
             
-            // إرسال بالضغط على Enter
-            document.getElementById('message-input').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
+            // إرسال الرسائل
+            document.getElementById('messageInput').addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
                     e.preventDefault();
                     sendMessage();
                 }
             });
             
             // التقييم
-            document.querySelectorAll('.star').forEach(star => {
+            document.querySelectorAll('.rating-star').forEach(star => {
                 star.addEventListener('click', function() {
-                    const rating = this.getAttribute('data-value');
+                    const rating = parseInt(this.getAttribute('data-rating'));
                     rateApp(rating);
+                });
+                
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(rating);
                 });
             });
             
-            // تحديث سريع للدردشة
+            document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+                highlightStars(appState.userRating);
+            });
+            
+            // سرعة التحديث
+            document.getElementById('refreshSpeed').addEventListener('input', function() {
+                updateSpeedHint();
+                appState.refreshInterval = this.value * 1000;
+                localStorage.setItem('refresh_interval', appState.refreshInterval);
+                restartAutoRefresh();
+            });
+            
+            // اختصارات لوحة المفاتيح
             document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'r') {
-                    e.preventDefault();
-                    refreshChat();
+                if (e.key === 'Escape') {
+                    closeAllModals();
+                    toggleSidebar(false);
                 }
             });
+        }
+
+        // تحميل الإعدادات
+        function loadSettings() {
+            const savedRating = localStorage.getItem('app_rating');
+            if (savedRating) {
+                appState.userRating = parseInt(savedRating);
+            }
+            
+            const savedInterval = localStorage.getItem('refresh_interval');
+            if (savedInterval) {
+                appState.refreshInterval = parseInt(savedInterval);
+            }
+            
+            const savedRepo = localStorage.getItem('current_repo');
+            if (savedRepo) {
+                appState.currentRepo = savedRepo;
+            }
+            
+            const savedChats = localStorage.getItem('cached_chats');
+            if (savedChats) {
+                try {
+                    appState.chats = JSON.parse(savedChats);
+                    renderChatList();
+                } catch (e) {
+                    console.error('خطأ في تحميل المحادثات المخبأة:', e);
+                }
+            }
+        }
+
+        // حفظ الإعدادات
+        function saveSettings() {
+            const username = document.getElementById('usernameInput').value.trim() || 'مستخدم';
+            const token = document.getElementById('tokenInput').value.trim();
+            
+            if (!token) {
+                showNotification('الرجاء إدخال رمز GitHub', 'error');
+                return;
+            }
+            
+            appState.username = username;
+            appState.token = token;
+            
+            localStorage.setItem('github_chat_username', username);
+            localStorage.setItem('github_chat_token', token);
+            
+            showNotification('تم حفظ الإعدادات بنجاح', 'success');
+            toggleSidebar(false);
+            
+            // إعادة تهيئة التطبيق
+            initializeApp();
         }
 
         // تهيئة التطبيق
         async function initializeApp() {
             if (!appState.token) {
-                showNotification('يرجى إدخال رمز GitHub في الإعدادات', 'info');
+                showNotification('الرجاء إدخال رمز GitHub أولاً', 'error');
                 return;
             }
             
+            updateConnectionStatus('connecting');
+            showNotification('جاري الاتصال بـ GitHub...', 'info');
+            
             try {
-                showNotification('جاري التحميل...', 'info');
-                
                 // جلب المستودعات
-                await loadUserRepos();
+                await loadRepositories();
                 
-                // تحميل المحادثات
+                // جلب المحادثات
                 await loadChats();
                 
-                // بدء التحديث التلقائي
+                // البدء بالتحديث التلقائي
                 startAutoRefresh();
                 
-                showNotification('تم تحميل التطبيق بنجاح', 'success');
+                updateConnectionStatus('connected');
+                showNotification('تم الاتصال بنجاح!', 'success');
                 
             } catch (error) {
                 console.error('خطأ في التهيئة:', error);
-                showNotification('فشل التحميل. تحقق من الرمز.', 'error');
+                updateConnectionStatus('disconnected');
+                showNotification('فشل الاتصال. تحقق من الرمز.', 'error');
             }
         }
 
-        // جلب مستودعات المستخدم
-        async function loadUserRepos() {
-            if (!appState.token) return;
-            
+        // جلب المستودعات
+        async function loadRepositories() {
             try {
                 const response = await fetch('https://api.github.com/user/repos', {
                     headers: {
@@ -1012,36 +1382,68 @@
                 
                 if (response.ok) {
                     const repos = await response.json();
-                    appState.userRepos = repos;
+                    appState.repos = repos;
                     
-                    // تحديث قائمة المستودعات
-                    const select = document.getElementById('repo-select');
-                    select.innerHTML = '';
+                    // تحديث قوائم الاختيار
+                    updateRepoSelectors();
                     
-                    repos.forEach(repo => {
-                        const option = document.createElement('option');
-                        option.value = repo.name;
-                        option.textContent = repo.name;
-                        select.appendChild(option);
-                    });
+                    // استخدام المستودع الافتراضي إذا لم يتم اختيار واحد
+                    if (!appState.currentRepo) {
+                        appState.currentRepo = 'msg775';
+                        localStorage.setItem('current_repo', appState.currentRepo);
+                    }
                     
-                    // إضافة الخيار الافتراضي
-                    const defaultOption = document.createElement('option');
-                    defaultOption.value = appState.defaultRepo;
-                    defaultOption.textContent = `${appState.defaultRepo} (الافتراضي)`;
-                    select.prepend(defaultOption);
-                    
+                } else {
+                    throw new Error('فشل جلب المستودعات');
                 }
             } catch (error) {
                 console.error('خطأ في جلب المستودعات:', error);
+                // استخدام المستودع الافتراضي في حالة الخطأ
+                appState.repos = [{ name: 'msg775', description: 'المستودع الافتراضي' }];
+                updateRepoSelectors();
             }
         }
 
-        // تحميل المحادثات
+        // تحديث قوائم المستودعات
+        function updateRepoSelectors() {
+            const repoSelect = document.getElementById('repoSelect');
+            const newChatRepo = document.getElementById('newChatRepo');
+            
+            // مسح الخيارات الحالية
+            repoSelect.innerHTML = '';
+            newChatRepo.innerHTML = '';
+            
+            // إضافة المستودع الافتراضي أولاً
+            const defaultOption = document.createElement('option');
+            defaultOption.value = 'msg775';
+            defaultOption.textContent = 'msg775 (الافتراضي)';
+            defaultOption.selected = appState.currentRepo === 'msg775';
+            repoSelect.appendChild(defaultOption.cloneNode(true));
+            newChatRepo.appendChild(defaultOption.cloneNode(true));
+            
+            // إضافة مستودعات المستخدم
+            appState.repos.forEach(repo => {
+                if (repo.name !== 'msg775') {
+                    const option1 = document.createElement('option');
+                    option1.value = repo.name;
+                    option1.textContent = `${repo.name} (${repo.private ? 'خاص' : 'عام'})`;
+                    option1.selected = repo.name === appState.currentRepo;
+                    repoSelect.appendChild(option1);
+                    
+                    const option2 = option1.cloneNode(true);
+                    newChatRepo.appendChild(option2);
+                }
+            });
+            
+            // تحديث معلومات المستودع
+            document.getElementById('repoInfo').textContent = `المستودع: ${appState.currentRepo}`;
+        }
+
+        // جلب المحادثات
         async function loadChats() {
             try {
-                // تحميل المحادثات من المستودع الافتراضي
-                const repoName = appState.defaultRepo;
+                // جلب المحادثات من المستودع الحالي
+                const repoName = appState.currentRepo;
                 const url = `https://api.github.com/repos/${appState.username}/${repoName}/contents/chats.json`;
                 
                 const response = await fetch(url, {
@@ -1055,14 +1457,22 @@
                     const data = await response.json();
                     const content = atob(data.content);
                     appState.chats = JSON.parse(content);
-                    renderChatList();
-                    updateStats();
+                    
                 } else if (response.status === 404) {
-                    // إنشاء ملف المحادثات إذا لم يكن موجودًا
+                    // إنشاء ملف محادثات جديد
                     await createChatsFile();
                 }
+                
+                // تحديث الواجهة
+                renderChatList();
+                updateStats();
+                
+                // تخزين مؤقت
+                localStorage.setItem('cached_chats', JSON.stringify(appState.chats));
+                
             } catch (error) {
-                console.error('خطأ في تحميل المحادثات:', error);
+                console.error('خطأ في جلب المحادثات:', error);
+                showNotification('فشل تحميل المحادثات', 'error');
             }
         }
 
@@ -1071,20 +1481,22 @@
             const defaultChats = [{
                 id: 'general',
                 name: 'المحادثة العامة',
-                repo: appState.defaultRepo,
+                repo: appState.currentRepo,
                 type: 'public',
+                description: 'المحادثة الرئيسية',
                 created: new Date().toISOString(),
-                lastMessage: 'مرحبًا بكم في المحادثة العامة!',
-                unread: 0
+                lastMessage: 'مرحبًا بكم!',
+                unread: 0,
+                messageCount: 0
             }];
             
             const content = JSON.stringify(defaultChats, null, 2);
             const contentBase64 = btoa(unescape(encodeURIComponent(content)));
             
-            const url = `https://api.github.com/repos/${appState.username}/${appState.defaultRepo}/contents/chats.json`;
+            const url = `https://api.github.com/repos/${appState.username}/${appState.currentRepo}/contents/chats.json`;
             
             try {
-                await fetch(url, {
+                const response = await fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `Bearer ${appState.token}`,
@@ -1097,9 +1509,10 @@
                     })
                 });
                 
-                appState.chats = defaultChats;
-                renderChatList();
-                updateStats();
+                if (response.ok) {
+                    appState.chats = defaultChats;
+                    showNotification('تم إنشاء ملف المحادثات', 'success');
+                }
             } catch (error) {
                 console.error('خطأ في إنشاء ملف المحادثات:', error);
             }
@@ -1107,18 +1520,38 @@
 
         // عرض قائمة المحادثات
         function renderChatList() {
-            const chatList = document.getElementById('chat-list');
+            const chatList = document.getElementById('chatList');
             chatList.innerHTML = '';
+            
+            if (appState.chats.length === 0) {
+                chatList.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: var(--gray);">
+                        <i class="fas fa-comment-slash" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p>لا توجد محادثات بعد</p>
+                    </div>
+                `;
+                return;
+            }
             
             appState.chats.forEach(chat => {
                 const li = document.createElement('li');
                 li.className = `chat-item ${appState.currentChat?.id === chat.id ? 'active' : ''}`;
-                li.onclick = () => switchChat(chat);
+                li.onclick = () => switchToChat(chat);
+                
+                const icon = chat.type === 'private' ? 'fas fa-lock' : 'fas fa-globe';
+                const time = new Date(chat.created).toLocaleDateString('ar-SA');
                 
                 li.innerHTML = `
+                    <div class="chat-icon">
+                        <i class="${icon}"></i>
+                    </div>
                     <div class="chat-info">
-                        <div class="chat-name">${chat.name}</div>
-                        <div class="chat-last-msg">${chat.lastMessage || 'لا توجد رسائل'}</div>
+                        <div class="chat-name">${escapeHtml(chat.name)}</div>
+                        <div class="chat-last-msg">${escapeHtml(chat.lastMessage || 'لا توجد رسائل')}</div>
+                        <div class="chat-meta">
+                            <span>${time}</span>
+                            <span>${chat.messageCount || 0} رسائل</span>
+                        </div>
                     </div>
                     ${chat.unread > 0 ? `<div class="chat-unread">${chat.unread}</div>` : ''}
                 `;
@@ -1127,24 +1560,26 @@
             });
         }
 
-        // تحويل المحادثة
-        async function switchChat(chat) {
+        // التحويل إلى محادثة
+        async function switchToChat(chat) {
             appState.currentChat = chat;
-            document.getElementById('current-chat-title').textContent = chat.name;
             
             // تحديث الواجهة
+            document.getElementById('chatTitle').textContent = chat.name;
             renderChatList();
+            toggleSidebar(false);
             
             // تحميل الرسائل
             await loadMessages();
             
-            // تحديث الإحصائيات
-            updateStats();
+            showNotification(`تم التبديل إلى: ${chat.name}`, 'success');
         }
 
         // تحميل الرسائل
         async function loadMessages() {
             if (!appState.currentChat) return;
+            
+            const startTime = Date.now();
             
             try {
                 const chat = appState.currentChat;
@@ -1163,22 +1598,28 @@
                     const content = atob(data.content);
                     const messages = JSON.parse(content);
                     
-                    // تصفية الرسائل الفارغة
                     appState.messages = messages.filter(msg => msg.content && msg.content.trim());
+                    appState.stats.totalMessages = appState.messages.length;
                     
-                    // تحديث آخر رسالة
+                    // تحديث عدد الرسائل في المحادثة
+                    chat.messageCount = appState.messages.length;
                     if (appState.messages.length > 0) {
                         const lastMsg = appState.messages[appState.messages.length - 1];
-                        chat.lastMessage = lastMsg.content.substring(0, 50) + (lastMsg.content.length > 50 ? '...' : '');
+                        chat.lastMessage = lastMsg.content.substring(0, 60) + (lastMsg.content.length > 60 ? '...' : '');
                     }
                     
                     renderMessages();
                     updateStats();
                     
+                    // حساب وقت الاستجابة
+                    const responseTime = Date.now() - startTime;
+                    appState.stats.responseTime = responseTime;
+                    
                 } else if (response.status === 404) {
                     appState.messages = [];
                     renderMessages();
                 }
+                
             } catch (error) {
                 console.error('خطأ في تحميل الرسائل:', error);
                 showNotification('فشل تحميل الرسائل', 'error');
@@ -1187,14 +1628,28 @@
 
         // عرض الرسائل
         function renderMessages() {
-            const container = document.getElementById('messages-container');
+            const container = document.getElementById('messagesContainer');
+            
+            if (!appState.currentChat) {
+                container.innerHTML = `
+                    <div class="empty-chat">
+                        <i class="fas fa-comments"></i>
+                        <h3>💬 اختر محادثة للبدء</h3>
+                        <p>اختر محادثة من القائمة الجانبية أو أنشئ محادثة جديدة</p>
+                    </div>
+                `;
+                return;
+            }
             
             if (appState.messages.length === 0) {
                 container.innerHTML = `
                     <div class="empty-chat">
                         <i class="fas fa-comment-slash"></i>
-                        <h3>لا توجد رسائل بعد</h3>
+                        <h3>📝 ابدأ المحادثة</h3>
                         <p>كن أول من يرسل رسالة في هذه المحادثة!</p>
+                        <p style="margin-top: 20px; font-size: 0.9rem; color: var(--gray);">
+                            <i class="fas fa-lightbulb"></i> تلميح: استخدم Ctrl+Enter لإرسال الرسائل بسرعة
+                        </p>
                     </div>
                 `;
                 return;
@@ -1202,25 +1657,57 @@
             
             container.innerHTML = '';
             
+            // تجميع الرسائل حسب التاريخ
+            const groupedMessages = {};
             appState.messages.forEach(msg => {
-                const isSent = msg.sender === appState.username;
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
-                
-                const time = new Date(msg.timestamp).toLocaleString('ar-SA', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    day: '2-digit',
-                    month: '2-digit'
+                const date = new Date(msg.timestamp).toDateString();
+                if (!groupedMessages[date]) {
+                    groupedMessages[date] = [];
+                }
+                groupedMessages[date].push(msg);
+            });
+            
+            // عرض الرسائل المجمعة
+            Object.keys(groupedMessages).forEach(date => {
+                // إضافة عنوان التاريخ
+                const dateHeader = document.createElement('div');
+                dateHeader.style.textAlign = 'center';
+                dateHeader.style.margin = '20px 0';
+                dateHeader.style.padding = '5px 15px';
+                dateHeader.style.backgroundColor = 'var(--light)';
+                dateHeader.style.borderRadius = '15px';
+                dateHeader.style.display = 'inline-block';
+                dateHeader.style.marginLeft = 'auto';
+                dateHeader.style.marginRight = 'auto';
+                dateHeader.style.fontSize = '0.85rem';
+                dateHeader.style.color = 'var(--gray)';
+                dateHeader.textContent = new Date(date).toLocaleDateString('ar-SA', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 });
+                container.appendChild(dateHeader);
                 
-                messageDiv.innerHTML = `
-                    <div class="message-sender">${msg.sender}</div>
-                    <div class="message-content">${escapeHtml(msg.content)}</div>
-                    <div class="message-time">${time}</div>
-                `;
-                
-                container.appendChild(messageDiv);
+                // عرض رسائل هذا التاريخ
+                groupedMessages[date].forEach(msg => {
+                    const isSent = msg.sender === appState.username;
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+                    
+                    const time = new Date(msg.timestamp).toLocaleTimeString('ar-SA', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-sender">${escapeHtml(msg.sender)}</div>
+                        <div class="message-content">${escapeHtml(msg.content)}</div>
+                        <div class="message-time">${time}</div>
+                    `;
+                    
+                    container.appendChild(messageDiv);
+                });
             });
             
             // التمرير للأسفل
@@ -1229,7 +1716,7 @@
 
         // إرسال رسالة
         async function sendMessage() {
-            const input = document.getElementById('message-input');
+            const input = document.getElementById('messageInput');
             const content = input.value.trim();
             
             if (!content) {
@@ -1242,8 +1729,11 @@
                 return;
             }
             
+            const sendBtn = document.getElementById('sendButton');
+            sendBtn.disabled = true;
+            
             try {
-                // إضافة الرسالة الجديدة
+                // إنشاء الرسالة الجديدة
                 const newMessage = {
                     sender: appState.username,
                     content: content,
@@ -1251,24 +1741,23 @@
                     id: Date.now().toString()
                 };
                 
-                // إضافة الرسالة إلى الذاكرة المؤقتة فورًا
+                // إضافة إلى الذاكرة المؤقتة
                 appState.messages.push(newMessage);
                 renderMessages();
                 
                 // مسح حقل الإدخال
                 input.value = '';
                 
-                // حفظ الرسالة على GitHub
+                // حفظ على GitHub
                 await saveMessages();
                 
-                // تحديث آخر رسالة في المحادثة
-                const chat = appState.chats.find(c => c.id === appState.currentChat.id);
-                if (chat) {
-                    chat.lastMessage = content.substring(0, 50) + (content.length > 50 ? '...' : '');
-                    chat.unread = 0; // إعادة تعيين الرسائل غير المقروءة
-                    await saveChats();
-                    renderChatList();
-                }
+                // تحديث المحادثة
+                const chat = appState.currentChat;
+                chat.lastMessage = content.substring(0, 60) + (content.length > 60 ? '...' : '');
+                chat.messageCount = (chat.messageCount || 0) + 1;
+                
+                await saveChats();
+                renderChatList();
                 
                 showNotification('تم إرسال الرسالة بنجاح', 'success');
                 
@@ -1276,13 +1765,16 @@
                 console.error('خطأ في إرسال الرسالة:', error);
                 showNotification('فشل إرسال الرسالة', 'error');
                 
-                // إزالة الرسالة من الذاكرة المؤقتة في حالة الفشل
+                // إزالة من الذاكرة المؤقتة
                 appState.messages.pop();
                 renderMessages();
+            } finally {
+                sendBtn.disabled = false;
+                input.focus();
             }
         }
 
-        // حفظ الرسائل على GitHub
+        // حفظ الرسائل
         async function saveMessages() {
             const chat = appState.currentChat;
             const fileName = `chat_${chat.id}.json`;
@@ -1291,7 +1783,7 @@
             
             const url = `https://api.github.com/repos/${appState.username}/${chat.repo}/contents/${fileName}`;
             
-            // الحصول على SHA إذا كان الملف موجودًا
+            // الحصول على SHA
             let sha = null;
             try {
                 const response = await fetch(url, {
@@ -1306,7 +1798,7 @@
                     sha = data.sha;
                 }
             } catch (error) {
-                // الملف غير موجود، سنقوم بإنشائه
+                // الملف غير موجود
             }
             
             const body = {
@@ -1315,9 +1807,7 @@
                 branch: 'main'
             };
             
-            if (sha) {
-                body.sha = sha;
-            }
+            if (sha) body.sha = sha;
             
             const response = await fetch(url, {
                 method: 'PUT',
@@ -1337,7 +1827,7 @@
             const content = JSON.stringify(appState.chats, null, 2);
             const contentBase64 = btoa(unescape(encodeURIComponent(content)));
             
-            const url = `https://api.github.com/repos/${appState.username}/${appState.defaultRepo}/contents/chats.json`;
+            const url = `https://api.github.com/repos/${appState.username}/${appState.currentRepo}/contents/chats.json`;
             
             // الحصول على SHA
             let sha = null;
@@ -1358,14 +1848,12 @@
             }
             
             const body = {
-                message: 'تحديث قائمة المحادثات',
+                message: 'تحديث المحادثات',
                 content: contentBase64,
                 branch: 'main'
             };
             
-            if (sha) {
-                body.sha = sha;
-            }
+            if (sha) body.sha = sha;
             
             const response = await fetch(url, {
                 method: 'PUT',
@@ -1380,141 +1868,120 @@
             return response.ok;
         }
 
-        // إنشاء محادثة جديدة
-        async function createNewChat() {
-            const name = document.getElementById('new-chat-name').value.trim();
-            const repoSelect = document.getElementById('repo-select');
-            const newRepoName = document.getElementById('new-repo-name').value.trim();
-            const chatType = document.querySelector('input[name="chat-type"]:checked').value;
+        // ========== دوال الواجهة ==========
+        
+        // تبديل القائمة الجانبية
+        function toggleSidebar(forceClose) {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
             
-            if (!name) {
-                showNotification('الرجاء إدخال اسم المحادثة', 'error');
-                return;
-            }
-            
-            try {
-                let repoName = repoSelect.value;
-                
-                // إذا تم إدخال اسم مستودع جديد، أنشئه
-                if (newRepoName && newRepoName !== appState.defaultRepo) {
-                    const created = await createNewRepo(newRepoName);
-                    if (created) {
-                        repoName = newRepoName;
-                        await loadUserRepos(); // تحديث قائمة المستودعات
-                    } else {
-                        showNotification('فشل إنشاء المستودع', 'error');
-                        return;
-                    }
-                }
-                
-                // إنشاء المحادثة
-                const newChat = {
-                    id: `chat_${Date.now()}`,
-                    name: name,
-                    repo: repoName,
-                    type: chatType,
-                    created: new Date().toISOString(),
-                    lastMessage: 'بدأ المحادثة...',
-                    unread: 0
-                };
-                
-                appState.chats.push(newChat);
-                await saveChats();
-                renderChatList();
-                
-                // الانتقال إلى المحادثة الجديدة
-                await switchChat(newChat);
-                
-                closeNewChatModal();
-                showNotification('تم إنشاء المحادثة بنجاح', 'success');
-                
-            } catch (error) {
-                console.error('خطأ في إنشاء المحادثة:', error);
-                showNotification('فشل إنشاء المحادثة', 'error');
-            }
-        }
-
-        // إنشاء مستودع جديد
-        async function createNewRepo(repoName) {
-            try {
-                const response = await fetch('https://api.github.com/user/repos', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${appState.token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        name: repoName,
-                        description: 'محادثة جماعية',
-                        private: false,
-                        auto_init: true
-                    })
-                });
-                
-                return response.ok;
-            } catch (error) {
-                console.error('خطأ في إنشاء المستودع:', error);
-                return false;
-            }
-        }
-
-        // مسح المحادثة
-        async function clearChat() {
-            if (!appState.currentChat) {
-                showNotification('لا توجد محادثة نشطة', 'error');
-                return;
-            }
-            
-            if (!confirm('هل أنت متأكد من مسح جميع الرسائل في هذه المحادثة؟')) {
-                return;
-            }
-            
-            try {
-                appState.messages = [];
-                await saveMessages();
-                renderMessages();
-                showNotification('تم مسح المحادثة بنجاح', 'success');
-            } catch (error) {
-                console.error('خطأ في مسح المحادثة:', error);
-                showNotification('فشل مسح المحادثة', 'error');
-            }
-        }
-
-        // تصدير المحادثة
-        function exportChat() {
-            if (appState.messages.length === 0) {
-                showNotification('لا توجد رسائل لتصديرها', 'error');
-                return;
-            }
-            
-            const chatData = {
-                chat: appState.currentChat,
-                messages: appState.messages,
-                exportedAt: new Date().toISOString()
-            };
-            
-            const dataStr = JSON.stringify(chatData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `chat_${appState.currentChat.id}_${new Date().toISOString().split('T')[0]}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            showNotification('تم تصدير المحادثة', 'success');
-        }
-
-        // تحديث المحادثة يدويًا
-        async function refreshChat() {
-            if (appState.currentChat) {
-                await loadMessages();
-                showNotification('تم تحديث المحادثة', 'success');
+            if (forceClose === false || (sidebar.classList.contains('active') && forceClose !== true)) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
             } else {
-                showNotification('اختر محادثة أولاً', 'error');
+                sidebar.classList.add('active');
+                overlay.classList.add('active');
             }
+        }
+
+        // تبديل علامات التبويب
+        function switchTab(tabId) {
+            // تحديث الأزرار
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            
+            // تحديث المحتوى
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        }
+
+        // تحديث حالة الاتصال
+        function updateConnectionStatus(status) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+            
+            switch(status) {
+                case 'connected':
+                    dot.className = 'status-dot online';
+                    text.textContent = 'متصل';
+                    appState.isConnected = true;
+                    break;
+                case 'connecting':
+                    dot.className = 'status-dot';
+                    text.textContent = 'جاري الاتصال...';
+                    appState.isConnected = false;
+                    break;
+                case 'disconnected':
+                    dot.className = 'status-dot';
+                    text.textContent = 'غير متصل';
+                    appState.isConnected = false;
+                    break;
+                default:
+                    if (appState.isConnected) {
+                        dot.className = 'status-dot online';
+                        text.textContent = 'متصل';
+                    } else {
+                        dot.className = 'status-dot';
+                        text.textContent = 'غير متصل';
+                    }
+            }
+        }
+
+        // تحديث الإحصائيات
+        function updateStats() {
+            appState.stats.totalMessages = appState.messages.length;
+            appState.stats.totalChats = appState.chats.length;
+            
+            document.getElementById('totalMessages').textContent = appState.stats.totalMessages;
+            document.getElementById('totalChats').textContent = appState.stats.totalChats;
+            document.getElementById('activeUsers').textContent = appState.stats.activeUsers;
+            document.getElementById('responseTime').textContent = appState.stats.responseTime;
+        }
+
+        // تحديث التقييم
+        function updateRatingUI() {
+            highlightStars(appState.userRating);
+            if (appState.userRating > 0) {
+                document.getElementById('ratingCount').textContent = `تقييمك: ${appState.userRating}/5`;
+            } else {
+                document.getElementById('ratingCount').textContent = 'لم يتم التقييم بعد';
+            }
+        }
+
+        // تظليل النجوم
+        function highlightStars(rating) {
+            document.querySelectorAll('.rating-star').forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        // تقييم التطبيق
+        function rateApp(rating) {
+            appState.userRating = rating;
+            localStorage.setItem('app_rating', rating);
+            updateRatingUI();
+            showNotification(`شكرًا لتقييمك بـ ${rating} نجوم!`, 'success');
+        }
+
+        // تحديث تلميح السرعة
+        function updateSpeedHint() {
+            const speed = document.getElementById('refreshSpeed').value;
+            let hint = '';
+            
+            if (speed <= 2) hint = 'سريع جدًا';
+            else if (speed <= 4) hint = 'سرعة متوسطة';
+            else if (speed <= 7) hint = 'بطيء';
+            else hint = 'بطيء جدًا';
+            
+            document.getElementById('speedHint').textContent = `${hint} (${speed} ثواني)`;
         }
 
         // بدء التحديث التلقائي
@@ -1527,49 +1994,206 @@
                 if (appState.currentChat && appState.isConnected) {
                     await loadMessages();
                 }
-            }, appState.refreshInterval * 1000);
+            }, appState.refreshInterval);
         }
 
-        // تحديث الإحصائيات
-        function updateStats() {
-            document.getElementById('total-messages').textContent = appState.messages.length;
-            document.getElementById('total-chats').textContent = appState.chats.length;
-            document.getElementById('active-users').textContent = appState.chats.reduce((sum, chat) => sum + (chat.unread || 0), 0);
+        // إعادة تشغيل التحديث التلقائي
+        function restartAutoRefresh() {
+            if (appState.refreshTimer) {
+                clearInterval(appState.refreshTimer);
+                startAutoRefresh();
+            }
         }
 
-        // تقييم التطبيق
-        function rateApp(rating) {
-            localStorage.setItem('app_rating', rating);
-            
-            // تحديث النجوم
-            document.querySelectorAll('.star').forEach((star, index) => {
-                if (index < rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
+        // ========== نوافذ منبثقة ==========
+        
+        function openNewChatModal() {
+            document.getElementById('newChatModal').classList.add('active');
+        }
+
+        function closeNewChatModal() {
+            document.getElementById('newChatModal').classList.remove('active');
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal.active').forEach(modal => {
+                modal.classList.remove('active');
             });
+        }
+
+        // إنشاء محادثة جديدة
+        async function createNewChat() {
+            const name = document.getElementById('newChatName').value.trim();
+            const repo = document.getElementById('newChatRepo').value;
+            const type = document.querySelector('input[name="chatType"]:checked').value;
+            const description = document.getElementById('chatDescription').value.trim();
             
-            showNotification(`شكرًا لتقييمك بـ ${rating} نجوم!`, 'success');
+            if (!name) {
+                showNotification('الرجاء إدخال اسم المحادثة', 'error');
+                return;
+            }
+            
+            try {
+                const newChat = {
+                    id: `chat_${Date.now()}`,
+                    name: name,
+                    repo: repo || appState.currentRepo,
+                    type: type,
+                    description: description,
+                    created: new Date().toISOString(),
+                    lastMessage: 'بدأ المحادثة...',
+                    unread: 0,
+                    messageCount: 0
+                };
+                
+                appState.chats.push(newChat);
+                await saveChats();
+                renderChatList();
+                
+                closeNewChatModal();
+                showNotification('تم إنشاء المحادثة بنجاح', 'success');
+                
+                // الانتقال إلى المحادثة الجديدة
+                await switchToChat(newChat);
+                
+            } catch (error) {
+                console.error('خطأ في إنشاء المحادثة:', error);
+                showNotification('فشل إنشاء المحادثة', 'error');
+            }
         }
 
-        // تهريب HTML
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // ========== وظائف مساعدة ==========
+        
+        function refreshMessages() {
+            if (appState.currentChat) {
+                loadMessages();
+                showNotification('جاري تحديث الرسائل...', 'info');
+            }
         }
 
-        // إظهار التنبيه
+        function exportChat() {
+            if (!appState.currentChat) {
+                showNotification('لا توجد محادثة نشطة', 'error');
+                return;
+            }
+            
+            const chatData = {
+                chat: appState.currentChat,
+                messages: appState.messages,
+                exportedAt: new Date().toISOString(),
+                totalMessages: appState.messages.length
+            };
+            
+            const dataStr = JSON.stringify(chatData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            const fileName = `chat_${appState.currentChat.id}_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const link = document.createElement('a');
+            link.href = dataUri;
+            link.download = fileName;
+            link.click();
+            
+            showNotification('تم تصدير المحادثة', 'success');
+        }
+
+        function clearCurrentChat() {
+            if (!appState.currentChat) {
+                showNotification('لا توجد محادثة نشطة', 'error');
+                return;
+            }
+            
+            if (!confirm('هل أنت متأكد من مسح جميع الرسائل في هذه المحادثة؟')) {
+                return;
+            }
+            
+            appState.messages = [];
+            appState.currentChat.messageCount = 0;
+            appState.currentChat.lastMessage = 'بدأ المحادثة...';
+            
+            saveMessages();
+            saveChats();
+            renderMessages();
+            renderChatList();
+            
+            showNotification('تم مسح المحادثة', 'success');
+        }
+
+        function showQuickActions() {
+            showNotification('الإجراءات السريعة: Ctrl+R تحديث، Esc إغلاق', 'info');
+        }
+
+        function attachFile(type) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = type === 'image' ? 'image/*' : '*/*';
+            input.multiple = true;
+            
+            input.onchange = async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                
+                showNotification(`تم تحديد ${files.length} ملف(ات)`, 'info');
+                
+                // في نسخة حقيقية، هنا نرفع الملفات إلى GitHub
+                // لكن لأغراض العرض، سنضيف رسالة توضيحية
+                const message = type === 'image' 
+                    ? `📸 أرسل ${files.length} صورة(ات)` 
+                    : `📎 أرسل ${files.length} ملف(ات)`;
+                
+                document.getElementById('messageInput').value = message;
+            };
+            
+            input.click();
+        }
+
+        function showEmojiPicker() {
+            const emojis = ['😊', '😂', '😍', '🎉', '👍', '❤️', '🔥', '✨', '🚀', '💯'];
+            const message = emojis.join(' ');
+            document.getElementById('messageInput').value += ' ' + message + ' ';
+            document.getElementById('messageInput').focus();
+        }
+
+        function formatText(type) {
+            const input = document.getElementById('messageInput');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const selectedText = input.value.substring(start, end);
+            
+            let formattedText = '';
+            switch(type) {
+                case 'bold': formattedText = `**${selectedText}**`; break;
+                case 'italic': formattedText = `*${selectedText}*`; break;
+                default: formattedText = selectedText;
+            }
+            
+            input.value = input.value.substring(0, start) + formattedText + input.value.substring(end);
+            input.focus();
+            input.setSelectionRange(start + formattedText.length, start + formattedText.length);
+        }
+
+        // عرض التنبيهات
         function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
+            
+            const icons = {
+                success: 'fas fa-check-circle',
+                error: 'fas fa-exclamation-circle',
+                info: 'fas fa-info-circle'
+            };
+            
             notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
+                <i class="${icons[type] || icons.info} notification-icon"></i>
+                <div class="notification-content">
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="close-notification" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
             `;
             
-            document.getElementById('notification-area').appendChild(notification);
+            container.appendChild(notification);
             
             setTimeout(() => {
                 notification.classList.add('show');
@@ -1578,50 +2202,18 @@
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => {
-                    notification.remove();
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
                 }, 300);
-            }, 3000);
+            }, 5000);
         }
 
-        // ========== دوال التحكم بالنوافذ ==========
-        function openSettings() {
-            document.getElementById('settings-modal').style.display = 'flex';
-        }
-
-        function closeSettings() {
-            document.getElementById('settings-modal').style.display = 'none';
-        }
-
-        function openNewChatModal() {
-            document.getElementById('new-chat-modal').style.display = 'flex';
-        }
-
-        function closeNewChatModal() {
-            document.getElementById('new-chat-modal').style.display = 'none';
-        }
-
-        function openFileModal() {
-            document.getElementById('file-modal').style.display = 'flex';
-        }
-
-        function closeFileModal() {
-            document.getElementById('file-modal').style.display = 'none';
-        }
-
-        // ========== وظائف إضافية ==========
-        function attachFile() {
-            openFileModal();
-        }
-
-        function attachImage() {
-            document.getElementById('file-input').accept = 'image/*';
-            document.getElementById('file-input').click();
-        }
-
-        function sendEmoji() {
-            const input = document.getElementById('message-input');
-            input.value += ' 😊 ';
-            input.focus();
+        // تهريب HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 </body>
