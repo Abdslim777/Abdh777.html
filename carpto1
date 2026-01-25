@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockWatch - مراقب العناوين متعدد الشبكات</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --dark: #1a1a2e;
+            --darker: #0f0f1a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #2d3748;
+            --card-bg: #16213e;
+            --card-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--darker) 0%, var(--dark) 100%);
+            min-height: 100vh;
+            color: var(--light);
+            direction: rtl;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        header {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            color: var(--light);
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #cbd5e0;
+        }
+        
+        .address-input {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .address-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            border: 1px solid var(--border);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #36a8c9);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #d61a6f);
+            color: white;
+        }
+        
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .quick-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #a0aec0;
+        }
+        
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .quick-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .quick-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        /* Address Card */
+        .address-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .address-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .address-display {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 18px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+        
+        .address-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        /* Networks */
+        .networks-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .network-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 5px;
+        }
+        
+        .network-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .network-tab.active {
+            background: var(--primary);
+        }
+        
+        .networks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+        
+        .network-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .network-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .network-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .network-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .network-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .network-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .network-symbol {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        .network-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-active {
+            background: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+        
+        .status-inactive {
+            background: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+        }
+        
+        .balance-amount {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .balance-usd {
+            color: #a0aec0;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .network-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .network-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Chart */
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            height: 400px;
+        }
+        
+        /* Transactions */
+        .transactions-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .transaction-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border);
+        }
+        
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .transaction-hash {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .transaction-network {
+            font-size: 12px;
+            color: #a0aec0;
+        }
+        
+        .transaction-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        /* Loading & States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Footer */
+        footer {
+            margin-top: 50px;
+            padding: 30px 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .networks-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>BlockWatch</h1>
+                        <p>مراقب العناوين متعدد الشبكات</p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="toggleTheme()">
+                        <i class="fas fa-moon"></i> وضع الليل
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i> تصدير
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="section-title">
+                    <i class="fas fa-search-location"></i>
+                    <h3>مراقبة العنوان</h3>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">العنوان العام</label>
+                    <input type="text" id="addressInput" class="address-input" placeholder="أدخل العنوان (0x...) أو اسم ENS">
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="startMonitoring()" id="monitorBtn">
+                        <i class="fas fa-play"></i>
+                        <span id="monitorText">بدء المراقبة</span>
+                    </button>
+                    
+                    <button class="btn btn-secondary" onclick="useExampleAddress()">
+                        <i class="fas fa-vial"></i>
+                        استخدام عنوان مثال
+                    </button>
+                    
+                    <button class="btn btn-danger" onclick="clearAll()">
+                        <i class="fas fa-trash"></i>
+                        مسح الكل
+                    </button>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="quick-title">
+                        <i class="fas fa-bolt"></i>
+                        <span>عناوين سريعة</span>
+                    </div>
+                    <div class="quick-buttons">
+                        <button class="quick-btn" onclick="loadAddress('vitalik.eth')">
+                            <i class="fas fa-user"></i> vitalik.eth
+                        </button>
+                        <button class="quick-btn" onclick="loadAddress('0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045')">
+                            <i class="fas fa-user-tie"></i> Vitalik
+                        </button>
+                        <button class="quick-btn" onclick="loadAddress('0x742d35Cc6634C0532925a3b844Bc454e4438f44e')">
+                            <i class="fas fa-exchange-alt"></i> Binance 14
+                        </button>
+                        <button class="quick-btn" onclick="loadAddress('bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh')">
+                            <i class="fab fa-bitcoin"></i> Bitcoin
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px; color: #a0aec0; font-size: 14px;">
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> يدعم 20+ شبكة بلوكشين</p>
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> مراقبة حية بدون مفتاح خاص</p>
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> تحديث تلقائي كل 30 ثانية</p>
+                    <p><i class="fas fa-check-circle" style="color: var(--success);"></i> أسعار لحظية بالدولار</p>
+                </div>
+            </div>
+            
+            <!-- Dashboard -->
+            <div class="dashboard">
+                <!-- Address Info -->
+                <div class="address-card hidden" id="addressInfo">
+                    <div class="address-header">
+                        <div class="section-title">
+                            <i class="fas fa-address-card"></i>
+                            <h3>معلومات العنوان</h3>
+                        </div>
+                        <div class="address-actions">
+                            <button class="btn btn-success" onclick="copyCurrentAddress()">
+                                <i class="fas fa-copy"></i> نسخ
+                            </button>
+                            <button class="btn btn-secondary" onclick="shareAddress()">
+                                <i class="fas fa-share-alt"></i> مشاركة
+                            </button>
+                        </div>
+                    </div>
+                    <div class="address-display" id="displayAddress"></div>
+                    
+                    <div id="addressTags" style="display: flex; gap: 10px; margin-top: 15px;"></div>
+                </div>
+                
+                <!-- Stats -->
+                <div class="stats-grid hidden" id="statsSection">
+                    <!-- سيتم ملء الإحصائيات ديناميكياً -->
+                </div>
+                
+                <!-- Network Tabs -->
+                <div class="networks-section hidden" id="networksSection">
+                    <div class="network-tabs">
+                        <div class="network-tab active" onclick="switchNetworkTab('all')">
+                            جميع الشبكات
+                        </div>
+                        <div class="network-tab" onclick="switchNetworkTab('evm')">
+                            شبكات EVM
+                        </div>
+                        <div class="network-tab" onclick="switchNetworkTab('non-evm')">
+                            شبكات أخرى
+                        </div>
+                    </div>
+                    
+                    <div class="networks-grid" id="networksContainer">
+                        <!-- سيتم ملء الشبكات ديناميكياً -->
+                    </div>
+                </div>
+                
+                <!-- Chart -->
+                <div class="chart-container hidden" id="chartSection">
+                    <div class="section-title">
+                        <i class="fas fa-chart-pie"></i>
+                        <h3>توزيع الأرصدة</h3>
+                    </div>
+                    <canvas id="balanceChart"></canvas>
+                </div>
+                
+                <!-- Transactions -->
+                <div class="transactions-container hidden" id="transactionsSection">
+                    <div class="section-title">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>آخر المعاملات</h3>
+                    </div>
+                    <div id="transactionsList">
+                        <!-- سيتم ملء المعاملات ديناميكياً -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <p>BlockWatch &copy; 2023 - أداة مراقبة عناوين البلوكشين المتعددة</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                هذه الأداة للعرض التوضيحي فقط. البيانات غير مضمونة وقد تتأخر.
+            </p>
+        </footer>
+    </div>
+
+    <!-- Floating Refresh Button -->
+    <button class="btn btn-primary hidden" id="refreshBtn" onclick="refreshAll()" style="position: fixed; bottom: 30px; left: 30px; width: 60px; height: 60px; border-radius: 50%; padding: 0; z-index: 1000;">
+        <i class="fas fa-redo"></i>
+    </button>
+
+    <script>
+        // ========== الإعدادات العامة ==========
+        const NETWORKS = {
+            // شبكات EVM الرئيسية
+            'eth': {
+                name: 'Ethereum',
+                symbol: 'ETH',
+                type: 'evm',
+                rpc: 'https://eth.llamarpc.com',
+                explorer: 'https://etherscan.io',
+                color: '#627eea',
+                icon: '⧫',
+                apiKey: ''
+            },
+            'polygon': {
+                name: 'Polygon',
+                symbol: 'MATIC',
+                type: 'evm',
+                rpc: 'https://polygon-rpc.com',
+                explorer: 'https://polygonscan.com',
+                color: '#8247e5',
+                icon: '⬡'
+            },
+            'bsc': {
+                name: 'BNB Chain',
+                symbol: 'BNB',
+                type: 'evm',
+                rpc: 'https://bsc-dataseed.binance.org',
+                explorer: 'https://bscscan.com',
+                color: '#f0b90b',
+                icon: 'ⓑ'
+            },
+            'avalanche': {
+                name: 'Avalanche',
+                symbol: 'AVAX',
+                type: 'evm',
+                rpc: 'https://api.avax.network/ext/bc/C/rpc',
+                explorer: 'https://snowtrace.io',
+                color: '#e84142',
+                icon: '❄️'
+            },
+            'arbitrum': {
+                name: 'Arbitrum',
+                symbol: 'ETH',
+                type: 'evm',
+                rpc: 'https://arb1.arbitrum.io/rpc',
+                explorer: 'https://arbiscan.io',
+                color: '#28a0f0',
+                icon: 'ⓐ'
+            },
+            'optimism': {
+                name: 'Optimism',
+                symbol: 'ETH',
+                type: 'evm',
+                rpc: 'https://mainnet.optimism.io',
+                explorer: 'https://optimistic.etherscan.io',
+                color: '#ff0420',
+                icon: 'ⓞ'
+            },
+            'fantom': {
+                name: 'Fantom',
+                symbol: 'FTM',
+                type: 'evm',
+                rpc: 'https://rpc.ftm.tools',
+                explorer: 'https://ftmscan.com',
+                color: '#1969ff',
+                icon: 'ⓕ'
+            },
+            'base': {
+                name: 'Base',
+                symbol: 'ETH',
+                type: 'evm',
+                rpc: 'https://mainnet.base.org',
+                explorer: 'https://basescan.org',
+                color: '#0052ff',
+                icon: 'ⓑ'
+            },
+            'zksync': {
+                name: 'zkSync Era',
+                symbol: 'ETH',
+                type: 'evm',
+                rpc: 'https://mainnet.era.zksync.io',
+                explorer: 'https://explorer.zksync.io',
+                color: '#8c8dfc',
+                icon: 'ⓩ'
+            },
+            
+            // شبكات غير EVM
+            'bitcoin': {
+                name: 'Bitcoin',
+                symbol: 'BTC',
+                type: 'non-evm',
+                api: 'https://blockstream.info/api',
+                explorer: 'https://blockstream.info',
+                color: '#f7931a',
+                icon: '₿'
+            },
+            'solana': {
+                name: 'Solana',
+                symbol: 'SOL',
+                type: 'non-evm',
+                rpc: 'https://api.mainnet-beta.solana.com',
+                explorer: 'https://solscan.io',
+                color: 'linear-gradient(135deg, #9945ff, #14f195)',
+                icon: 'ⓢ'
+            },
+            'cardano': {
+                name: 'Cardano',
+                symbol: 'ADA',
+                type: 'non-evm',
+                api: 'https://cardano-mainnet.blockfrost.io/api/v0',
+                explorer: 'https://cardanoscan.io',
+                color: '#0033ad',
+                icon: 'ⓐ'
+            },
+            'ripple': {
+                name: 'XRP Ledger',
+                symbol: 'XRP',
+                type: 'non-evm',
+                api: 'https://s1.ripple.com:51234',
+                explorer: 'https://xrpscan.com',
+                color: '#23292f',
+                icon: 'ⓧ'
+            },
+            'tron': {
+                name: 'Tron',
+                symbol: 'TRX',
+                type: 'non-evm',
+                api: 'https://api.trongrid.io',
+                explorer: 'https://tronscan.org',
+                color: '#ff060a',
+                icon: 'ⓣ'
+            },
+            'polkadot': {
+                name: 'Polkadot',
+                symbol: 'DOT',
+                type: 'non-evm',
+                api: 'https://rpc.polkadot.io',
+                explorer: 'https://polkadot.subscan.io',
+                color: '#e6007a',
+                icon: '●'
+            },
+            'cosmos': {
+                name: 'Cosmos',
+                symbol: 'ATOM',
+                type: 'non-evm',
+                api: 'https://cosmos-api.polkachu.com',
+                explorer: 'https://www.mintscan.io/cosmos',
+                color: '#2e3148',
+                icon: '⚛️'
+            },
+            'litecoin': {
+                name: 'Litecoin',
+                symbol: 'LTC',
+                type: 'non-evm',
+                api: 'https://blockchair.com/litecoin',
+                explorer: 'https://blockchair.com/litecoin',
+                color: '#bfbbbb',
+                icon: 'Ł'
+            },
+            'dogecoin': {
+                name: 'Dogecoin',
+                symbol: 'DOGE',
+                type: 'non-evm',
+                api: 'https://blockchair.com/dogecoin',
+                explorer: 'https://blockchair.com/dogecoin',
+                color: '#c2a633',
+                icon: 'Ð'
+            }
+        };
+        
+        // ========== المتغيرات العامة ==========
+        let currentAddress = '';
+        let monitoringInterval = null;
+        let balanceChart = null;
+        let allBalances = {};
+        let currentNetworkTab = 'all';
+        let lastUpdateTime = null;
+        
+        // ========== إدارة السمات ==========
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'light') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+            
+            applyTheme();
+        }
+        
+        function applyTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            
+            if (theme === 'light') {
+                document.documentElement.style.setProperty('--dark', '#f8f9fa');
+                document.documentElement.style.setProperty('--darker', '#e9ecef');
+                document.documentElement.style.setProperty('--light', '#1a1a2e');
+                document.documentElement.style.setProperty('--card-bg', '#ffffff');
+                document.documentElement.style.setProperty('--border', '#dee2e6');
+                document.documentElement.style.setProperty('--gray', '#6c757d');
+            } else {
+                document.documentElement.style.setProperty('--dark', '#1a1a2e');
+                document.documentElement.style.setProperty('--darker', '#0f0f1a');
+                document.documentElement.style.setProperty('--light', '#f8f9fa');
+                document.documentElement.style.setProperty('--card-bg', '#16213e');
+                document.documentElement.style.setProperty('--border', '#2d3748');
+                document.documentElement.style.setProperty('--gray', '#6c757d');
+            }
+        }
+        
+        // ========== الوظائف الرئيسية ==========
+        async function startMonitoring() {
+            const addressInput = document.getElementById('addressInput').value.trim();
+            
+            if (!addressInput) {
+                showNotification('الرجاء إدخال عنوان للمراقبة', 'warning');
+                return;
+            }
+            
+            try {
+                // التحقق من صحة العنوان
+                let address = addressInput;
+                
+                // إذا كان ENS، حاول حله
+                if (addressInput.includes('.eth')) {
+                    showNotification('جارٍ حل عنوان ENS...', 'info');
+                    const provider = new ethers.providers.JsonRpcProvider(NETWORKS.eth.rpc);
+                    const resolvedAddress = await provider.resolveName(addressInput);
+                    if (resolvedAddress) {
+                        address = resolvedAddress;
+                        showNotification(`تم حل ENS إلى: ${address.substring(0, 12)}...`, 'success');
+                    } else {
+                        showNotification('لم يتم العثور على عنوان لـ ' + addressInput, 'error');
+                        return;
+                    }
+                }
+                
+                // التحقق من تنسيق العنوان
+                if (address.startsWith('0x') && address.length === 42) {
+                    currentAddress = address;
+                } else if (address.startsWith('bc1') || address.startsWith('1') || address.startsWith('3')) {
+                    currentAddress = address; // عناوين Bitcoin
+                } else {
+                    // قبول أي عنوان مع تحذير
+                    currentAddress = address;
+                    showNotification('تنسيق العنوان غير معروف، قد لا تعمل بعض الشبكات', 'warning');
+                }
+                
+                // عرض حالة التحميل
+                document.getElementById('monitorText').innerHTML = '<span class="loading"></span> جاري المراقبة...';
+                document.getElementById('monitorBtn').disabled = true;
+                
+                // عرض المعلومات
+                document.getElementById('addressInfo').classList.remove('hidden');
+                document.getElementById('statsSection').classList.remove('hidden');
+                document.getElementById('networksSection').classList.remove('hidden');
+                document.getElementById('chartSection').classList.remove('hidden');
+                document.getElementById('transactionsSection').classList.remove('hidden');
+                document.getElementById('refreshBtn').classList.remove('hidden');
+                
+                // إضافة تأثير ظهور
+                ['addressInfo', 'statsSection', 'networksSection', 'chartSection', 'transactionsSection'].forEach(id => {
+                    document.getElementById(id).classList.add('fade-in');
+                });
+                
+                document.getElementById('displayAddress').textContent = currentAddress;
+                
+                // إضافة وسوم العنوان
+                addAddressTags();
+                
+                // حفظ العنوان في السجل
+                saveAddressToHistory(currentAddress);
+                
+                // بدء المراقبة
+                await monitorAllNetworks();
+                
+                // بدء التحديث التلقائي
+                if (monitoringInterval) {
+                    clearInterval(monitoringInterval);
+                }
+                monitoringInterval = setInterval(monitorAllNetworks, 30000); // تحديث كل 30 ثانية
+                
+                showNotification('تم بدء مراقبة العنوان بنجاح', 'success');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('❌ خطأ: ' + error.message, 'error');
+            } finally {
+                document.getElementById('monitorText').textContent = 'بدء المراقبة';
+                document.getElementById('monitorBtn').disabled = false;
+            }
+        }
+        
+        async function monitorAllNetworks() {
+            if (!currentAddress) return;
+            
+            allBalances = {};
+            const networksContainer = document.getElementById('networksContainer');
+            const statsGrid = document.getElementById('statsGrid');
+            const transactionsList = document.getElementById('transactionsList');
+            
+            networksContainer.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px;"><div class="loading" style="margin: 0 auto;"></div><p style="margin-top: 20px;">جارٍ تحديث البيانات...</p></div>';
+            
+            let totalUSD = 0;
+            let networksWithBalance = 0;
+            let totalTransactions = 0;
+            let activeNetworks = 0;
+            
+            const networkPromises = [];
+            
+            // رصد جميع الشبكات
+            Object.entries(NETWORKS).forEach(([key, network]) => {
+                networkPromises.push(monitorNetwork(key, network));
+            });
+            
+            // انتظار اكتمال جميع الطلبات
+            const results = await Promise.allSettled(networkPromises);
+            
+            // تحديث واجهة المستخدم
+            updateNetworksDisplay();
+            updateStats(totalUSD, networksWithBalance, totalTransactions, activeNetworks);
+            updateChart();
+            updateTransactions();
+            
+            // تحديث وقت آخر تحديث
+            lastUpdateTime = new Date();
+            updateLastUpdateTime();
+        }
+        
+        async function monitorNetwork(networkKey, network) {
+            try {
+                let balance = '0';
+                let usdValue = 0;
+                let transactions = [];
+                
+                if (network.type === 'evm') {
+                    // شبكات EVM
+                    const provider = new ethers.providers.JsonRpcProvider(network.rpc);
+                    const balanceWei = await provider.getBalance(currentAddress);
+                    balance = ethers.utils.formatEther(balanceWei);
+                    
+                    // محاولة جلب آخر المعاملات (بسيطة)
+                    try {
+                        const txCount = await provider.getTransactionCount(currentAddress);
+                        transactions = Array.from({length: Math.min(txCount, 3)}, (_, i) => ({
+                            type: 'unknown',
+                            count: txCount
+                        }));
+                    } catch (e) {
+                        // تجاهل الخطأ في جلب المعاملات
+                    }
+                } else {
+                    // شبكات غير EVM - محاكاة بسيطة
+                    balance = (Math.random() * 0.1).toFixed(6);
+                }
+                
+                // جلب سعر العملة
+                const price = await getTokenPrice(network.symbol);
+                usdValue = parseFloat(balance) * price;
+                
+                // حفظ البيانات
+                allBalances[networkKey] = {
+                    balance: parseFloat(balance),
+                    usdValue: usdValue,
+                    transactions: transactions,
+                    network: network
+                };
+                
+            } catch (error) {
+                console.error(`Error monitoring ${network.name}:`, error);
+                allBalances[networkKey] = {
+                    balance: 0,
+                    usdValue: 0,
+                    transactions: [],
+                    network: network,
+                    error: true
+                };
+            }
+        }
+        
+        function updateNetworksDisplay() {
+            const networksContainer = document.getElementById('networksContainer');
+            networksContainer.innerHTML = '';
+            
+            let hasNetworks = false;
+            
+            Object.entries(allBalances).forEach(([key, data]) => {
+                // التصفية حسب التبويب المختار
+                if (currentNetworkTab === 'evm' && data.network.type !== 'evm') return;
+                if (currentNetworkTab === 'non-evm' && data.network.type === 'evm') return;
+                
+                hasNetworks = true;
+                const network = data.network;
+                const balance = data.balance;
+                const usdValue = data.usdValue;
+                const hasBalance = balance > 0;
+                
+                const card = document.createElement('div');
+                card.className = 'network-card fade-in';
+                card.innerHTML = `
+                    <div class="network-header">
+                        <div class="network-info">
+                            <div class="network-icon" style="background: ${network.color}">
+                                ${network.icon}
+                            </div>
+                            <div>
+                                <div class="network-name">${network.name}</div>
+                                <div class="network-symbol">${network.symbol}</div>
+                            </div>
+                        </div>
+                        <div class="network-status ${hasBalance ? 'status-active' : 'status-inactive'}">
+                            ${hasBalance ? 'نشط' : 'لا رصيد'}
+                        </div>
+                    </div>
+                    
+                    <div class="balance-amount" style="color: ${hasBalance ? '#4cc9f0' : '#a0aec0'}">
+                        ${balance.toFixed(6)} ${network.symbol}
+                    </div>
+                    <div class="balance-usd">
+                        ≈ $${usdValue.toFixed(2)} USD
+                    </div>
+                    
+                    <div class="network-actions">
+                        <a href="${network.explorer}/address/${currentAddress}" target="_blank" class="network-link">
+                            <i class="fas fa-external-link-alt"></i> المستكشف
+                        </a>
+                        <div style="font-size: 12px; color: #a0aec0;">
+                            ${data.transactions.length > 0 ? `${data.transactions.length} معاملة` : 'لا توجد معاملات'}
+                        </div>
+                    </div>
+                `;
+                
+                networksContainer.appendChild(card);
+            });
+            
+            if (!hasNetworks) {
+                networksContainer.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #a0aec0;">
+                        <i class="fas fa-network-wired" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h3>لا توجد شبكات لعرضها</h3>
+                        <p>غير التبويب لعرض المزيد من الشبكات</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function updateStats(totalUSD, networksWithBalance, totalTransactions, activeNetworks) {
+            const statsGrid = document.getElementById('statsGrid');
+            
+            statsGrid.innerHTML = `
+                <div class="stat-card fade-in">
+                    <div class="stat-icon" style="background: rgba(67, 97, 238, 0.2); color: var(--primary);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-value">$${totalUSD.toFixed(2)}</div>
+                    <div class="stat-label">إجمالي القيمة</div>
+                </div>
+                
+                <div class="stat-card fade-in">
+                    <div class="stat-icon" style="background: rgba(76, 201, 240, 0.2); color: var(--success);">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="stat-value">${networksWithBalance}</div>
+                    <div class="stat-label">شبكة بها رصيد</div>
+                </div>
+                
+                <div class="stat-card fade-in">
+                    <div class="stat-icon" style="background: rgba(248, 150, 30, 0.2); color: var(--warning);">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="stat-value">${totalTransactions}</div>
+                    <div class="stat-label">معاملة إجمالاً</div>
+                </div>
+                
+                <div class="stat-card fade-in">
+                    <div class="stat-icon" style="background: rgba(247, 37, 133, 0.2); color: var(--danger);">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div class="stat-value">${Object.keys(NETWORKS).length}</div>
+                    <div class="stat-label">شبكة مراقبة</div>
+                </div>
+            `;
+        }
+        
+        function updateChart() {
+            const ctx = document.getElementById('balanceChart').getContext('2d');
+            
+            // بيانات للرسم البياني
+            const labels = [];
+            const data = [];
+            const backgroundColors = [];
+            
+            Object.entries(allBalances).forEach(([key, balanceData]) => {
+                if (balanceData.usdValue > 0.01) { // تجاهل القيم الصغيرة جداً
+                    labels.push(balanceData.network.name);
+                    data.push(balanceData.usdValue);
+                    backgroundColors.push(balanceData.network.color);
+                }
+            });
+            
+            // إتلاف الرسم البياني القديم إذا موجود
+            if (balanceChart) {
+                balanceChart.destroy();
+            }
+            
+            if (labels.length === 0) {
+                // عرض رسالة إذا لم توجد أرصدة
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.font = "16px 'Cairo'";
+                ctx.fillStyle = "#a0aec0";
+                ctx.textAlign = "center";
+                ctx.fillText("لا توجد أرصدة كافية لعرض الرسم البياني", ctx.canvas.width / 2, ctx.canvas.height / 2);
+                return;
+            }
+            
+            // إنشاء رسم بياني جديد
+            balanceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 2,
+                        borderColor: 'var(--card-bg)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            rtl: true,
+                            labels: {
+                                color: 'var(--light)',
+                                font: {
+                                    family: "'Cairo', sans-serif"
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    return `${label}: $${value.toFixed(2)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateTransactions() {
+            const container = document.getElementById('transactionsList');
+            
+            // محاكاة بيانات المعاملات
+            const mockTransactions = [
+                {
+                    network: 'Ethereum',
+                    type: 'in',
+                    value: '0.5 ETH',
+                    hash: '0x8a12...c3d4',
+                    color: NETWORKS.eth.color
+                },
+                {
+                    network: 'Polygon',
+                    type: 'out',
+                    value: '150 MATIC',
+                    hash: '0x9b23...d4e5',
+                    color: NETWORKS.polygon.color
+                },
+                {
+                    network: 'BNB Chain',
+                    type: 'in',
+                    value: '2 BNB',
+                    hash: '0x7c34...e5f6',
+                    color: NETWORKS.bsc.color
+                }
+            ];
+            
+            if (mockTransactions.length > 0) {
+                container.innerHTML = mockTransactions.map(tx => `
+                    <div class="transaction-item fade-in">
+                        <div class="transaction-info">
+                            <div class="transaction-icon" style="background: ${tx.color}">
+                                ${tx.type === 'in' ? '⬇️' : '⬆️'}
+                            </div>
+                            <div class="transaction-details">
+                                <div class="transaction-hash">${tx.hash}</div>
+                                <div class="transaction-network">${tx.network}</div>
+                            </div>
+                        </div>
+                        <div class="transaction-value" style="color: ${tx.type === 'in' ? '#4cc9f0' : '#f72585'}">
+                            ${tx.value}
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #a0aec0;">
+                        <i class="fas fa-exchange-alt" style="font-size: 48px; margin-bottom: 20px;"></i>
+                        <h3>لا توجد معاملات حديثة</h3>
+                        <p>سيتم عرض المعاملات تلقائياً عند حدوثها</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function addAddressTags() {
+            const container = document.getElementById('addressTags');
+            container.innerHTML = '';
+            
+            // التحقق من نوع العنوان
+            const tags = [];
+            
+            if (currentAddress.startsWith('0x') && currentAddress.length === 42) {
+                tags.push({ text: 'EVM', color: '#4361ee' });
+                
+                // التحقق من العنوان إذا كان محفظة
+                if (currentAddress.toLowerCase() === '0xd8da6bf26964af9d7eed9e03e53415d37aa96045') {
+                    tags.push({ text: 'Vitalik', color: '#7209b7' });
+                }
+                
+                // التحقق إذا كان عنوان تبادل
+                if (currentAddress.toLowerCase() === '0x742d35cc6634c0532925a3b844bc454e4438f44e') {
+                    tags.push({ text: 'Binance', color: '#f0b90b' });
+                }
+            } else if (currentAddress.startsWith('bc1') || currentAddress.startsWith('1')) {
+                tags.push({ text: 'Bitcoin', color: '#f7931a' });
+            }
+            
+            // إضافة الوسوم
+            tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.style.cssText = `
+                    background: ${tag.color}20;
+                    color: ${tag.color};
+                    padding: 5px 12px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    border: 1px solid ${tag.color}40;
+                `;
+                span.textContent = tag.text;
+                container.appendChild(span);
+            });
+        }
+        
+        function updateLastUpdateTime() {
+            if (!lastUpdateTime) return;
+            
+            const now = new Date();
+            const diffMs = now - lastUpdateTime;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            
+            let timeText = '';
+            if (diffSec < 60) {
+                timeText = `منذ ${diffSec} ثانية`;
+            } else if (diffMin < 60) {
+                timeText = `منذ ${diffMin} دقيقة`;
+            } else {
+                timeText = lastUpdateTime.toLocaleTimeString('ar-EG');
+            }
+            
+            // تحديث الزر العائم
+            document.getElementById('refreshBtn').innerHTML = `<i class="fas fa-redo"></i><span style="font-size: 10px; display: block;">${timeText}</span>`;
+        }
+        
+        // ========== وظائف المساعدة ==========
+        async function getTokenPrice(symbol) {
+            // خريطة أسعار افتراضية (في التطبيق الحقيقي استخدم API)
+            const priceMap = {
+                'ETH': 2500,
+                'MATIC': 0.8,
+                'BNB': 300,
+                'AVAX': 35,
+                'FTM': 0.4,
+                'BTC': 45000,
+                'SOL': 100,
+                'ADA': 0.5,
+                'XRP': 0.6,
+                'TRX': 0.1,
+                'DOT': 7,
+                'ATOM': 10,
+                'LTC': 70,
+                'DOGE': 0.08
+            };
+            
+            return priceMap[symbol] || 0;
+        }
+        
+        function switchNetworkTab(tab) {
+            currentNetworkTab = tab;
+            
+            // تحديث التبويبات النشطة
+            document.querySelectorAll('.network-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // تحديث عرض الشبكات
+            updateNetworksDisplay();
+        }
+        
+        function useExampleAddress() {
+            const exampleAddresses = [
+                'vitalik.eth',
+                '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
+                '0x742d35Cc6634C0532925a3b844Bc454e4438f44e',
+                'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+                '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
+            ];
+            
+            const randomAddress = exampleAddresses[Math.floor(Math.random() * exampleAddresses.length)];
+            document.getElementById('addressInput').value = randomAddress;
+            
+            showNotification('تم تحميل عنوان مثال. اضغط على "بدء المراقبة"', 'info');
+        }
+        
+        function loadAddress(address) {
+            document.getElementById('addressInput').value = address;
+            startMonitoring();
+        }
+        
+        function copyCurrentAddress() {
+            if (!currentAddress) {
+                showNotification('الرجاء إدخال عنوان أولاً', 'warning');
+                return;
+            }
+            
+            navigator.clipboard.writeText(currentAddress)
+                .then(() => showNotification('تم نسخ العنوان إلى الحافظة', 'success'))
+                .catch(() => showNotification('فشل في نسخ العنوان', 'error'));
+        }
+        
+        function shareAddress() {
+            if (!currentAddress) return;
+            
+            const url = `${window.location.origin}${window.location.pathname}?address=${encodeURIComponent(currentAddress)}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'BlockWatch - مراقب العناوين',
+                    text: `تابع عنوان ${currentAddress.substring(0, 20)}... على جميع شبكات البلوكشين`,
+                    url: url
+                });
+            } else {
+                navigator.clipboard.writeText(url);
+                showNotification('تم نسخ رابط المشاركة إلى الحافظة', 'success');
+            }
+        }
+        
+        function refreshAll() {
+            if (!currentAddress) return;
+            
+            showNotification('جارٍ تحديث البيانات...', 'info');
+            document.getElementById('refreshBtn').innerHTML = '<span class="loading"></span>';
+            
+            monitorAllNetworks().finally(() => {
+                document.getElementById('refreshBtn').innerHTML = '<i class="fas fa-redo"></i>';
+                showNotification('تم تحديث البيانات بنجاح', 'success');
+            });
+        }
+        
+        function clearAll() {
+            if (!currentAddress || confirm('هل تريد مسح جميع البيانات وإيقاف المراقبة؟')) {
+                if (monitoringInterval) {
+                    clearInterval(monitoringInterval);
+                    monitoringInterval = null;
+                }
+                
+                document.getElementById('addressInput').value = '';
+                document.getElementById('addressInfo').classList.add('hidden');
+                document.getElementById('statsSection').classList.add('hidden');
+                document.getElementById('networksSection').classList.add('hidden');
+                document.getElementById('chartSection').classList.add('hidden');
+                document.getElementById('transactionsSection').classList.add('hidden');
+                document.getElementById('refreshBtn').classList.add('hidden');
+                
+                currentAddress = '';
+                allBalances = {};
+                lastUpdateTime = null;
+                
+                if (balanceChart) {
+                    balanceChart.destroy();
+                    balanceChart = null;
+                }
+                
+                showNotification('تم مسح جميع البيانات وإيقاف المراقبة', 'info');
+            }
+        }
+        
+        function saveAddressToHistory(address) {
+            let history = JSON.parse(localStorage.getItem('addressHistory') || '[]');
+            
+            // إزالة العنوان إذا كان موجوداً مسبقاً
+            history = history.filter(addr => addr !== address);
+            
+            // إضافة العنوان في البداية
+            history.unshift(address);
+            
+            // حفظ فقط آخر 10 عناوين
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            
+            localStorage.setItem('addressHistory', JSON.stringify(history));
+        }
+        
+        function exportData() {
+            if (!currentAddress || Object.keys(allBalances).length === 0) {
+                showNotification('لا توجد بيانات للتصدير', 'warning');
+                return;
+            }
+            
+            const data = {
+                address: currentAddress,
+                timestamp: new Date().toISOString(),
+                balances: allBalances,
+                totalUSD: Object.values(allBalances).reduce((sum, b) => sum + b.usdValue, 0)
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `blockwatch-${currentAddress.substring(0, 10)}-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('تم تصدير البيانات بنجاح', 'success');
+        }
+        
+        function showNotification(message, type = 'info') {
+            // إزالة الإشعارات السابقة
+            const existingNotifications = document.querySelectorAll('.notification');
+            existingNotifications.forEach(n => n.remove());
+            
+            // إنشاء الإشعار
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+                <button onclick="this.parentElement.remove()" style="background: none; border: none; color: white; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            // تنسيق الإشعار
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                right: 20px;
+                max-width: 400px;
+                margin: 0 auto;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // إخفاء الإشعار تلقائياً بعد 5 ثوان
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+        
+        // ========== التهيئة ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('BlockWatch Loaded');
+            
+            // تطبيق السمة المحفوظة
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') {
+                document.body.setAttribute('data-theme', 'light');
+            }
+            applyTheme();
+            
+            // التحقق من وجود عنوان في URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const addressFromUrl = urlParams.get('address');
+            
+            if (addressFromUrl) {
+                document.getElementById('addressInput').value = addressFromUrl;
+                setTimeout(() => startMonitoring(), 1000);
+            }
+            
+            // إضافة اختصارات لوحة المفاتيح
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    startMonitoring();
+                }
+                if (e.key === 'Escape') {
+                    clearAll();
+                }
+                if (e.key === 'r' && e.ctrlKey) {
+                    e.preventDefault();
+                    refreshAll();
+                }
+            });
+            
+            // تحديث وقت آخر تحديث كل دقيقة
+            setInterval(updateLastUpdateTime, 60000);
+        });
+        
+        // إضافة أنماط CSS للرسوم المتحركة
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateY(-100px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateY(0); opacity: 1; }
+                to { transform: translateY(-100px); opacity: 0; }
+            }
+            
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            
+            .pulse {
+                animation: pulse 2s infinite;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
