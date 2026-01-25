@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرادار المالي المباشر | Global Market Tracker</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <style>
+        :root {
+            --bg: #0a0f1d;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --accent: #3b82f6;
+            --gold: #fbbf24;
+            --crypto: #8b5cf6;
+            --fiat: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0, transparent 50%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .section-title {
+            grid-column: 1 / -1;
+            margin: 20px 0 10px;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+        }
+
+        .crypto-card::before { background: var(--crypto); }
+        .gold-card::before { background: var(--gold); }
+        .fiat-card::before { background: var(--fiat); }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header i { font-size: 1.5rem; opacity: 0.8; }
+
+        .asset-name { font-size: 1.1rem; font-weight: 600; color: #cbd5e1; }
+
+        .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 10px 0;
+            letter-spacing: -1px;
+        }
+
+        .update-time {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .loader {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo"><i class="fas fa-chart-line"></i> Global Market Radar</div>
+        <p><span class="status-dot"></span> بث مباشر للأسعار العالمية</p>
+    </header>
+
+    <div class="market-grid" id="marketGrid">
+        <div class="loader">جاري الاتصال بالأسواق العالمية...</div>
+    </div>
+</div>
+
+<script>
+    // تهيئة البيانات
+    const cryptoIds = 'bitcoin,ethereum,binancecoin,solana,ripple';
+    
+    async function fetchMarketData() {
+        try {
+            // 1. جلب العملات المشفرة
+            const cryptoRes = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${cryptoIds}&vs_currencies=usd`);
+            const cryptoData = await cryptoRes.json();
+
+            // 2. جلب الذهب والعملات (استخدام API مجاني للعملات)
+            // ملاحظة: الذهب يُقاس غالباً مقابل الدولار بترميز XAU
+            const fiatRes = await fetch(`https://open.er-api.com/v6/latest/USD`);
+            const fiatData = await fiatRes.json();
+
+            renderData(cryptoData, fiatData.rates);
+        } catch (error) {
+            document.getElementById('marketGrid').innerHTML = `
+                <div class="loader" style="color: #ef4444;">خطأ في الاتصال! يرجى التأكد من الإنترنت.</div>
+            `;
+        }
+    }
+
+    function renderData(crypto, fiat) {
+        const grid = document.getElementById('marketGrid');
+        const now = new Date().toLocaleTimeString('ar-EG');
+
+        let html = '';
+
+        // قسم الذهب
+        html += `<div class="section-title"><i class="fas fa-coins" style="color:var(--gold)"></i> المعادن الثمينة</div>`;
+        const goldPrice = (1 / fiat.XAU).toFixed(2); // تحويل السعر للأونصة
+        html += createCard('الذهب (أونصة)', `$${goldPrice}`, 'gold-card', 'fa-solid fa-bars-staggered', 'var(--gold)');
+
+        // قسم العملات المشفرة
+        html += `<div class="section-title"><i class="fab fa-bitcoin" style="color:var(--crypto)"></i> العملات المشفرة الرائدة</div>`;
+        html += createCard('Bitcoin', `$${crypto.bitcoin.usd.toLocaleString()}`, 'crypto-card', 'fa-brands fa-bitcoin', 'var(--crypto)');
+        html += createCard('Ethereum', `$${crypto.ethereum.usd.toLocaleString()}`, 'crypto-card', 'fa-brands fa-ethereum', 'var(--crypto)');
+        html += createCard('Solana', `$${crypto.solana.usd.toLocaleString()}`, 'crypto-card', 'fa-solid fa-s', 'var(--crypto)');
+
+        // قسم العملات العالمية
+        html += `<div class="section-title"><i class="fas fa-money-bill-transfer" style="color:var(--fiat)"></i> العملات الورقية (مقابل 1 دولار)</div>`;
+        html += createCard('اليورو', `€${fiat.EUR.toFixed(3)}`, 'fiat-card', 'fa-solid fa-euro-sign', 'var(--fiat)');
+        html += createCard('الريال السعودي', `ر.س ${fiat.SAR.toFixed(3)}`, 'fiat-card', 'fa-solid fa-landmark', 'var(--fiat)');
+        html += createCard('الدرهم الإماراتي', `د.إ ${fiat.AED.toFixed(3)}`, 'fiat-card', 'fa-solid fa-money-bill-1', 'var(--fiat)');
+        html += createCard('الجنيه المصري', `ج.م ${fiat.EGP.toFixed(3)}`, 'fiat-card', 'fa-solid fa-coins', 'var(--fiat)');
+
+        grid.innerHTML = html;
+    }
+
+    function createCard(name, price, type, icon, iconColor) {
+        return `
+            <div class="card ${type}">
+                <div class="card-header">
+                    <span class="asset-name">${name}</span>
+                    <i class="${icon}" style="color: ${iconColor}"></i>
+                </div>
+                <div class="price">${price}</div>
+                <div class="update-time">آخر تحديث: الآن</div>
+            </div>
+        `;
+    }
+
+    // التشغيل والتحديث التلقائي
+    fetchMarketData();
+    setInterval(fetchMarketData, 60000); // تحديث كل دقيقة
+</script>
+
+</body>
+</html>
