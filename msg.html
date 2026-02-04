@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام المراسلة مع GitHub</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .main-content {
+            display: flex;
+            min-height: 700px;
+        }
+        
+        .sidebar {
+            width: 300px;
+            background-color: #f8f9fa;
+            border-left: 1px solid #e9ecef;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            font-size: 18px;
+        }
+        
+        .contact-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+        
+        .contact-item {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            display: flex;
+            align-items: center;
+        }
+        
+        .contact-item:hover {
+            background-color: #e3f2fd;
+            transform: translateX(-5px);
+        }
+        
+        .contact-item.active {
+            border-color: #667eea;
+            background-color: #e3f2fd;
+            font-weight: bold;
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-left: 15px;
+            font-weight: bold;
+        }
+        
+        .token-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .token-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            margin-bottom: 10px;
+            direction: ltr;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        .btn-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .chat-header {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-contact-name {
+            font-size: 22px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .message {
+            max-width: 70%;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 18px;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+        }
+        
+        .message.sent {
+            background-color: #667eea;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message.received {
+            background-color: #e9ecef;
+            color: #333;
+            margin-right: auto;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-time {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+            text-align: left;
+        }
+        
+        .message.sent .message-time {
+            text-align: right;
+        }
+        
+        .file-attachment {
+            display: inline-block;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .image-attachment {
+            max-width: 200px;
+            border-radius: 10px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .message-input-area {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .message-input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: none;
+            height: 60px;
+            font-family: inherit;
+        }
+        
+        .file-upload-btn {
+            background-color: #10b981;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-btn:hover {
+            background-color: #0da271;
+            transform: translateY(-2px);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .notification {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        
+        .notification.success {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        
+        .notification.error {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-left: none;
+                border-bottom: 1px solid #e9ecef;
+            }
+            
+            .contact-list {
+                display: flex;
+                overflow-x: auto;
+                gap: 10px;
+            }
+            
+            .contact-item {
+                min-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 نظام المراسلة مع GitHub</h1>
+            <p>تخزين واسترجاع المحادثات باستخدام GitHub كخادم</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <h3 class="section-title">📞 جهات الاتصال</h3>
+                <ul class="contact-list" id="contactList">
+                    <!-- جهات الاتصال سيتم تحميلها تلقائيا -->
+                </ul>
+                
+                <div class="token-section">
+                    <h3 class="section-title">🔑 توكن GitHub</h3>
+                    <p style="margin-bottom: 10px; font-size: 14px; color: #666;">
+                        أدخل التوكن الذي يبدأ بـ <code>ghp_</code> للوصول إلى مستودع GitHub
+                    </p>
+                    <input type="password" class="token-input" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                    <div class="actions">
+                        <button class="btn btn-primary" id="saveTokenBtn">
+                            <span class="btn-icon">💾</span> حفظ التوكن
+                        </button>
+                        <button class="btn btn-danger" id="clearDataBtn">
+                            <span class="btn-icon">🗑️</span> مسح البيانات
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="notification" id="notification"></div>
+            </div>
+            
+            <div class="chat-area">
+                <div class="chat-header">
+                    <div>
+                        <div class="chat-contact-name" id="currentContact">اختر جهة اتصال لعرض المحادثة</div>
+                        <div id="contactInfo" style="font-size: 14px; color: #666; margin-top: 5px;"></div>
+                    </div>
+                    <button class="btn btn-success" id="refreshChatBtn">
+                        <span class="btn-icon">🔄</span> تحديث المحادثة
+                    </button>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div style="text-align: center; color: #888; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
+                        <h3>لا توجد محادثة مختارة</h3>
+                        <p>اختر جهة اتصال من القائمة لبدء المحادثة</p>
+                    </div>
+                </div>
+                
+                <div class="message-input-area">
+                    <textarea class="message-input" id="messageInput" placeholder="اكتب رسالتك هنا..."></textarea>
+                    <div class="file-upload-btn" id="fileUploadBtn" title="إرسال ملف أو صورة">
+                        📎
+                    </div>
+                    <input type="file" class="file-input" id="fileInput" multiple accept="image/*,.txt,.pdf,.doc,.docx">
+                    <button class="btn btn-primary" id="sendMessageBtn" style="height: 60px; width: 100px;">
+                        إرسال
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // متغيرات التطبيق
+        let currentContact = null;
+        let githubToken = localStorage.getItem('github_token') || '';
+        const REPO_OWNER = 'YOUR_GITHUB_USERNAME'; // ضع اسم مستخدم GitHub هنا
+        const REPO_NAME = 'messaging-system'; // اسم المستودع
+        const BASE_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents`;
+        
+        // عناصر DOM
+        const tokenInput = document.getElementById('tokenInput');
+        const saveTokenBtn = document.getElementById('saveTokenBtn');
+        const clearDataBtn = document.getElementById('clearDataBtn');
+        const contactList = document.getElementById('contactList');
+        const chatMessages = document.getElementById('chatMessages');
+        const currentContactElement = document.getElementById('currentContact');
+        const contactInfoElement = document.getElementById('contactInfo');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageBtn = document.getElementById('sendMessageBtn');
+        const fileInput = document.getElementById('fileInput');
+        const fileUploadBtn = document.getElementById('fileUploadBtn');
+        const refreshChatBtn = document.getElementById('refreshChatBtn');
+        const notification = document.getElementById('notification');
+        
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            // تعيين التوكن إذا كان موجوداً
+            if (githubToken) {
+                tokenInput.value = githubToken;
+            }
+            
+            // تحميل جهات الاتصال
+            loadContacts();
+            
+            // إضافة المستمعين للأحداث
+            saveTokenBtn.addEventListener('click', saveToken);
+            clearDataBtn.addEventListener('click', clearAllData);
+            sendMessageBtn.addEventListener('click', sendMessage);
+            fileUploadBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileUpload);
+            refreshChatBtn.addEventListener('click', loadChat);
+            
+            // إرسال الرسالة عند الضغط على Enter
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+        
+        // حفظ التوكن
+        function saveToken() {
+            const token = tokenInput.value.trim();
+            
+            if (!token.startsWith('ghp_')) {
+                showNotification('التوكن يجب أن يبدأ بـ ghp_', 'error');
+                return;
+            }
+            
+            githubToken = token;
+            localStorage.setItem('github_token', token);
+            showNotification('تم حفظ التوكن بنجاح', 'success');
+            loadContacts(); // إعادة تحميل جهات الاتصال
+        }
+        
+        // مسح جميع البيانات
+        function clearAllData() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات (التوكن والمحادثات المحلية)؟')) {
+                localStorage.clear();
+                githubToken = '';
+                tokenInput.value = '';
+                currentContact = null;
+                contactList.innerHTML = '';
+                chatMessages.innerHTML = `
+                    <div style="text-align: center; color: #888; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">💬</div>
+                        <h3>لا توجد محادثة مختارة</h3>
+                        <p>اختر جهة اتصال من القائمة لبدء المحادثة</p>
+                    </div>
+                `;
+                currentContactElement.textContent = 'اختر جهة اتصال لعرض المحادثة';
+                contactInfoElement.textContent = '';
+                showNotification('تم مسح جميع البيانات بنجاح', 'success');
+            }
+        }
+        
+        // تحميل جهات الاتصال
+        async function loadContacts() {
+            if (!githubToken) {
+                showNotification('الرجاء إدخال توكن GitHub أولاً', 'error');
+                return;
+            }
+            
+            contactList.innerHTML = '<li class="contact-item" style="justify-content: center;"><div class="loading"></div> جاري تحميل جهات الاتصال...</li>';
+            
+            try {
+                // في التطبيق الحقيقي، ستجلب جهات الاتصال من GitHub
+                // هنا سنستخدم بيانات تجريبية للتوضيح
+                const contacts = ['Abdh1', 'Ahmed', 'Sara', 'Mohammed', 'Fatima'];
+                
+                contactList.innerHTML = '';
+                
+                contacts.forEach(contact => {
+                    const contactItem = document.createElement('li');
+                    contactItem.className = 'contact-item';
+                    contactItem.dataset.contact = contact;
+                    contactItem.innerHTML = `
+                        <div class="contact-icon">${contact.charAt(0)}</div>
+                        <div>${contact}</div>
+                    `;
+                    
+                    contactItem.addEventListener('click', () => selectContact(contact));
+                    contactList.appendChild(contactItem);
+                });
+                
+                // تحديد أول جهة اتصال تلقائياً
+                if (contacts.length > 0) {
+                    selectContact(contacts[0]);
+                }
+                
+            } catch (error) {
+                console.error('Error loading contacts:', error);
+                contactList.innerHTML = '<li class="contact-item" style="color: #ef4444;">فشل في تحميل جهات الاتصال</li>';
+            }
+        }
+        
+        // تحديد جهة اتصال
+        function selectContact(contactName) {
+            currentContact = contactName;
+            
+            // تحديث النشاط في القائمة
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.contact === contactName) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // تحديث واجهة المحادثة
+            currentContactElement.textContent = contactName;
+            contactInfoElement.textContent = `محادثة مع ${contactName} - يتم تخزين الرسائل على GitHub`;
+            
+            // تحميل المحادثة
+            loadChat();
+        }
+        
+        // تحميل المحادثة
+        async function loadChat() {
+            if (!currentContact) return;
+            
+            chatMessages.innerHTML = '<div style="text-align: center; padding: 40px;"><div class="loading"></div> جاري تحميل المحادثة...</div>';
+            
+            try {
+                // في التطبيق الحقيقي، ستجلب الرسائل من GitHub
+                // هنا سنستخدم بيانات تجريبية للتوضيح
+                
+                // محاكاة تأخير الشبكة
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // بيانات تجريبية للمحادثة
+                const messages = [
+                    { id: 1, text: 'مرحباً! كيف حالك؟', sender: currentContact, time: '10:30 ص', type: 'text', sent: false },
+                    { id: 2, text: 'أنا بخير، شكراً لك! كيف يمكنني مساعدتك اليوم؟', sender: 'أنت', time: '10:32 ص', type: 'text', sent: true },
+                    { id: 3, text: 'أحتاج إلى ملف المشروع الجديد', sender: currentContact, time: '10:35 ص', type: 'text', sent: false },
+                    { id: 4, text: 'مرفق: project_document.pdf', sender: 'أنت', time: '10:40 ص', type: 'file', sent: true, fileName: 'project_document.pdf' },
+                    { id: 5, text: 'شكراً! هذه صورة للتصميم المقترح', sender: currentContact, time: '10:45 ص', type: 'image', sent: false, imageUrl: 'https://via.placeholder.com/200x150/667eea/ffffff?text=Design' }
+                ];
+                
+                displayMessages(messages);
+                
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                chatMessages.innerHTML = '<div style="text-align: center; color: #ef4444; padding: 40px;">فشل في تحميل المحادثة. تأكد من صحة التوكن وإتصال الإنترنت.</div>';
+            }
+        }
+        
+        // عرض الرسائل
+        function displayMessages(messages) {
+            chatMessages.innerHTML = '';
+            
+            if (messages.length === 0) {
+                chatMessages.innerHTML = `
+                    <div style="text-align: center; color: #888; padding: 40px;">
+                        <div style="font-size: 48px; margin-bottom: 20px;">💭</div>
+                        <h3>لا توجد رسائل بعد</h3>
+                        <p>ابدأ محادثة جديدة مع ${currentContact}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            messages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${msg.sent ? 'sent' : 'received'}`;
+                
+                let content = `<div>${msg.text}</div>`;
+                
+                if (msg.type === 'file') {
+                    content += `<div class="file-attachment">📄 ${msg.fileName}</div>`;
+                } else if (msg.type === 'image') {
+                    content += `<img src="${msg.imageUrl}" alt="صورة" class="image-attachment">`;
+                }
+                
+                content += `<div class="message-time">${msg.time} • ${msg.sender}</div>`;
+                
+                messageElement.innerHTML = content;
+                chatMessages.appendChild(messageElement);
+            });
+            
+            // التمرير للأسفل لرؤية آخر رسالة
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // إرسال رسالة
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            const files = fileInput.files;
+            
+            if (!text && files.length === 0) {
+                showNotification('الرجاء كتابة رسالة أو اختيار ملف', 'error');
+                return;
+            }
+            
+            if (!currentContact) {
+                showNotification('الرجاء اختيار جهة اتصال أولاً', 'error');
+                return;
+            }
+            
+            if (!githubToken) {
+                showNotification('الرجاء إدخال توكن GitHub أولاً', 'error');
+                return;
+            }
+            
+            // إضافة الرسالة إلى الشاشة فوراً
+            const message = {
+                id: Date.now(),
+                text: text || (files.length > 0 ? 'مرفق ملف' : ''),
+                sender: 'أنت',
+                time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+                type: files.length > 0 ? 'file' : 'text',
+                sent: true
+            };
+            
+            // عرض الرسالة
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message sent';
+            
+            let content = `<div>${message.text}</div>`;
+            
+            // معالجة الملفات المرفقة
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    if (file.type.startsWith('image/')) {
+                        // معاينة الصور
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            content += `<img src="${e.target.result}" alt="صورة" class="image-attachment">`;
+                            messageElement.innerHTML = content + `<div class="message-time">${message.time} • ${message.sender}</div>`;
+                        };
+                        reader.readAsDataURL(file);
+                        message.type = 'image';
+                    } else {
+                        content += `<div class="file-attachment">📄 ${file.name}</div>`;
+                    }
+                }
+            }
+            
+            content += `<div class="message-time">${message.time} • ${message.sender}</div>`;
+            messageElement.innerHTML = content;
+            
+            // إضافة الرسالة إلى الشاشة
+            const emptyState = chatMessages.querySelector('div[style*="text-align: center"]');
+            if (emptyState) {
+                chatMessages.innerHTML = '';
+            }
+            
+            chatMessages.appendChild(messageElement);
+            
+            // مسح حقل الإدخال
+            messageInput.value = '';
+            fileInput.value = '';
+            
+            // التمرير لأسفل
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // محاكاة إرسال الرسالة إلى GitHub
+            try {
+                // في التطبيق الحقيقي، ستخزن الرسالة على GitHub هنا
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // محاكاة رد تلقائي
+                simulateReply();
+                
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showNotification('فشل في إرسال الرسالة. تأكد من صحة التوكن.', 'error');
+            }
+        }
+        
+        // محاكاة رد تلقائي
+        function simulateReply() {
+            setTimeout(() => {
+                if (!currentContact) return;
+                
+                const replies = [
+                    'شكراً على الرسالة!',
+                    'سأرد عليك قريباً',
+                    'هل يمكنك إرسال المزيد من التفاصيل؟',
+                    'تم استلام الملف بنجاح',
+                    'سأقوم بمراجعة هذا الأمر'
+                ];
+                
+                const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                
+                const replyMessage = {
+                    id: Date.now() + 1,
+                    text: randomReply,
+                    sender: currentContact,
+                    time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
+                    type: 'text',
+                    sent: false
+                };
+                
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message received';
+                messageElement.innerHTML = `
+                    <div>${replyMessage.text}</div>
+                    <div class="message-time">${replyMessage.time} • ${replyMessage.sender}</div>
+                `;
+                
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                showNotification('تم استلام رد جديد', 'success');
+            }, 2000);
+        }
+        
+        // معالجة رفع الملفات
+        function handleFileUpload() {
+            const files = fileInput.files;
+            if (files.length > 0) {
+                let fileNames = '';
+                for (let i = 0; i < files.length; i++) {
+                    fileNames += files[i].name;
+                    if (i < files.length - 1) fileNames += ', ';
+                }
+                
+                messageInput.value = messageInput.value + (messageInput.value ? '\n' : '') + `📎 ${fileNames}`;
+                showNotification(`تم إضافة ${files.length} ملف(ات) للرفع`, 'success');
+            }
+        }
+        
+        // عرض الإشعارات
+        function showNotification(message, type = 'info') {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 4000);
+        }
+        
+        // وظيفة مساعدة للاتصال بـ GitHub API
+        async function githubAPI(endpoint, method = 'GET', data = null) {
+            if (!githubToken) {
+                throw new Error('لم يتم تعيين توكن GitHub');
+            }
+            
+            const headers = {
+                'Authorization': `token ${githubToken}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json'
+            };
+            
+            const options = {
+                method,
+                headers
+            };
+            
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+            
+            try {
+                const response = await fetch(`${BASE_URL}${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API error: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('GitHub API call failed:', error);
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>
