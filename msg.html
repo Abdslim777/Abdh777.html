@@ -3,128 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSG-GT | المحادثة الذكية المشفرة</title>
+    <title>MSG-GT V3.0 | المحادثة الذكية المشفرة</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        body { 
+            font-family: 'Tajawal', sans-serif; 
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc; 
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.36);
+        }
+        .message-user {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+        .message-ai {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+        }
+        .typing-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #60a5fa;
+            margin: 0 2px;
+        }
+        .typing-indicator:nth-child(1) { animation: typing 1.2s infinite 0s; }
+        .typing-indicator:nth-child(2) { animation: typing 1.2s infinite 0.2s; }
+        .typing-indicator:nth-child(3) { animation: typing 1.2s infinite 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body class="h-screen flex flex-col">
+<body class="h-screen flex flex-col overflow-hidden">
 
-    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900">
-        <div class="glass p-8 rounded-2xl shadow-2xl w-96 text-center">
-            <h1 class="text-2xl font-bold mb-6 text-blue-400">MSG-GT V2.5</h1>
-            <p class="mb-4 text-sm text-slate-400">أدخل كلمة المرور لفك تشفير بياناتك</p>
-            <input type="password" id="master-password" class="w-full p-3 rounded bg-slate-800 border border-slate-700 mb-4 focus:outline-none focus:border-blue-500" placeholder="كلمة المرور...">
-            <button onclick="initApp()" class="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded font-bold transition">دخول آمن</button>
+    <!-- شاشة الدخول -->
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
+        <div class="glass p-8 rounded-2xl shadow-2xl w-96 max-w-[90%] text-center">
+            <div class="mb-6">
+                <i class="fas fa-lock text-4xl text-blue-400 mb-2"></i>
+                <h1 class="text-2xl font-bold text-blue-400">MSG-GT V3.0</h1>
+                <p class="text-sm text-slate-400 mt-1">نظام المحادثة المشفرة من طرف لطرف</p>
+            </div>
+            
+            <div class="mb-6 text-right">
+                <label for="master-password" class="block text-sm text-slate-300 mb-2">كلمة المرور الرئيسية</label>
+                <div class="relative">
+                    <input 
+                        type="password" 
+                        id="master-password" 
+                        class="w-full p-3 pl-10 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                        placeholder="أدخل كلمة المرور..."
+                        autocomplete="current-password"
+                    >
+                    <i class="fas fa-key absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                    <button id="toggle-password" class="absolute left-10 top-1/2 transform -translate-y-1/2 text-slate-500">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 mt-2 text-right">
+                    كلمة المرور تستخدم لتشفير بياناتك محلياً ولا يتم إرسالها لأي مكان
+                </p>
+            </div>
+            
+            <button onclick="initApp()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 p-3 rounded-xl font-bold transition duration-300 shadow-lg hover:shadow-xl">
+                <i class="fas fa-sign-in-alt ml-2"></i>
+                دخول آمن
+            </button>
+            
+            <div class="mt-6 pt-4 border-t border-slate-800">
+                <p class="text-xs text-slate-500">
+                    <i class="fas fa-shield-alt ml-1"></i>
+                    جميع البيانات مشفرة باستخدام AES-256-GCM
+                </p>
+            </div>
         </div>
     </div>
 
-    <header class="p-4 glass flex justify-between items-center shadow-lg">
-        <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <h2 class="font-bold text-lg">محادثات GitHub الذكية</h2>
-        </div>
-        <button onclick="logout()" class="text-sm text-red-400 hover:text-red-300">خروج آمن</button>
-    </header>
+    <!-- شاشة التطبيق الرئيسية -->
+    <div id="app-container" class="hidden h-full flex flex-col">
 
-    <main id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4">
-        <div class="text-center text-slate-500 text-sm mt-10">بداية المحادثة المشفرة (نهاية إلى نهاية)</div>
-    </main>
-
-    <footer class="p-4 glass">
-        <div class="max-w-4xl mx-auto flex gap-2">
-            <input type="text" id="user-input" class="flex-1 p-3 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:border-blue-500" placeholder="اكتب رسالتك هنا...">
-            <button onclick="sendMessage()" class="bg-blue-600 p-3 rounded-xl px-6 hover:bg-blue-700 transition">إرسال</button>
-        </div>
-    </footer>
-
-    <script>
-        let cryptoKey = null;
-
-        // دالة إنشاء مفتاح التشفير من كلمة المرور
-        async function deriveKey(password) {
-            const encoder = new TextEncoder();
-            const baseKey = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveKey"]);
-            return crypto.subtle.deriveKey(
-                { name: "PBKDF2", salt: encoder.encode("msg-gt-salt"), iterations: 100000, hash: "SHA-256" },
-                baseKey,
-                { name: "AES-GCM", length: 256 },
-                false,
-                ["encrypt", "decrypt"]
-            );
-        }
-
-        // تشفير النص
-        async function encryptData(text) {
-            const iv = crypto.getRandomValues(new Uint8Array(12));
-            const encoded = new TextEncoder().encode(text);
-            const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoded);
-            return { b64: btoa(String.fromCharCode(...new Uint8Array(encrypted))), iv: btoa(String.fromCharCode(...iv)) };
-        }
-
-        // بدء التطبيق
-        async function initApp() {
-            const pw = document.getElementById('master-password').value;
-            if (!pw) return alert("يرجى إدخال كلمة المرور");
-            
-            try {
-                cryptoKey = await deriveKey(pw);
-                document.getElementById('login-screen').classList.add('hidden');
-                loadHistory();
-            } catch (e) {
-                alert("خطأ في المفتاح!");
-            }
-        }
-
-        // إرسال رسالة (محاكاة الذكاء الاصطناعي)
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            addMessageToUI('user', text);
-            input.value = '';
-
-            // حفظ الرسالة مشفرة
-            const encrypted = await encryptData(text);
-            saveToLocal(encrypted);
-
-            // محاكاة رد النظام (تجريبي)
-            setTimeout(() => {
-                addMessageToUI('ai', "تم استلام رسالتك وتشفيرها بنجاح في النظام المحلي.");
-            }, 1000);
-        }
-
-        function addMessageToUI(sender, text) {
-            const container = document.getElementById('chat-container');
-            const div = document.createElement('div');
-            div.className = `flex ${sender === 'user' ? 'justify-start' : 'justify-end'}`;
-            div.innerHTML = `
-                <div class="${sender === 'user' ? 'bg-blue-700' : 'bg-slate-700'} p-3 rounded-2xl max-w-[80%] shadow-md">
-                    <p class="text-sm">${text}</p>
+        <!-- الهيدر -->
+        <header class="p-4 glass flex justify-between items-center shadow-lg border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse absolute top-0 left-0 opacity-50"></div>
                 </div>
-            `;
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-        }
+                <div>
+                    <h2 class="font-bold text-lg">MSG-GT V3.0</h2>
+                    <p class="text-xs text-slate-400">محادثات مشفرة من طرف لطرف</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-slate-800 transition" title="تبديل السمة">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button onclick="exportChats()" class="p-2 rounded-lg hover:bg-slate-800 transition" title="تصدير المحادثات">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button onclick="clearHistory()" class="p-2 rounded-lg hover:bg-slate-800 transition text-yellow-400" title="مسح السجل">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button onclick="logout()" class="p-2 rounded-lg hover:bg-red-900/30 transition text-red-400" title="خروج آمن">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </header>
 
-        function saveToLocal(data) {
-            let history = JSON.parse(localStorage.getItem('chat_history') || '[]');
-            history.push(data);
-            localStorage.setItem('chat_history', JSON.stringify(history));
-        }
+        <!-- منطقة المحادثة -->
+        <main id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <!-- الرسائل ستضاف هنا ديناميكياً -->
+            <div id="welcome-message" class="text-center mt-10 fade-in">
+                <div class="inline-block p-6 rounded-2xl glass max-w-lg">
+                    <i class="fas fa-lock text-4xl text-blue-400 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">مرحباً بك في MSG-GT V3.0</h3>
+                    <p class="text-slate-400 mb-3">جميع رسائلك مشفرة بشكل كامل وتخزن فقط على جهازك</p>
+                    <div class="flex justify-center gap-4 mt-4 text-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-shield-check text-green-400 ml-1"></i>
+                            <span>تشفير AES-256</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-user-lock text-blue-400 ml-1"></i>
+                            <span>خصوصية كاملة</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-database text-purple-400 ml-1"></i>
+                            <span>تخزين محلي</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-        function logout() {
-            location.reload();
-        }
+        <!-- مؤشر الكتابة -->
+        <div id="typing-indicator" class="hidden px-4 pb-2">
+            <div class="flex justify-start">
+                <div class="bg-slate-700 p-3 rounded-2xl rounded-tr-none">
+                    <div class="flex gap-1">
+                        <div class="typing-indicator"></div>
+                        <div class="typing-indicator"></div>
+                        <div class="typing-indicator"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        function loadHistory() {
-            // ملاحظة: لفك التشفير وعرض السجل نحتاج لدالة decrypt (يمكن إضافتها في المرحلة القادمة)
-            console.log("تم تحميل النظام.. البيانات القديمة مخزنة بشكل مشفر.");
-        }
-    </script>
+        <!-- الفوتر مع حقل الإدخال -->
+        <footer class="p-4 glass border-t border-slate-800">
+            <div class="max-w-4xl mx-auto">
+                <div class="flex gap-2">
+                    <div class="flex-1 relative">
+                        <input 
+                            type="text" 
+                            id="user-input" 
+                            class="w-full p-3 pl-12 rounded-xl bg-slate-800 border border-slate-700 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition"
+                            placeholder="اكتب رسالتك هنا..."
+                            autocomplete="off"
+                            disabled
+                        >
+                        <i class="fas fa-comment-dots absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500"></i>
+                        <div class="absolute left-3 top-1/2 transform -translate-y-1/2 flex gap-2">
+                            <button onclick="addEmoji('😊')" class="text-lg hover:scale-110 transition">😊</button>
+                            <button onclick="addEmoji('👍')" class="text-lg hover:scale-110 transition">👍</button>
+                            <button onclick="addEmoji('🔐')" class="text-lg hover:scale-110 transition">🔐</button>
+                        </div>
+                    </div>
+                    <button 
+                        onclick="sendMessage()" 
+                        id="send-button"
+                        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 p-3 rounded-xl px-6 hover:shadow-xl transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="flex justify-between mt-3 text-xs text-slate-500">
+                    <div class="flex items-center">
+                        <i class="fas fa-info-circle ml-1"></i>
+                        <span>Press Enter to send</span>
+                    </div>
+                    <div class="flex items-center" id="encryption-status">
+                        <i class="fas fa-lock text-green-400 ml-1"></i>
+                        <span>التشفير نشط</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- الإشعارات -->
+    <div id="notification-container" class="fixed top-4 left-4 z-50 space-y-2"></div>
+
+    <!-- نافذة الإعدادات -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div class="glass p-6 rounded-2xl w-96 max-w-[90%]">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold"><i class="fas fa-cog ml-2"></i>الإعدادات</h3>
+                <button onclick="closeSettings()" class="text-slate-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-300 mb-2">نوع الذكاء الاصطناعي</label>
+                    <select id="ai-type" class="w-full p-2 rounded-lg bg-slate-800 border border-slate-700">
+                        <option value="assistant">مساعد ذكي</option>
+                        <option value="coder">مبرمج مساعد</option>
+                        <option value="writer">كاتب محتوى</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-slate-300 mb-2">عدد الرسائل المسموح بها</label>
+                    <input type="range" id="message-limit" min="10" max="1000" value="100" class="w-full">
+                    <div class="text-xs text-slate-400 mt-1" id="limit-display">100 رسالة</div>
+                </div>
+                
+                <div class="pt-4 border-t border-slate-800">
+                    <button onclick="showAdvancedSettings()" class="text-sm text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-sliders-h ml-1"></i>
+                        إعدادات متقدمة
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
