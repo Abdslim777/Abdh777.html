@@ -3,647 +3,684 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⛏️ معدّن بيتكوين حقيقي بـ Python في المتصفح</title>
-    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
-    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <title>⚡ معدّن بيتكوين - النسخة الذهبية</title>
+    
+    <!-- PyScript بطريقة مبسطة -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/pyscript.css">
+    <script defer src="https://pyscript.net/releases/2024.1.1/pyscript.js"></script>
     
     <style>
-        :root {
-            --primary: #f7931a;
-            --secondary: #1e293b;
-            --dark: #0f172a;
-            --light: #f8fafc;
-            --success: #10b981;
-            --danger: #ef4444;
-        }
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Cairo', 'Segoe UI', sans-serif;
+            font-family: 'Tajawal', 'Arial', sans-serif;
         }
         
         body {
-            background: linear-gradient(135deg, #0c0c2e, #1a1a40);
-            color: var(--light);
-            min-height: 100vh;
+            background: linear-gradient(145deg, #0a0c0e 0%, #1a1e24 100%);
+            color: #fff;
             padding: 20px;
+            min-height: 100vh;
         }
         
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: rgba(30, 41, 59, 0.9);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(247, 147, 26, 0.2);
+        }
+        
+        /* الشريط العلوي */
+        .top-bar {
+            background: rgba(247, 147, 26, 0.1);
             backdrop-filter: blur(10px);
-        }
-        
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid var(--primary);
-        }
-        
-        h1 {
-            color: var(--primary);
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 10px rgba(247, 147, 26, 0.3);
-        }
-        
-        .subtitle {
-            color: #94a3b8;
-            font-size: 1.2rem;
-        }
-        
-        .tech-badge {
-            display: inline-block;
-            background: var(--primary);
-            color: #000;
-            padding: 8px 15px;
             border-radius: 20px;
-            margin-top: 10px;
-            font-weight: bold;
-            font-size: 0.9rem;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(247, 147, 26, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
-        .controls {
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 15px;
-            padding: 25px;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            color: #f7931a;
+            font-size: 1.8rem;
+            text-shadow: 0 0 20px rgba(247, 147, 26, 0.3);
+        }
+        
+        .status-badge {
+            background: #2d3e50;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #f1c40f;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-dot.ready {
+            background: #2ecc71;
+            animation: none;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* بطاقات التحكم */
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
             margin-bottom: 30px;
+        }
+        
+        .card {
+            background: rgba(30, 35, 40, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            border-color: #f7931a;
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            color: #f7931a;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
         
         .input-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
-        .input-box {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        label {
+        .input-group label {
+            display: block;
             margin-bottom: 8px;
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 1rem;
+            color: #a0a0a0;
+            font-size: 0.9rem;
         }
         
-        input, select {
-            padding: 14px;
-            border: 2px solid #475569;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.05);
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #3a4a5a;
+            border-radius: 12px;
             color: white;
             font-size: 1rem;
             transition: all 0.3s;
         }
         
-        input:focus, select:focus {
+        .input-group input:focus, .input-group select:focus {
+            border-color: #f7931a;
             outline: none;
-            border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(247, 147, 26, 0.2);
-            background: rgba(255, 255, 255, 0.1);
         }
         
-        .button-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        button {
-            padding: 15px 30px;
+        /* الأزرار */
+        .btn {
+            padding: 15px 25px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
-            min-width: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            width: 100%;
         }
         
         .btn-primary {
-            background: linear-gradient(45deg, var(--primary), #e67e22);
-            color: #000;
+            background: linear-gradient(45deg, #f7931a, #e67e22);
+            color: white;
         }
         
         .btn-primary:hover:not(:disabled) {
             transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(247, 147, 26, 0.4);
+            box-shadow: 0 10px 25px rgba(247, 147, 26, 0.4);
         }
         
         .btn-secondary {
-            background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(45deg, #3498db, #2980b9);
             color: white;
         }
         
         .btn-secondary:hover:not(:disabled) {
             transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
         }
         
-        .btn-danger {
-            background: linear-gradient(45deg, var(--danger), #dc2626);
-            color: white;
-        }
-        
-        .btn-danger:hover:not(:disabled) {
-            transform: translateY(-3px);
-            box-shadow: 0 7px 20px rgba(239, 68, 68, 0.4);
-        }
-        
-        button:disabled {
+        .btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none !important;
         }
         
+        /* الإحصائيات */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
             margin-bottom: 30px;
         }
         
-        .stat-card {
-            background: rgba(255, 255, 255, 0.05);
+        .stat-item {
+            background: rgba(20, 25, 30, 0.8);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: transform 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
-            color: var(--primary);
+            color: #f7931a;
             margin-bottom: 5px;
         }
         
         .stat-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
+            color: #a0a0a0;
+            font-size: 0.85rem;
         }
         
+        /* نافذة المخرجات */
         .console {
-            background: #020617;
-            border-radius: 10px;
-            padding: 20px;
-            height: 400px;
-            overflow-y: auto;
-            font-family: 'Cascadia Code', 'Monaco', monospace;
-            font-size: 0.9rem;
-            border: 1px solid #334155;
+            background: #0a0c0e;
+            border-radius: 15px;
+            padding: 25px;
             margin-top: 20px;
+            border: 1px solid #2a3a4a;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .console-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #a0a0a0;
+            border-bottom: 1px solid #2a3a4a;
+            padding-bottom: 15px;
+        }
+        
+        .console-content {
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
         }
         
         .log-entry {
             padding: 8px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.9rem;
             color: #a5b4fc;
         }
         
-        .log-entry.success {
-            color: var(--success);
+        .log-success {
+            color: #2ecc71;
         }
         
-        .log-entry.warning {
-            color: var(--primary);
+        .log-error {
+            color: #e74c3c;
         }
         
-        .log-entry.error {
-            color: var(--danger);
+        .log-warning {
+            color: #f7931a;
         }
         
-        .log-entry.info {
-            color: #38bdf8;
+        .log-info {
+            color: #3498db;
         }
         
-        .loading {
-            text-align: center;
-            padding: 30px;
-            color: #94a3b8;
+        /* رسالة التحميل */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 12, 14, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
         }
         
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #64748b;
-            font-size: 0.9rem;
+        .loading-screen.hide {
+            opacity: 0;
+            pointer-events: none;
         }
         
-        /* تخصيص شريط التمرير */
-        ::-webkit-scrollbar {
-            width: 10px;
+        .miner-animation {
+            width: 100px;
+            height: 100px;
+            border: 5px solid #f7931a;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
         }
         
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 5px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #e67e22;
-        }
-        
+        /* للهواتف */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .input-group {
-                grid-template-columns: 1fr;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-            
-            button {
-                width: 100%;
-            }
-            
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .top-bar {
+                flex-direction: column;
+                gap: 15px;
             }
         }
     </style>
     
-    <!-- خط عربي -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <!-- خطوط عربية -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- شاشة التحميل -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="miner-animation"></div>
+        <h2 style="color: #f7931a; margin-bottom: 10px;">جاري تحميل بيئة التعدين</h2>
+        <p style="color: #a0a0a0;">⏳ يتم تحميل Python الحقيقي...</p>
+        <p style="color: #2ecc71; margin-top: 20px;" id="loadingStatus">🔧 جاري التهيئة...</p>
+    </div>
+    
     <div class="container">
-        <header>
-            <h1>⛏️ معدّن بيتكوين حقيقي</h1>
-            <div class="subtitle">Python حقيقي يعمل في المتصفح عبر WebAssembly</div>
-            <div class="tech-badge">
-                🔥 PyScript + WebAssembly + hashlib حقيقي
+        <!-- الشريط العلوي -->
+        <div class="top-bar">
+            <div class="logo">
+                <span style="font-size: 2rem;">⛏️</span>
+                <h1>معدّن Python الحقيقي</h1>
             </div>
-        </header>
+            <div class="status-badge">
+                <div id="statusDot" class="status-dot"></div>
+                <span id="statusText">جاري التحميل...</span>
+            </div>
+        </div>
         
-        <div class="controls">
-            <div class="input-group">
-                <div class="input-box">
-                    <label for="difficulty">⚡ مستوى الصعوبة:</label>
+        <!-- لوحة التحكم -->
+        <div class="control-panel">
+            <div class="card">
+                <div class="card-title">
+                    <span>⚙️</span>
+                    إعدادات التعدين
+                </div>
+                <div class="input-group">
+                    <label>🔢 مستوى الصعوبة</label>
                     <select id="difficulty">
-                        <option value="1">سهل جداً (0) - للتجربة</option>
-                        <option value="2">سهل (00)</option>
-                        <option value="3" selected>متوسط (000) - واقعي</option>
-                        <option value="4">صعب (0000) - حقيقي</option>
-                        <option value="5">خبير (00000) - تحدي</option>
+                        <option value="1">⭐ سهل جداً (0)</option>
+                        <option value="2" selected>⭐⭐ سهل (00)</option>
+                        <option value="3">⭐⭐⭐ متوسط (000)</option>
+                        <option value="4">⭐⭐⭐⭐ صعب (0000)</option>
+                        <option value="5">⭐⭐⭐⭐⭐ خبير (00000)</option>
                     </select>
                 </div>
-                <div class="input-box">
-                    <label for="maxAttempts">🎯 الحد الأقصى للمحاولات:</label>
+                <div class="input-group">
+                    <label>🎯 الحد الأقصى للمحاولات</label>
                     <input type="number" id="maxAttempts" value="100000" min="1000" max="1000000">
                 </div>
-                <div class="input-box">
-                    <label for="blockData">📦 بيانات الكتلة:</label>
-                    <input type="text" id="blockData" value="User1->User2: 1 BTC">
-                </div>
             </div>
             
-            <div class="button-group">
-                <button class="btn-primary" onclick="startRealMining()">
-                    <span>▶️</span> بدء التعدين الحقيقي
-                </button>
-                <button class="btn-secondary" onclick="testSHA256()">
-                    <span>🔍</span> اختبار SHA256
-                </button>
-                <button class="btn-danger" onclick="clearConsole()">
-                    <span>🗑️</span> مسح النتائج
-                </button>
+            <div class="card">
+                <div class="card-title">
+                    <span>📦</span>
+                    بيانات الكتلة
+                </div>
+                <div class="input-group">
+                    <label>📝 نص الكتلة</label>
+                    <input type="text" id="blockData" value="كتلة بيتكوين تجريبية">
+                </div>
+                <div class="input-group">
+                    <label>🔗 الهاش السابق</label>
+                    <input type="text" id="prevHash" value="00000000000000000005af71eea30b6596540130635f9923">
+                </div>
             </div>
         </div>
         
+        <!-- أزرار التحكم -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+            <button id="mineBtn" class="btn btn-primary" onclick="startMining()" disabled>
+                <span>⏳</span> انتظر تحميل Python...
+            </button>
+            <button id="testBtn" class="btn btn-secondary" onclick="testSHA256()" disabled>
+                <span>🔬</span> اختبار SHA256
+            </button>
+        </div>
+        
+        <!-- الإحصائيات -->
         <div class="stats-grid">
-            <div class="stat-card">
+            <div class="stat-item">
                 <div class="stat-value" id="attemptsCount">0</div>
-                <div class="stat-label">🔄 عدد المحاولات</div>
+                <div class="stat-label">المحاولات</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-item">
                 <div class="stat-value" id="hashRate">0 H/s</div>
-                <div class="stat-label">⚡ سرعة التعدين</div>
+                <div class="stat-label">السرعة</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-item">
                 <div class="stat-value" id="successCount">0</div>
-                <div class="stat-label">🎯 النجاحات</div>
+                <div class="stat-label">النجاحات</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-item">
                 <div class="stat-value" id="timeElapsed">0s</div>
-                <div class="stat-label">⏱️ الوقت المنقضي</div>
+                <div class="stat-label">الوقت</div>
             </div>
         </div>
         
-        <div class="console" id="console">
-            <div class="loading">
-                <p>⚙️ جاري تحميل بيئة Python...</p>
-                <p>⏳ قد يستغرق التحميل بضع ثوان</p>
-                <p>💡 بعد التحميل، اضغط "بدء التعدين الحقيقي"</p>
+        <!-- نافذة المخرجات -->
+        <div class="console">
+            <div class="console-header">
+                <span>📟 مخرجات التعدين</span>
+                <button onclick="clearConsole()" style="background: none; border: none; color: #f7931a; cursor: pointer;">
+                    🧹 مسح
+                </button>
             </div>
-        </div>
-        
-        <div class="footer">
-            ⚠️ هذا مشروع تعليمي - التعدين الحقيقي يحتاج أجهزة ASIC<br>
-            🔧 التقنية: Python 3.11 + WebAssembly + hashlib حقيقي<br>
-            ⭐ يعمل على جميع المتصفحات الحديثة
+            <div id="consoleContent" class="console-content">
+                <div class="log-entry log-info">
+                    🔧 مرحباً بك في معدّن Python الحقيقي
+                </div>
+                <div class="log-entry log-info">
+                    ⏳ جاري تحميل بيئة التعدين...
+                </div>
+            </div>
         </div>
     </div>
-
-    <script>
-        // دالة لإضافة رسائل للكونسول
-        function addLog(message, type = 'info') {
-            const consoleEl = document.getElementById('console');
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry ${type}`;
-            logEntry.innerHTML = `[${new Date().toLocaleTimeString('ar-EG')}] ${message}`;
-            consoleEl.appendChild(logEntry);
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        }
-        
-        // دالة مسح الكونسول
-        function clearConsole() {
-            document.getElementById('console').innerHTML = `
-                <div class="loading">
-                    <p>🧹 تم مسح النتائج</p>
-                    <p>🔧 جاهز للتعدين الجديد</p>
-                </div>
-            `;
-            
-            // إعادة تعيين الإحصائيات
-            document.getElementById('attemptsCount').textContent = '0';
-            document.getElementById('hashRate').textContent = '0 H/s';
-            document.getElementById('successCount').textContent = '0';
-            document.getElementById('timeElapsed').textContent = '0s';
-        }
-        
-        // دالة بدء التعدين - سيتحكم بها PyScript
-        function startRealMining() {
-            addLog('🚀 بدأ التعدين الحقيقي...', 'warning');
-            
-            // تحديث واجهة المستخدم
-            document.querySelector('.btn-primary').disabled = true;
-            document.querySelector('.btn-primary').innerHTML = '<span>⏳</span> جاري التعدين...';
-            
-            // سيتم التحكم من خلال PyScript
-        }
-        
-        // دالة اختبار SHA256
-        function testSHA256() {
-            addLog('🔍 جاري اختبار SHA256...', 'info');
-            // سيتم التحكم من خلال PyScript
-        }
-    </script>
-
-    <!-- كود PyScript -->
-    <script type="py" config="./pyscript.json">
-        import asyncio
+    
+    <!-- PyScript مع كود التعدين الحقيقي -->
+    <py-script>
         import hashlib
         import time
-        from js import document, console, Date
+        from js import document, window
         from pyodide.ffi import create_proxy
         
-        class BitcoinMiner:
+        class RealBitcoinMiner:
+            """معدّن بيتكوين حقيقي باستخدام Python"""
+            
             def __init__(self):
                 self.is_mining = False
-                self.start_time = 0
                 self.attempts = 0
-                self.success_count = 0
-                self.hash_rate = 0
+                self.successes = 0
+                self.start_time = 0
                 
-            def add_log(self, message, log_type='info'):
-                """إضافة رسالة للكونسول"""
-                console_el = document.getElementById("console")
-                if console_el.innerHTML.includes('جاري تحميل'):
-                    console_el.innerHTML = ''
+            def log(self, message, type="info"):
+                """إضافة رسالة للمخرجات"""
+                console = document.getElementById("consoleContent")
                 
-                log_entry = document.createElement("div")
-                log_entry.className = f"log-entry {log_type}"
-                now = Date.new().toLocaleTimeString('ar-EG')
-                log_entry.innerHTML = f"[{now}] {message}"
-                console_el.appendChild(log_entry)
-                console_el.scrollTop = console_el.scrollHeight
+                # تحديد اللون
+                colors = {
+                    "success": "#2ecc71",
+                    "error": "#e74c3c", 
+                    "warning": "#f7931a",
+                    "info": "#3498db"
+                }
+                color = colors.get(type, "#a5b4fc")
                 
-                # طباعة في كونسول المطورين أيضًا
-                print(f"[{log_type.upper()}] {message}")
+                # إنشاء عنصر الرسالة
+                from js import document
+                div = document.createElement("div")
+                div.className = f"log-entry log-{type}"
+                div.style.color = color
+                
+                from datetime import datetime
+                time_str = datetime.now().strftime("%H:%M:%S")
+                div.innerHTML = f"[{time_str}] {message}"
+                
+                console.appendChild(div)
+                console.scrollTop = console.scrollHeight
+                
+                # طباعة في الكونسول أيضاً
+                print(f"[{type.upper()}] {message}")
             
             def update_stats(self):
                 """تحديث الإحصائيات"""
-                if self.start_time == 0:
-                    return
-                    
-                elapsed = (time.time() - self.start_time)
-                if elapsed > 0:
-                    self.hash_rate = self.attempts / elapsed
+                elapsed = time.time() - self.start_time if self.start_time > 0 else 0
+                speed = self.attempts / elapsed if elapsed > 0 else 0
                 
                 document.getElementById("attemptsCount").innerText = f"{self.attempts:,}"
-                document.getElementById("hashRate").innerText = f"{self.hash_rate:,.0f} H/s"
-                document.getElementById("successCount").innerText = f"{self.success_count}"
+                document.getElementById("hashRate").innerText = f"{speed:,.0f} H/s"
+                document.getElementById("successCount").innerText = f"{self.successes}"
                 document.getElementById("timeElapsed").innerText = f"{elapsed:.1f}s"
             
-            async def mine_block(self, difficulty, max_attempts, block_data):
-                """التعدين الحقيقي"""
+            def mine(self, difficulty, max_attempts, block_data, prev_hash):
+                """دالة التعدين الرئيسية"""
                 self.is_mining = True
-                self.start_time = time.time()
                 self.attempts = 0
-                self.success_count = 0
+                self.start_time = time.time()
                 
                 prefix = '0' * difficulty
-                prev_hash = "00000000000000000005af71eea30b6596540130635f9923"
                 
-                self.add_log(f"⚙️ بدأ التعدين | الصعوبة: {difficulty} | الحد: {max_attempts:,}", "warning")
-                self.add_log(f"📦 بيانات الكتلة: {block_data}", "info")
-                self.add_log(f"🎯 الهدف: هاش يبدأ بـ '{prefix}'", "info")
+                self.log(f"⚡ بدء التعدين | الصعوبة: {difficulty} | الهدف: {prefix}...", "warning")
+                self.log(f"📦 بيانات الكتلة: {block_data}", "info")
+                self.log(f"🔗 الهاش السابق: {prev_hash[:16]}...", "info")
                 
                 found = False
                 
-                for nonce in range(max_attempts):
-                    if not self.is_mining:
-                        break
-                    
-                    self.attempts = nonce
-                    
-                    # بناء بيانات الكتلة
-                    data = f"{prev_hash}{block_data}{nonce}"
-                    
-                    # SHA256 مزدوج - مثل البيتكوين الحقيقي
-                    first_hash = hashlib.sha256(data.encode()).digest()
-                    final_hash = hashlib.sha256(first_hash).hexdigest()
-                    
-                    # تحديث الإحصائيات كل 10000 محاولة
-                    if nonce % 10000 == 0 and nonce > 0:
-                        self.update_stats()
-                        self.add_log(f"📊 {nonce:,} محاولة | {self.hash_rate:,.0f} H/s", "info")
-                    
-                    # التحقق من الهاش
-                    if final_hash.startswith(prefix):
-                        elapsed = time.time() - self.start_time
-                        self.success_count += 1
-                        self.update_stats()
+                try:
+                    for nonce in range(1, max_attempts + 1):
+                        if not self.is_mining:
+                            break
+                            
+                        self.attempts = nonce
                         
-                        self.add_log("=" * 50, "success")
-                        self.add_log("🎉🎉🎉 تم العثور على كتلة! 🎉🎉🎉", "success")
-                        self.add_log(f"🔢 النونس: {nonce:,}", "success")
-                        self.add_log(f"🔐 الهاش: {final_hash}", "success")
-                        self.add_log(f"⏱️ الوقت: {elapsed:.2f} ثانية", "success")
-                        self.add_log(f"⚡ السرعة: {self.hash_rate:,.0f} هاش/ثانية", "success")
-                        self.add_log("=" * 50, "success")
+                        # بناء البيانات للتعدين
+                        data = f"{prev_hash}{block_data}{nonce}"
                         
-                        found = True
-                        break
-                
-                if not found:
-                    elapsed = time.time() - self.start_time
-                    self.add_log("❌ انتهت المحاولات دون إيجاد حل", "error")
-                    self.add_log(f"🔍 فحصنا {self.attempts:,} هاش", "info")
-                    self.add_log(f"⚡ السرعة القصوى: {self.hash_rate:,.0f} H/s", "info")
-                
-                self.is_mining = False
-                self.update_stats()
-                
-                # إعادة تمكين الزر
-                btn = document.querySelector(".btn-primary")
-                btn.disabled = False
-                btn.innerHTML = '<span>▶️</span> بدء التعدين الحقيقي'
+                        # SHA256 مزدوج - مثل البيتكوين الحقيقي
+                        first_hash = hashlib.sha256(data.encode()).digest()
+                        final_hash = hashlib.sha256(first_hash).hexdigest()
+                        
+                        # تحديث الإحصائيات كل 10000 محاولة
+                        if nonce % 10000 == 0:
+                            self.update_stats()
+                            self.log(f"📊 {nonce:,} محاولة | السرعة: {self.attempts/(time.time()-self.start_time):,.0f} H/s", "info")
+                        
+                        # التحقق من الهاش
+                        if final_hash.startswith(prefix):
+                            elapsed = time.time() - self.start_time
+                            speed = self.attempts / elapsed
+                            
+                            self.successes += 1
+                            self.update_stats()
+                            
+                            self.log("🎉🎉🎉 نجاح! تم إيجاد كتلة! 🎉🎉🎉", "success")
+                            self.log(f"🔢 النونس: {nonce:,}", "success")
+                            self.log(f"🔐 الهاش: {final_hash}", "success")
+                            self.log(f"⏱️ الوقت: {elapsed:.2f} ثانية", "success")
+                            self.log(f"⚡ السرعة: {speed:,.0f} H/s", "success")
+                            
+                            found = True
+                            break
+                            
+                except Exception as e:
+                    self.log(f"❌ خطأ: {str(e)}", "error")
+                finally:
+                    self.is_mining = False
+                    self.update_stats()
+                    
+                    if not found:
+                        self.log(f"❌ انتهت المحاولات ({max_attempts:,}) بدون إيجاد حل", "error")
+                        self.log("💡 جرب زيادة عدد المحاولات أو تقليل الصعوبة", "info")
+                    else:
+                        self.log("✅ انتهى التعدين بنجاح", "success")
                 
                 return found
-            
-            def stop_mining(self):
-                """إيقاف التعدين"""
-                self.is_mining = False
-                self.add_log("⏸️ تم إيقاف التعدين", "warning")
         
         # إنشاء كائن المعدن
-        miner = BitcoinMiner()
+        miner = RealBitcoinMiner()
         
-        # دالة بدء التعدين من JavaScript
-        async def start_real_mining():
+        # دالة بدء التعدين
+        async def start_mining_py():
+            """تستدعى من JavaScript"""
             # الحصول على المدخلات
             difficulty = int(document.getElementById("difficulty").value)
             max_attempts = int(document.getElementById("maxAttempts").value)
             block_data = document.getElementById("blockData").value
+            prev_hash = document.getElementById("prevHash").value
             
             # بدء التعدين
-            await miner.mine_block(difficulty, max_attempts, block_data)
-        
+            await miner.mine(difficulty, max_attempts, block_data, prev_hash)
+            
         # دالة اختبار SHA256
-        async def test_sha256():
-            miner.add_log("🧪 بدأ اختبار SHA256...", "info")
+        async def test_sha256_py():
+            """اختبار مكتبة التشفير"""
+            miner.log("🔬 بدء اختبار SHA256...", "info")
             
             test_data = "Hello Bitcoin!"
             
-            # حساب الهاش
             start = time.time()
             first_hash = hashlib.sha256(test_data.encode()).digest()
             final_hash = hashlib.sha256(first_hash).hexdigest()
             end = time.time()
             
-            miner.add_log(f"📝 النص: {test_data}", "info")
-            miner.add_log(f"🔐 الهاش: {final_hash}", "success")
-            miner.add_log(f"⏱️ الوقت: {(end - start) * 1000:.4f} مللي ثانية", "info")
-            miner.add_log("✅ اختبار SHA256 مكتمل", "success")
+            miner.log(f"📝 النص: {test_data}", "info")
+            miner.log(f"🔐 الهاش: {final_hash}", "success")
+            miner.log(f"⚡ الوقت: {(end-start)*1000:.4f} مللي ثانية", "success")
+            miner.log("✅ اختبار SHA256 مكتمل", "success")
+            
+        # جعل الدوال متاحة لـ JavaScript
+        window.start_mining_py = start_mining_py
+        window.test_sha256_py = test_sha256_py
         
-        # دالة مسح الكونسول
-        def clear_console():
-            miner.add_log = lambda *args: None  # تعطيل مؤقت
-            document.getElementById("console").innerHTML = '''
-                <div class="loading">
-                    <p>🧹 تم مسح النتائج</p>
-                    <p>🔧 جاهز للتعدين الجديد</p>
-                </div>
-            '''
-            miner.add_log = BitcoinMiner.add_log  # إعادة التفعيل
+        # إرسال إشارة أن Python جاهز
+        miner.log("✅ بيئة Python جاهزة!", "success")
+        miner.log("🔧 مكتبة hashlib محملة بنجاح", "success")
+        miner.log("⚡ اضغط على زر بدء التعدين للبدء", "warning")
         
-        # إضافة رسالة ترحيب عند التحميل
-        miner.add_log("✅ بيئة Python جاهزة!", "success")
-        miner.add_log("🔧 تم تحميل hashlib الحقيقي", "info")
-        miner.add_log("🚀 اضغط 'بدء التعدين الحقيقي' للبدء", "warning")
+        # تحديث واجهة المستخدم
+        document.getElementById("statusDot").className = "status-dot ready"
+        document.getElementById("statusText").innerText = "✅ Python جاهز للعمل"
+        document.getElementById("mineBtn").disabled = False
+        document.getElementById("mineBtn").innerHTML = '<span>⛏️</span> بدء التعدين الحقيقي'
+        document.getElementById("testBtn").disabled = False
         
-    </script>
-
-    <!-- ملف إعدادات PyScript -->
-    <script type="json" id="pyscript-config">
-        {
-            "packages": [],
-            "runtimes": [{
-                "src": "https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js",
-                "name": "pyodide-0.24.1",
-                "lang": "python"
-            }]
-        }
-    </script>
-
-    <!-- ربط دوال JavaScript بـ PyScript -->
+        # إخفاء شاشة التحميل
+        loading_screen = document.getElementById("loadingScreen")
+        loading_screen.className = "loading-screen hide"
+        setTimeout(lambda: loading_screen.remove(), 500)
+    </py-script>
+    
+    <!-- JavaScript للتحكم -->
     <script>
-        // عندما يكون PyScript جاهزاً
-        document.addEventListener('DOMContentLoaded', function() {
-            // إعادة تعريف الدوال بعد تحميل PyScript
-            window.startRealMining = async function() {
-                try {
-                    await start_real_mining();
-                } catch (error) {
-                    addLog(`❌ خطأ: ${error.message}`, 'error');
-                    console.error(error);
-                }
+        // بدء التعدين
+        async function startMining() {
+            const mineBtn = document.getElementById("mineBtn");
+            
+            if (!window.start_mining_py) {
+                alert("❌ Python لم يحمل بعد! انتظر قليلاً...");
+                return;
+            }
+            
+            mineBtn.disabled = true;
+            mineBtn.innerHTML = '<span>⏳</span> جاري التعدين...';
+            
+            try {
+                await window.start_mining_py();
+            } catch (error) {
+                console.error("خطأ:", error);
+                addLog(`❌ خطأ: ${error.message}`, "error");
+            } finally {
+                mineBtn.disabled = false;
+                mineBtn.innerHTML = '<span>⛏️</span> بدء التعدين الحقيقي';
+            }
+        }
+        
+        // اختبار SHA256
+        async function testSHA256() {
+            if (!window.test_sha256_py) {
+                alert("❌ Python لم يحمل بعد!");
+                return;
+            }
+            
+            await window.test_sha256_py();
+        }
+        
+        // مسح المخرجات
+        function clearConsole() {
+            const console = document.getElementById("consoleContent");
+            console.innerHTML = `
+                <div class="log-entry log-info">
+                    🔧 تم مسح المخرجات
+                </div>
+                <div class="log-entry log-info">
+                    ⚡ جاهز للتعدين
+                </div>
+            `;
+            
+            // إعادة تعيين الإحصائيات
+            document.getElementById("attemptsCount").innerText = "0";
+            document.getElementById("hashRate").innerText = "0 H/s";
+            document.getElementById("successCount").innerText = "0";
+            document.getElementById("timeElapsed").innerText = "0s";
+        }
+        
+        // إضافة رسالة (للاستخدام من JavaScript)
+        function addLog(message, type = "info") {
+            const console = document.getElementById("consoleContent");
+            const div = document.createElement("div");
+            
+            const colors = {
+                success: "#2ecc71",
+                error: "#e74c3c",
+                warning: "#f7931a",
+                info: "#3498db"
             };
             
-            window.testSHA256 = async function() {
-                try {
-                    await test_sha256();
-                } catch (error) {
-                    console.error(error);
-                }
-            };
+            div.style.color = colors[type] || "#a5b4fc";
+            div.className = `log-entry log-${type}`;
             
-            window.clearConsole = function() {
-                clear_console();
-                addLog('🧹 تم مسح النتائج', 'info');
-            };
+            const now = new Date();
+            const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
             
-            // إظهار رسالة جاهز
-            setTimeout(() => {
-                document.getElementById('console').innerHTML = `
-                    <div class="log-entry success">✅ بيئة Python جاهزة!</div>
-                    <div class="log-entry info">🔧 تم تحميل hashlib الحقيقي</div>
-                    <div class="log-entry warning">🚀 اضغط 'بدء التعدين الحقيقي' للبدء</div>
-                `;
-            }, 2000);
-        });
+            div.innerHTML = `[${time}] ${message}`;
+            console.appendChild(div);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        // التأكد من إخفاء شاشة التحميل بعد 30 ثانية كحد أقصى
+        setTimeout(() => {
+            const loadingScreen = document.getElementById("loadingScreen");
+            if (loadingScreen && !loadingScreen.className.includes("hide")) {
+                loadingScreen.className = "loading-screen hide";
+                addLog("⚠️ تم إخفاء شاشة التحميل تلقائياً", "warning");
+            }
+        }, 30000);
+        
+        console.log("✅ JavaScript جاهز!");
     </script>
 </body>
 </html>
